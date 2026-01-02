@@ -525,6 +525,19 @@
             margin-top: 4px;
         }
 
+        .achievement-desc {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.2;
+            opacity: 0.8;
+        }
+
+        .achievement:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
         /* Statistics */
         .stats-grid {
             display: grid;
@@ -560,6 +573,7 @@
             align-items: flex-end;
             height: 80px;
             gap: 3px;
+            margin-top: 20px;
         }
 
         .stat-bar {
@@ -583,12 +597,13 @@
 
         .stat-bar-value {
             position: absolute;
-            top: -18px;
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-secondary);
             white-space: nowrap;
+            margin-bottom: 2px;
         }
 
         .stat-labels {
@@ -1662,6 +1677,31 @@
             }
         };
 
+        const ACHIEVEMENT_DESCRIPTIONS = {
+            ru: {
+                first_step: 'Выполните первую задачу',
+                perfect_day: 'Выполните все задачи за один день',
+                perfect_week: 'Выполните все задачи за неделю (100%)',
+                streak_7: 'Выполняйте все задачи 7 дней подряд',
+                streak_30: 'Выполняйте все задачи 30 дней подряд',
+                marathoner: 'Выполните 50 задач всего',
+                master: 'Выполните 100 задач всего',
+                early_bird: 'Выполните задачу до 6:00 утра',
+                on_track: 'Закройте 3 идеальные недели подряд'
+            },
+            en: {
+                first_step: 'Complete your first task',
+                perfect_day: 'Complete all tasks in a single day',
+                perfect_week: 'Complete all tasks for the week (100%)',
+                streak_7: 'Complete all tasks for 7 days straight',
+                streak_30: 'Complete all tasks for 30 days straight',
+                marathoner: 'Complete 50 tasks total',
+                master: 'Complete 100 tasks total',
+                early_bird: 'Complete a task before 6:00 AM',
+                on_track: 'Complete 3 perfect weeks in a row'
+            }
+        };
+
         // ==================== SOUNDS ====================
         const SOUNDS = {
             check: () => playTone(800, 0.1, 'sine'),
@@ -2030,6 +2070,7 @@
                 data.totalCompleted = Math.max(0, data.totalCompleted - removed);
                 saveData();
                 renderTasks();
+                renderProgressStats();
                 renderStats();
                 recheckAllAchievements();
             }
@@ -2450,15 +2491,26 @@
         // ==================== ACHIEVEMENTS ====================
         function renderAchievements() {
             const names = ACHIEVEMENT_NAMES[data.lang];
+            const descs = ACHIEVEMENT_DESCRIPTIONS[data.lang];
             document.getElementById('achievements-grid').innerHTML = ACHIEVEMENTS.map(ach => {
                 const unlocked = data.achievements[ach.id];
                 return `
-                    <div class="achievement ${unlocked ? 'unlocked' : 'locked'}" title="${names[ach.id]}">
+                    <div class="achievement ${unlocked ? 'unlocked' : 'locked'}" onclick="showAchievementInfo('${ach.id}')">
                         <div class="achievement-icon">${ach.icon}</div>
                         <div class="achievement-name">${names[ach.id]}</div>
+                        <div class="achievement-desc">${descs[ach.id]}</div>
                     </div>
                 `;
             }).join('');
+        }
+
+        function showAchievementInfo(id) {
+            const names = ACHIEVEMENT_NAMES[data.lang];
+            const descs = ACHIEVEMENT_DESCRIPTIONS[data.lang];
+            const ach = ACHIEVEMENTS.find(a => a.id === id);
+            const unlocked = data.achievements[id];
+            const status = unlocked ? (data.lang === 'ru' ? '✅ Получено' : '✅ Unlocked') : (data.lang === 'ru' ? '🔒 Не получено' : '🔒 Locked');
+            showNotification(ach.icon, names[id], `${descs[id]}\n${status}`);
         }
 
         function unlockAchievement(id) {
