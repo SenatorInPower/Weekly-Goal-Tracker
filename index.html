@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weekly Goal Tracker</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Track your daily tasks and habits with achievements">
+    <meta name="theme-color" content="#4a90d9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Goal Tracker">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icons (inline SVG) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234a90d9'/><stop offset='100%25' stop-color='%232ecc71'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><path d='M25 50 L42 67 L75 33' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='20' y1='22' x2='80' y2='22' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234a90d9'/><stop offset='100%25' stop-color='%232ecc71'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><path d='M25 50 L42 67 L75 33' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='20' y1='22' x2='80' y2='22' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --text-secondary: #666666;
+            --accent: #4a90d9;
+            --accent-secondary: #2ecc71;
+            --border: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #27ae60;
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #9b59b6;
+            --accent-secondary: #1abc9c;
+            --border: #2d3a5a;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .theme-toggle {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .week-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .week-display {
+            font-size: 1.1rem;
+            font-weight: 500;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        /* Add Task Form */
+        .add-task-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .add-task-form input,
+        .add-task-form select,
+        .add-task-form textarea {
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .add-task-form input[type="text"] {
+            min-width: 200px;
+        }
+
+        .add-task-form input[type="number"] {
+            width: 80px;
+        }
+
+        .add-task-form textarea {
+            min-width: 200px;
+            height: 42px;
+            resize: vertical;
+        }
+
+        .add-task-form button {
+            background: var(--accent-secondary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            align-self: flex-end;
+        }
+
+        .add-task-form button:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        /* Tracker Table */
+        .tracker-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .tracker-table thead,
+        .tracker-table tbody,
+        .tracker-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .tracker-table th,
+        .tracker-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tracker-table th {
+            background: var(--bg);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .tracker-table th.today,
+        .tracker-table td.today {
+            background: rgba(74, 144, 217, 0.1);
+        }
+
+        [data-theme="dark"] .tracker-table th.today,
+        [data-theme="dark"] .tracker-table td.today {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        .task-name-cell {
+            text-align: left !important;
+        }
+
+        .task-name {
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .task-name:hover {
+            color: var(--accent);
+        }
+
+        .task-comment {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .task-time {
+            font-size: 0.7rem;
+            color: var(--accent);
+            margin-top: 2px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            background: var(--bg);
+        }
+
+        /* Checkbox */
+        .day-checkbox {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            appearance: none;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .day-checkbox:checked {
+            background: var(--accent-secondary);
+            border-color: var(--accent-secondary);
+        }
+
+        .day-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            animation: checkmark 0.3s ease;
+        }
+
+        @keyframes checkmark {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            min-width: 60px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease, background 0.3s;
+            min-width: 2px;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .edit-btn,
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+            padding: 2px 5px;
+        }
+
+        .edit-btn {
+            color: var(--accent);
+        }
+
+        .delete-btn {
+            color: var(--danger);
+        }
+
+        .edit-btn:hover,
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Donut Chart */
+        .donut-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .donut-chart {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .donut-chart svg {
+            transform: rotate(-90deg);
+        }
+
+        .donut-chart circle {
+            fill: none;
+            stroke-width: 15;
+        }
+
+        .donut-bg {
+            stroke: var(--border);
+        }
+
+        .donut-progress {
+            stroke: var(--accent-secondary);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease, stroke 0.3s;
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-percent {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .donut-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Category Progress */
+        .category-progress {
+            margin-bottom: 15px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .category-name {
+            font-weight: 500;
+        }
+
+        .category-percent {
+            color: var(--text-secondary);
+        }
+
+        .no-categories {
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Streak */
+        .streak-container {
+            text-align: center;
+        }
+
+        .streak-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .streak-icon.active {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .streak-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .streak-label {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .streak-best {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Achievements */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .achievement {
+            text-align: center;
+            padding: 15px 10px;
+            border-radius: 12px;
+            background: var(--bg);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .achievement.locked {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+
+        .achievement.unlocked {
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .achievement-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .achievement-date {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Data Actions */
+        .data-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .data-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .data-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .data-btn.danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .data-btn.danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        #import-file {
+            display: none;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 30px var(--shadow);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-form label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .modal-form input,
+        .modal-form select,
+        .modal-form textarea {
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .modal-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn.save {
+            background: var(--accent-secondary);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px var(--shadow);
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .notification-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tracker-table thead {
+                display: none;
+            }
+
+            .tracker-table,
+            .tracker-table tbody,
+            .tracker-table tr {
+                display: block;
+            }
+
+            .tracker-table tr {
+                margin-bottom: 20px;
+                background: var(--bg);
+                border-radius: 12px;
+                padding: 15px;
+            }
+
+            .tracker-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border-bottom: 1px solid var(--border);
+                text-align: right;
+            }
+
+            .tracker-table td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-secondary);
+            }
+
+            .tracker-table td:last-child {
+                border-bottom: none;
+            }
+
+            .task-name-cell {
+                text-align: right !important;
+            }
+
+            .days-row {
+                display: flex;
+                gap: 5px;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+            }
+
+            .day-checkbox {
+                width: 32px;
+                height: 32px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .week-nav {
+                flex-direction: column;
+            }
+
+            .add-task-form {
+                flex-direction: column;
+            }
+
+            .form-group {
+                width: 100%;
+            }
+
+            .add-task-form input,
+            .add-task-form select,
+            .add-task-form textarea {
+                width: 100%;
+            }
+
+            .add-task-form button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <div class="logo">Weekly Goal Tracker</div>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span> <span id="theme-text">Тёмная тема</span>
+                </button>
+            </div>
+            <nav class="week-nav">
+                <button class="nav-btn" onclick="changeWeek(-1)">← Предыдущая</button>
+                <div class="week-display" id="week-display"></div>
+                <button class="nav-btn" onclick="goToToday()">Сегодня</button>
+                <button class="nav-btn" onclick="changeWeek(1)">Следующая →</button>
+            </nav>
+        </header>
+
+        <!-- Add Task -->
+        <section class="card">
+            <h2 class="card-title">Добавить задачу</h2>
+            <form class="add-task-form" onsubmit="addTask(event)">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="task-name" placeholder="Название задачи" required>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="task-category">
+                        <option value="work">💼 Работа</option>
+                        <option value="health">🏃 Здоровье</option>
+                        <option value="study">📚 Учёба</option>
+                        <option value="personal">🏠 Личное</option>
+                        <option value="other">📌 Другое</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Время (мин)</label>
+                    <input type="number" id="task-time" placeholder="30" min="1" max="480">
+                </div>
+                <div class="form-group">
+                    <label>Комментарий</label>
+                    <input type="text" id="task-comment" placeholder="Заметка (опционально)">
+                </div>
+                <button type="submit">Добавить</button>
+            </form>
+        </section>
+
+        <!-- Tracker -->
+        <section class="card">
+            <h2 class="card-title">Трекер задач</h2>
+            <table class="tracker-table" id="tracker-table">
+                <thead>
+                    <tr>
+                        <th style="width: 22%">Задача</th>
+                        <th style="width: 10%">Категория</th>
+                        <th id="day-0">Пн</th>
+                        <th id="day-1">Вт</th>
+                        <th id="day-2">Ср</th>
+                        <th id="day-3">Чт</th>
+                        <th id="day-4">Пт</th>
+                        <th id="day-5">Сб</th>
+                        <th id="day-6">Вс</th>
+                        <th style="width: 8%">Прогресс</th>
+                        <th style="width: 8%"></th>
+                    </tr>
+                </thead>
+                <tbody id="tasks-body">
+                </tbody>
+            </table>
+            <div class="empty-state" id="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p>Пока нет задач. Добавьте первую задачу выше!</p>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="stats-grid">
+            <div class="card">
+                <h2 class="card-title">Прогресс недели</h2>
+                <div class="donut-container">
+                    <div class="donut-chart">
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <circle class="donut-bg" cx="75" cy="75" r="60"></circle>
+                            <circle class="donut-progress" id="donut-progress" cx="75" cy="75" r="60"
+                                stroke-dasharray="377" stroke-dashoffset="377"></circle>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-percent" id="total-percent">0%</div>
+                            <div class="donut-label">выполнено</div>
+                        </div>
+                    </div>
+                    <p id="total-stats" style="margin-top: 15px; color: var(--text-secondary);">
+                        Выполнено 0 из 0
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">По категориям</h2>
+                <div id="category-stats"></div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Серия дней</h2>
+                <div class="streak-container">
+                    <div class="streak-icon" id="streak-icon">🔥</div>
+                    <div class="streak-number" id="current-streak">0</div>
+                    <div class="streak-label">дней подряд</div>
+                    <div class="streak-best">Лучший результат: <span id="best-streak">0</span> дней</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements -->
+        <section class="card">
+            <h2 class="card-title">Достижения</h2>
+            <div class="achievements-grid" id="achievements-grid"></div>
+        </section>
+
+        <!-- Data Management -->
+        <section class="card">
+            <h2 class="card-title">Управление данными</h2>
+            <div class="data-actions">
+                <button class="data-btn" onclick="exportData()">📥 Экспорт</button>
+                <button class="data-btn" onclick="document.getElementById('import-file').click()">📤 Импорт</button>
+                <input type="file" id="import-file" accept=".json" onchange="importData(event)">
+                <button class="data-btn danger" onclick="resetData()">🗑️ Сбросить данные</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal">
+            <h3 class="modal-title">Редактировать задачу</h3>
+            <form class="modal-form" onsubmit="saveTaskEdit(event)">
+                <input type="hidden" id="edit-task-id">
+                <div>
+                    <label>Название</label>
+                    <input type="text" id="edit-task-name" required>
+                </div>
+                <div>
+                    <label>Категория</label>
+                    <select id="edit-task-category">
+                        <option value="work">💼 Работа</option>
+                        <option value="health">🏃 Здоровье</option>
+                        <option value="study">📚 Учёба</option>
+                        <option value="personal">🏠 Личное</option>
+                        <option value="other">📌 Другое</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Время (мин)</label>
+                    <input type="number" id="edit-task-time" min="1" max="480">
+                </div>
+                <div>
+                    <label>Комментарий</label>
+                    <textarea id="edit-task-comment" placeholder="Заметка"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn cancel" onclick="closeEditModal()">Отмена</button>
+                    <button type="submit" class="modal-btn save">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-icon" id="notification-icon"></div>
+        <div class="notification-title" id="notification-title"></div>
+        <div class="notification-text" id="notification-text"></div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas class="confetti" id="confetti-canvas"></canvas>
+
+    <script>
+        // ==================== DATA ====================
+        const CATEGORIES = {
+            work: { name: 'Работа', icon: '💼', color: '#3498db' },
+            health: { name: 'Здоровье', icon: '🏃', color: '#2ecc71' },
+            study: { name: 'Учёба', icon: '📚', color: '#9b59b6' },
+            personal: { name: 'Личное', icon: '🏠', color: '#e74c3c' },
+            other: { name: 'Другое', icon: '📌', color: '#95a5a6' }
+        };
+
+        const ACHIEVEMENTS = [
+            { id: 'first_step', name: 'Первый шаг', desc: 'Выполнить первую задачу', icon: '🌱', check: (d) => d.totalCompleted >= 1 },
+            { id: 'perfect_day', name: 'Идеальный день', desc: 'Все задачи за день', icon: '⭐', check: (d, date) => checkPerfectDay(d, date) },
+            { id: 'perfect_week', name: 'Идеальная неделя', desc: '100% за неделю', icon: '🏆', check: (d) => checkPerfectWeekCondition(d) },
+            { id: 'streak_7', name: 'Streak 7', desc: 'Серия 7 дней подряд', icon: '🔥', check: (d) => d.streak.best >= 7 },
+            { id: 'streak_30', name: 'Streak 30', desc: 'Серия 30 дней', icon: '💎', check: (d) => d.streak.best >= 30 },
+            { id: 'marathoner', name: 'Марафонец', desc: '50 выполненных задач', icon: '🏅', check: (d) => d.totalCompleted >= 50 },
+            { id: 'master', name: 'Мастер', desc: '100 выполненных задач', icon: '👑', check: (d) => d.totalCompleted >= 100 },
+            { id: 'early_bird', name: 'Ранняя пташка', desc: 'Отметить задачу до 9:00', icon: '🐦', check: (d) => d.earlyBirdUnlocked },
+            { id: 'on_track', name: 'Всё по плану', desc: '3 идеальных недели подряд', icon: '🎯', check: (d) => d.perfectWeeksInRow >= 3 }
+        ];
+
+        const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        const MONTH_NAMES = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+
+        let currentWeekStart = getWeekStart(new Date());
+        let data = loadData();
+
+        // ==================== INITIALIZATION ====================
+        function init() {
+            applyTheme();
+            renderWeekDisplay();
+            renderTasks();
+            renderStats();
+            renderAchievements();
+            highlightToday();
+        }
+
+        // ==================== DATA MANAGEMENT ====================
+        function loadData() {
+            const defaultData = {
+                tasks: [],
+                completions: {},
+                achievements: {},
+                streak: { current: 0, best: 0, lastDate: null },
+                perfectWeeks: 0,
+                perfectWeeksInRow: 0,
+                totalCompleted: 0,
+                theme: 'light',
+                earlyBirdUnlocked: false
+            };
+
+            try {
+                const saved = localStorage.getItem('weeklyGoalTracker');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    return { ...defaultData, ...parsed };
+                }
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+
+            return defaultData;
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('weeklyGoalTracker', JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving data:', e);
+            }
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `weekly-tracker-backup-${formatDate(new Date())}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('📥', 'Экспорт завершён', 'Данные сохранены в файл');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    data = { ...loadData(), ...imported };
+                    saveData();
+                    init();
+                    showNotification('📤', 'Импорт завершён', 'Данные успешно загружены');
+                } catch (err) {
+                    alert('Ошибка импорта: неверный формат файла');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function resetData() {
+            if (confirm('Вы уверены, что хотите удалить все данные? Это действие необратимо!')) {
+                localStorage.removeItem('weeklyGoalTracker');
+                data = loadData();
+                init();
+                showNotification('🗑️', 'Данные удалены', 'Все данные были сброшены');
+            }
+        }
+
+        // ==================== THEME ====================
+        function toggleTheme() {
+            data.theme = data.theme === 'light' ? 'dark' : 'light';
+            applyTheme();
+            saveData();
+        }
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', data.theme);
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            if (data.theme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Светлая тема';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Тёмная тема';
+            }
+        }
+
+        // ==================== DATE UTILITIES ====================
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            d.setDate(diff);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function formatWeekDisplay(startDate) {
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 6);
+
+            const startDay = startDate.getDate();
+            const startMonth = MONTH_NAMES[startDate.getMonth()];
+            const endDay = endDate.getDate();
+            const endMonth = MONTH_NAMES[endDate.getMonth()];
+            const year = endDate.getFullYear();
+
+            if (startDate.getMonth() === endDate.getMonth()) {
+                return `${startDay} — ${endDay} ${endMonth} ${year}`;
+            }
+            return `${startDay} ${startMonth} — ${endDay} ${endMonth} ${year}`;
+        }
+
+        function getWeekDates() {
+            const dates = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(currentWeekStart);
+                d.setDate(d.getDate() + i);
+                dates.push(formatDate(d));
+            }
+            return dates;
+        }
+
+        function changeWeek(delta) {
+            currentWeekStart.setDate(currentWeekStart.getDate() + (delta * 7));
+            renderWeekDisplay();
+            renderTasks();
+            renderStats();
+            highlightToday();
+        }
+
+        function goToToday() {
+            currentWeekStart = getWeekStart(new Date());
+            renderWeekDisplay();
+            renderTasks();
+            renderStats();
+            highlightToday();
+        }
+
+        function renderWeekDisplay() {
+            document.getElementById('week-display').textContent = formatWeekDisplay(currentWeekStart);
+        }
+
+        function highlightToday() {
+            const today = formatDate(new Date());
+            const weekDates = getWeekDates();
+
+            for (let i = 0; i < 7; i++) {
+                const th = document.getElementById(`day-${i}`);
+                if (th) {
+                    th.classList.toggle('today', weekDates[i] === today);
+                }
+            }
+
+            document.querySelectorAll('.day-cell').forEach(cell => {
+                const date = cell.dataset.date;
+                cell.classList.toggle('today', date === today);
+            });
+        }
+
+        // ==================== TASKS ====================
+        function addTask(event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('task-name');
+            const categorySelect = document.getElementById('task-category');
+            const timeInput = document.getElementById('task-time');
+            const commentInput = document.getElementById('task-comment');
+
+            const task = {
+                id: Date.now().toString(),
+                name: nameInput.value.trim(),
+                category: categorySelect.value,
+                time: timeInput.value ? parseInt(timeInput.value) : null,
+                comment: commentInput.value.trim(),
+                createdAt: formatDate(new Date())
+            };
+
+            data.tasks.push(task);
+            saveData();
+
+            nameInput.value = '';
+            timeInput.value = '';
+            commentInput.value = '';
+
+            renderTasks();
+            renderStats();
+        }
+
+        function deleteTask(taskId) {
+            if (confirm('Удалить эту задачу?')) {
+                data.tasks = data.tasks.filter(t => t.id !== taskId);
+                // Remove completions and recalculate total
+                let removedCount = 0;
+                Object.keys(data.completions).forEach(date => {
+                    if (data.completions[date]?.[taskId]) {
+                        removedCount++;
+                        delete data.completions[date][taskId];
+                    }
+                });
+                data.totalCompleted = Math.max(0, data.totalCompleted - removedCount);
+
+                saveData();
+                renderTasks();
+                renderStats();
+                recheckAllAchievements();
+            }
+        }
+
+        function openEditModal(taskId) {
+            const task = data.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            document.getElementById('edit-task-id').value = taskId;
+            document.getElementById('edit-task-name').value = task.name;
+            document.getElementById('edit-task-category').value = task.category;
+            document.getElementById('edit-task-time').value = task.time || '';
+            document.getElementById('edit-task-comment').value = task.comment || '';
+
+            document.getElementById('edit-modal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('show');
+        }
+
+        function saveTaskEdit(event) {
+            event.preventDefault();
+
+            const taskId = document.getElementById('edit-task-id').value;
+            const task = data.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            task.name = document.getElementById('edit-task-name').value.trim();
+            task.category = document.getElementById('edit-task-category').value;
+            task.time = document.getElementById('edit-task-time').value ? parseInt(document.getElementById('edit-task-time').value) : null;
+            task.comment = document.getElementById('edit-task-comment').value.trim();
+
+            saveData();
+            closeEditModal();
+            renderTasks();
+            renderStats();
+        }
+
+        function toggleCompletion(taskId, date) {
+            if (!data.completions[date]) {
+                data.completions[date] = {};
+            }
+
+            const wasCompleted = data.completions[date][taskId];
+            data.completions[date][taskId] = !wasCompleted;
+
+            if (!wasCompleted) {
+                data.totalCompleted++;
+
+                // Check early bird (before 9:00)
+                const now = new Date();
+                if (now.getHours() < 9) {
+                    data.earlyBirdUnlocked = true;
+                }
+            } else {
+                data.totalCompleted = Math.max(0, data.totalCompleted - 1);
+            }
+
+            updateStreak();
+            saveData();
+            renderTasks();
+            renderStats();
+            recheckAllAchievements();
+        }
+
+        function isCompleted(taskId, date) {
+            return data.completions[date]?.[taskId] || false;
+        }
+
+        function renderTasks() {
+            const tbody = document.getElementById('tasks-body');
+            const emptyState = document.getElementById('empty-state');
+            const weekDates = getWeekDates();
+
+            if (data.tasks.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tbody.innerHTML = data.tasks.map(task => {
+                const category = CATEGORIES[task.category];
+                const completedDays = weekDates.filter(date => isCompleted(task.id, date)).length;
+                const progress = Math.round((completedDays / 7) * 100);
+                const progressColor = getProgressColor(progress);
+
+                const timeDisplay = task.time ? `⏱ ${task.time} мин` : '';
+                const commentDisplay = task.comment ? escapeHtml(task.comment) : '';
+
+                return `
+                    <tr>
+                        <td class="task-name-cell" data-label="Задача">
+                            <div class="task-name" onclick="openEditModal('${task.id}')" title="Нажмите для редактирования">
+                                ${escapeHtml(task.name)}
+                            </div>
+                            ${commentDisplay ? `<div class="task-comment">${commentDisplay}</div>` : ''}
+                            ${timeDisplay ? `<div class="task-time">${timeDisplay}</div>` : ''}
+                        </td>
+                        <td data-label="Категория">
+                            <span class="category-badge" style="border-left: 3px solid ${category.color}">
+                                ${category.icon} ${category.name}
+                            </span>
+                        </td>
+                        ${weekDates.map((date, i) => `
+                            <td class="day-cell" data-label="${DAY_NAMES[i]}" data-date="${date}">
+                                <input type="checkbox" class="day-checkbox"
+                                    ${isCompleted(task.id, date) ? 'checked' : ''}
+                                    onchange="toggleCompletion('${task.id}', '${date}')">
+                            </td>
+                        `).join('')}
+                        <td data-label="Прогресс">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${Math.max(progress, 2)}%; background: ${progressColor}"></div>
+                            </div>
+                            <div class="progress-text">${progress}%</div>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="edit-btn" onclick="openEditModal('${task.id}')" title="Редактировать">✏️</button>
+                                <button class="delete-btn" onclick="deleteTask('${task.id}')" title="Удалить">×</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== STATISTICS ====================
+        function renderStats() {
+            renderTotalProgress();
+            renderCategoryStats();
+            renderStreakStats();
+        }
+
+        function renderTotalProgress() {
+            const weekDates = getWeekDates();
+            const totalPossible = data.tasks.length * 7;
+            let totalCompleted = 0;
+
+            data.tasks.forEach(task => {
+                weekDates.forEach(date => {
+                    if (isCompleted(task.id, date)) totalCompleted++;
+                });
+            });
+
+            const percent = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
+            const circumference = 2 * Math.PI * 60;
+            const offset = circumference - (percent / 100) * circumference;
+            const color = getProgressColor(percent);
+
+            document.getElementById('donut-progress').style.strokeDashoffset = offset;
+            document.getElementById('donut-progress').style.stroke = color;
+            document.getElementById('total-percent').textContent = `${percent}%`;
+            document.getElementById('total-stats').textContent = `Выполнено ${totalCompleted} из ${totalPossible}`;
+        }
+
+        function renderCategoryStats() {
+            const container = document.getElementById('category-stats');
+            const weekDates = getWeekDates();
+            const stats = {};
+
+            Object.keys(CATEGORIES).forEach(cat => {
+                stats[cat] = { total: 0, completed: 0 };
+            });
+
+            data.tasks.forEach(task => {
+                stats[task.category].total += 7;
+                weekDates.forEach(date => {
+                    if (isCompleted(task.id, date)) {
+                        stats[task.category].completed++;
+                    }
+                });
+            });
+
+            const hasCategories = Object.values(stats).some(s => s.total > 0);
+
+            if (!hasCategories) {
+                container.innerHTML = '<div class="no-categories">Добавьте задачи для отображения статистики</div>';
+                return;
+            }
+
+            container.innerHTML = Object.entries(CATEGORIES).map(([key, cat]) => {
+                const s = stats[key];
+                if (s.total === 0) return '';
+
+                const percent = Math.round((s.completed / s.total) * 100);
+                const color = getProgressColor(percent);
+
+                return `
+                    <div class="category-progress">
+                        <div class="category-header">
+                            <span class="category-name">${cat.icon} ${cat.name}</span>
+                            <span class="category-percent">${percent}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${Math.max(percent, 2)}%; background: ${color}"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderStreakStats() {
+            document.getElementById('current-streak').textContent = data.streak.current;
+            document.getElementById('best-streak').textContent = data.streak.best;
+
+            const icon = document.getElementById('streak-icon');
+            if (data.streak.current > 0) {
+                icon.classList.add('active');
+            } else {
+                icon.classList.remove('active');
+            }
+        }
+
+        function updateStreak() {
+            const today = formatDate(new Date());
+            const yesterday = formatDate(new Date(Date.now() - 86400000));
+
+            // Check if all tasks are completed today
+            const allCompletedToday = data.tasks.length > 0 &&
+                data.tasks.every(task => isCompleted(task.id, today));
+
+            if (allCompletedToday) {
+                if (data.streak.lastDate === yesterday) {
+                    data.streak.current++;
+                } else if (data.streak.lastDate !== today) {
+                    data.streak.current = 1;
+                }
+                data.streak.lastDate = today;
+                data.streak.best = Math.max(data.streak.best, data.streak.current);
+            } else {
+                // Reset current streak if today is not complete
+                if (data.streak.lastDate === today) {
+                    // Was complete today, now not - find actual streak
+                    data.streak.current = calculateCurrentStreak();
+                    if (data.streak.current === 0) {
+                        data.streak.lastDate = null;
+                    }
+                }
+            }
+        }
+
+        function calculateCurrentStreak() {
+            if (data.tasks.length === 0) return 0;
+
+            let streak = 0;
+            let checkDate = new Date();
+            checkDate.setDate(checkDate.getDate() - 1); // Start from yesterday
+
+            while (true) {
+                const dateStr = formatDate(checkDate);
+                const allCompleted = data.tasks.every(task => isCompleted(task.id, dateStr));
+
+                if (allCompleted) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+
+                // Safety limit
+                if (streak > 365) break;
+            }
+
+            return streak;
+        }
+
+        function getProgressColor(percent) {
+            if (percent >= 70) return '#27ae60';
+            if (percent >= 40) return '#f39c12';
+            return '#e74c3c';
+        }
+
+        // ==================== ACHIEVEMENTS ====================
+        function renderAchievements() {
+            const container = document.getElementById('achievements-grid');
+
+            container.innerHTML = ACHIEVEMENTS.map(ach => {
+                const unlocked = data.achievements[ach.id];
+                const date = unlocked ? new Date(unlocked).toLocaleDateString('ru-RU') : '';
+
+                return `
+                    <div class="achievement ${unlocked ? 'unlocked' : 'locked'}" title="${ach.desc}">
+                        <div class="achievement-icon">${ach.icon}</div>
+                        <div class="achievement-name">${ach.name}</div>
+                        ${unlocked ? `<div class="achievement-date">${date}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function unlockAchievement(id) {
+            if (data.achievements[id]) return false;
+
+            data.achievements[id] = Date.now();
+            saveData();
+
+            const ach = ACHIEVEMENTS.find(a => a.id === id);
+            if (ach) {
+                showNotification(ach.icon, 'Новое достижение!', ach.name);
+
+                if (id === 'perfect_week') {
+                    launchConfetti();
+                }
+            }
+
+            renderAchievements();
+            return true;
+        }
+
+        function revokeAchievement(id) {
+            if (!data.achievements[id]) return false;
+
+            delete data.achievements[id];
+            saveData();
+            renderAchievements();
+            return true;
+        }
+
+        function recheckAllAchievements() {
+            const today = formatDate(new Date());
+
+            ACHIEVEMENTS.forEach(ach => {
+                const shouldHave = ach.check(data, today);
+                const hasIt = !!data.achievements[ach.id];
+
+                if (shouldHave && !hasIt) {
+                    unlockAchievement(ach.id);
+                } else if (!shouldHave && hasIt) {
+                    // Only revoke certain achievements that can be "lost"
+                    // Don't revoke: early_bird (once unlocked, stays), streak achievements based on best
+                    const revocable = ['first_step', 'perfect_day', 'perfect_week', 'marathoner', 'master', 'on_track'];
+                    if (revocable.includes(ach.id)) {
+                        revokeAchievement(ach.id);
+                    }
+                }
+            });
+        }
+
+        function checkPerfectDay(d, date) {
+            if (!date) date = formatDate(new Date());
+            return d.tasks.length > 0 && d.tasks.every(task => isCompleted(task.id, date));
+        }
+
+        function checkPerfectWeekCondition(d) {
+            const weekDates = getWeekDates();
+            if (d.tasks.length === 0) return false;
+
+            return weekDates.every(date =>
+                d.tasks.every(task => isCompleted(task.id, date))
+            );
+        }
+
+        // ==================== NOTIFICATIONS ====================
+        function showNotification(icon, title, text) {
+            const notification = document.getElementById('notification');
+            document.getElementById('notification-icon').textContent = icon;
+            document.getElementById('notification-title').textContent = title;
+            document.getElementById('notification-text').textContent = text;
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // ==================== CONFETTI ====================
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
+
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: Math.random() * 3 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 8 + 4,
+                    rotation: Math.random() * 360
+                });
+            }
+
+            let frame = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.1;
+                    p.rotation += 5;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                frame++;
+                if (frame < 200) {
+                    requestAnimationFrame(animate);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            animate();
+        }
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Close modal on outside click
+        document.getElementById('edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // ==================== START ====================
+        init();
+
+        // ==================== PWA SERVICE WORKER ====================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered:', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+
+        // Install prompt for PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show install button
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            const header = document.querySelector('.header-top');
+            if (!document.getElementById('install-btn')) {
+                const btn = document.createElement('button');
+                btn.id = 'install-btn';
+                btn.className = 'nav-btn';
+                btn.innerHTML = '📲 Установить';
+                btn.onclick = installApp;
+                header.insertBefore(btn, header.querySelector('.theme-toggle'));
+            }
+        }
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') {
+                        console.log('App installed');
+                        document.getElementById('install-btn')?.remove();
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        window.addEventListener('appinstalled', () => {
+            console.log('App installed successfully');
+            document.getElementById('install-btn')?.remove();
+        });
+    </script>
+</body>
+</html>
