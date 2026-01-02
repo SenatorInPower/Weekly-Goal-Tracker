@@ -233,12 +233,12 @@
             font-size: 0.85rem;
         }
 
-        /* Fixed column widths */
-        .tracker-table .col-task { width: 20%; text-align: left; }
-        .tracker-table .col-category { width: 12%; }
+        /* Fixed column widths - total 100% */
+        .tracker-table .col-task { width: 18%; text-align: left; }
+        .tracker-table .col-category { width: 10%; }
         .tracker-table .col-day { width: 8%; }
-        .tracker-table .col-progress { width: 10%; }
-        .tracker-table .col-actions { width: 6%; }
+        .tracker-table .col-progress { width: 8%; }
+        .tracker-table .col-actions { width: 8%; }
 
         .tracker-table th.today {
             background: var(--accent);
@@ -1702,18 +1702,26 @@
             }
         }
 
-        function setupReminders() {
-            setInterval(() => {
-                const now = new Date();
-                const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                const today = formatDate(now);
+        const sentReminders = new Set();
 
-                data.tasks.forEach(task => {
-                    if (task.reminder === timeStr && !isCompleted(task.id, today)) {
-                        sendNotification(t('reminderTitle'), t('reminderText').replace('{0}', task.name));
-                    }
-                });
-            }, 60000);
+        function checkReminders() {
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const today = formatDate(now);
+
+            data.tasks.forEach(task => {
+                const reminderId = `${task.id}-${today}-${task.reminder}`;
+                if (task.reminder === timeStr && !isCompleted(task.id, today) && !sentReminders.has(reminderId)) {
+                    sendNotification(t('reminderTitle'), t('reminderText').replace('{0}', task.name));
+                    sentReminders.add(reminderId);
+                    playSound('notification');
+                }
+            });
+        }
+
+        function setupReminders() {
+            checkReminders();
+            setInterval(checkReminders, 30000);
         }
 
         // ==================== DATE UTILS ====================
