@@ -1205,7 +1205,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-top">
-                <div class="logo">Weekly Goal Tracker</div>
+                <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
                 <div class="header-controls">
                     <button class="control-btn" onclick="toggleLanguage()" title="Switch language">
                         <span id="lang-flag">🇬🇧</span>
@@ -1495,6 +1495,7 @@
         // ==================== TRANSLATIONS ====================
         const TRANSLATIONS = {
             ru: {
+                appName: 'Трекер Целей',
                 addTask: 'Добавить задачу',
                 taskName: 'Название',
                 taskNamePlaceholder: 'Название задачи',
@@ -1563,6 +1564,7 @@
                 noCategoryData: 'Добавьте задачи'
             },
             en: {
+                appName: 'Goal Tracker',
                 addTask: 'Add Task',
                 taskName: 'Name',
                 taskNamePlaceholder: 'Task name',
@@ -2212,6 +2214,7 @@
 
             if (data.tasks.length === 0) {
                 tbody.innerHTML = '';
+                document.getElementById('mobile-tasks').innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
             }
