@@ -2338,15 +2338,34 @@
             closeWheelPicker();
         }
 
+        function getWheelSelectedValue(scrollContainer) {
+            const rect = scrollContainer.getBoundingClientRect();
+            const centerY = rect.top + rect.height / 2;
+            let closest = null;
+            let closestDist = Infinity;
+
+            scrollContainer.querySelectorAll('.wheel-item').forEach(item => {
+                const itemRect = item.getBoundingClientRect();
+                const itemCenterY = itemRect.top + itemRect.height / 2;
+                const dist = Math.abs(itemCenterY - centerY);
+                if (dist < closestDist && item.dataset.value !== '') {
+                    closestDist = dist;
+                    closest = item;
+                }
+            });
+
+            return closest?.dataset.value ?? null;
+        }
+
         function confirmWheelPicker() {
             const hoursScroll = document.getElementById('wheel-hours');
             const minutesScroll = document.getElementById('wheel-minutes');
 
-            const hour = Math.round(hoursScroll.scrollTop / 50);
-            const min = Math.round(minutesScroll.scrollTop / 50) * 5;
+            const hour = getWheelSelectedValue(hoursScroll);
+            const min = getWheelSelectedValue(minutesScroll);
 
-            if (hour >= 0 && hour <= 23) {
-                const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+            if (hour !== null) {
+                const timeStr = `${String(hour).padStart(2, '0')}:${String(min || 0).padStart(2, '0')}`;
 
                 if (wheelPickerTarget === 'reminder') {
                     document.getElementById('edit-task-reminder').value = timeStr;
@@ -2387,9 +2406,7 @@
 
         function confirmDurationPicker() {
             const durationScroll = document.getElementById('wheel-duration');
-            const durations = [5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 150, 180];
-            const index = Math.round(durationScroll.scrollTop / 50);
-            const duration = durations[index];
+            const duration = getWheelSelectedValue(durationScroll);
 
             if (duration) {
                 document.getElementById('edit-task-time').value = duration;
