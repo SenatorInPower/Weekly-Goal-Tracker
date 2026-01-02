@@ -525,43 +525,82 @@
             margin-top: 4px;
         }
 
-        /* Monthly Stats */
-        .monthly-chart {
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-block {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stat-total {
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        .stat-chart {
             display: flex;
             align-items: flex-end;
-            height: 120px;
-            gap: 4px;
-            padding: 10px 0;
+            height: 80px;
+            gap: 3px;
         }
 
-        .month-bar {
+        .stat-bar {
             flex: 1;
             background: var(--border);
-            border-radius: 4px 4px 0 0;
+            border-radius: 3px 3px 0 0;
             height: 100%;
             position: relative;
-            transition: all 0.3s;
+            min-width: 8px;
         }
 
-        .month-bar:hover {
-            background: var(--accent);
-        }
-
-        .month-bar-fill {
+        .stat-bar-fill {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--accent-secondary);
-            border-radius: 4px 4px 0 0;
-            transition: height 0.5s;
+            background: linear-gradient(to top, var(--accent), var(--accent-secondary));
+            border-radius: 3px 3px 0 0;
+            transition: height 0.3s;
         }
 
-        .month-label {
-            font-size: 0.6rem;
-            text-align: center;
-            margin-top: 4px;
+        .stat-bar-value {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
             color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .stat-labels {
+            display: flex;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .stat-labels span {
+            flex: 1;
+            text-align: center;
         }
 
         /* Data Actions */
@@ -1024,14 +1063,125 @@
                 grid-template-columns: 1fr;
             }
 
-            .tracker-table {
-                font-size: 0.85rem;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
 
-            .day-checkbox {
-                width: 28px;
-                height: 28px;
+            /* Hide table, show mobile cards */
+            .tracker-wrapper {
+                display: none;
             }
+
+            .mobile-tasks {
+                display: block !important;
+            }
+        }
+
+        /* Mobile task cards */
+        .mobile-tasks {
+            display: none;
+        }
+
+        .mobile-task-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .mobile-task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .mobile-task-name {
+            font-weight: 600;
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .mobile-task-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .mobile-task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mobile-task-actions button {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px;
+            opacity: 0.7;
+        }
+
+        .mobile-task-actions button:hover {
+            opacity: 1;
+        }
+
+        .mobile-days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .mobile-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mobile-day-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .mobile-day.today .mobile-day-label {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .mobile-day .day-checkbox {
+            width: 32px;
+            height: 32px;
+        }
+
+        .mobile-task-progress {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mobile-progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .mobile-progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent), var(--accent-secondary));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .mobile-progress-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 40px;
+            text-align: right;
         }
     </style>
 </head>
@@ -1117,6 +1267,7 @@
                     <tbody id="tasks-body"></tbody>
                 </table>
             </div>
+            <div class="mobile-tasks" id="mobile-tasks"></div>
             <div class="empty-state" id="empty-state">
                 <div class="empty-state-icon">📝</div>
                 <p data-i18n="noTasks">Нет задач. Добавьте первую!</p>
@@ -1160,11 +1311,35 @@
             </div>
         </section>
 
-        <!-- Monthly Stats -->
+        <!-- Statistics -->
         <section class="card">
-            <h2 class="card-title" data-i18n="yearStats">Статистика за год</h2>
-            <div class="monthly-chart" id="monthly-chart"></div>
-            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); padding: 0 2px;" id="month-labels"></div>
+            <h2 class="card-title" data-i18n="statistics">Статистика</h2>
+            <div class="stats-grid">
+                <div class="stat-block">
+                    <div class="stat-header">
+                        <span data-i18n="weekStats">Неделя</span>
+                        <span class="stat-total" id="week-total">0</span>
+                    </div>
+                    <div class="stat-chart" id="week-chart"></div>
+                    <div class="stat-labels" id="week-labels"></div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-header">
+                        <span data-i18n="monthStats">Месяц</span>
+                        <span class="stat-total" id="month-total">0</span>
+                    </div>
+                    <div class="stat-chart" id="month-chart"></div>
+                    <div class="stat-labels" id="month-labels"></div>
+                </div>
+                <div class="stat-block">
+                    <div class="stat-header">
+                        <span data-i18n="yearStats">Год</span>
+                        <span class="stat-total" id="year-total">0</span>
+                    </div>
+                    <div class="stat-chart" id="year-chart"></div>
+                    <div class="stat-labels" id="year-labels"></div>
+                </div>
+            </div>
         </section>
 
         <!-- Achievements -->
@@ -1326,7 +1501,11 @@
                 streak: 'Серия дней',
                 daysInRow: 'дней подряд',
                 bestResult: 'Лучший:',
-                yearStats: 'Статистика за год',
+                statistics: 'Статистика',
+                weekStats: 'Неделя',
+                monthStats: 'Месяц',
+                yearStats: 'Год',
+                weekShort: 'Нед',
                 achievements: 'Достижения',
                 dataManagement: 'Управление данными',
                 export: 'Экспорт',
@@ -1390,7 +1569,11 @@
                 streak: 'Day Streak',
                 daysInRow: 'days in a row',
                 bestResult: 'Best:',
-                yearStats: 'Year Statistics',
+                statistics: 'Statistics',
+                weekStats: 'Week',
+                monthStats: 'Month',
+                yearStats: 'Year',
+                weekShort: 'Wk',
                 achievements: 'Achievements',
                 dataManagement: 'Data Management',
                 export: 'Export',
@@ -1526,9 +1709,9 @@
             populateCategorySelects();
             renderWeekDisplay();
             renderTasks();
-            renderStats();
+            renderProgressStats();
             renderAchievements();
-            renderMonthlyStats();
+            renderStats();
             highlightToday();
             updateSoundButton();
             updateNotifButton();
@@ -1571,9 +1754,9 @@
             applyLanguage();
             populateCategorySelects();
             renderTasks();
-            renderStats();
+            renderProgressStats();
             renderAchievements();
-            renderMonthlyStats();
+            renderStats();
             renderWeekDisplay();
         }
 
@@ -1944,8 +2127,8 @@
             updateStreak();
             saveData();
             renderTasks();
+            renderProgressStats();
             renderStats();
-            renderMonthlyStats();
             recheckAllAchievements();
         }
 
@@ -2041,10 +2224,61 @@
                     </tr>
                 `;
             }).join('');
+
+            // Render mobile cards
+            renderMobileTasks(weekDates);
         }
 
-        // ==================== STATISTICS ====================
-        function renderStats() {
+        function renderMobileTasks(weekDates) {
+            const container = document.getElementById('mobile-tasks');
+            const cats = t('categories');
+            const days = t('days');
+            const today = formatDate(new Date());
+
+            container.innerHTML = data.tasks.map(task => {
+                const cat = CATEGORIES[task.category];
+                const catName = cats[task.category];
+                const completed = weekDates.filter(d => isCompleted(task.id, d)).length;
+                const progress = Math.round((completed / 7) * 100);
+
+                return `
+                    <div class="mobile-task-card">
+                        <div class="mobile-task-header">
+                            <div>
+                                <div class="mobile-task-name" onclick="openEditModal('${task.id}')">${escapeHtml(task.name)}</div>
+                                <div class="mobile-task-meta">
+                                    <span style="border-left:3px solid ${cat.color};padding-left:6px">${catName}</span>
+                                    ${task.time ? ` · ⏱${task.time}м` : ''}
+                                    ${task.reminder ? ` · ⏰${task.reminder}` : ''}
+                                </div>
+                            </div>
+                            <div class="mobile-task-actions">
+                                <button onclick="openEditModal('${task.id}')">✏️</button>
+                                <button onclick="deleteTask('${task.id}')">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="mobile-days-grid">
+                            ${weekDates.map((date, i) => `
+                                <div class="mobile-day ${date === today ? 'today' : ''}">
+                                    <span class="mobile-day-label">${days[i]}</span>
+                                    <input type="checkbox" class="day-checkbox" ${isCompleted(task.id, date) ? 'checked' : ''}
+                                        onchange="toggleCompletion('${task.id}', '${date}')">
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mobile-task-progress">
+                            <div class="mobile-progress-bar">
+                                <div class="mobile-progress-fill" style="width:${progress}%"></div>
+                            </div>
+                            <span class="mobile-progress-text">${completed}/7</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== PROGRESS STATS ====================
+        function renderProgressStats() {
             renderTotalProgress();
             renderCategoryStats();
             renderStreakStats();
@@ -2137,30 +2371,80 @@
             return streak;
         }
 
-        function renderMonthlyStats() {
-            const container = document.getElementById('monthly-chart');
-            const labelsContainer = document.getElementById('month-labels');
-            const months = t('months');
+        function renderStats() {
             const now = new Date();
-            const bars = [];
-            const labels = [];
+            const days = t('days');
+            const months = t('months');
+            const taskCount = data.tasks.length || 1;
 
-            let maxVal = 1;
+            // Weekly stats (7 days)
+            const weekData = [];
+            let weekTotal = 0;
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                const dateStr = formatDate(d);
+                let count = 0;
+                data.tasks.forEach(task => {
+                    if (isCompleted(task.id, dateStr)) count++;
+                });
+                const dayIdx = (d.getDay() + 6) % 7; // Convert Sun=0 to Mon=0
+                weekData.push({ label: days[dayIdx], value: count });
+                weekTotal += count;
+            }
+            renderStatBlock('week', weekData, taskCount, weekTotal);
+
+            // Monthly stats (4 weeks)
+            const monthData = [];
+            let monthTotal = 0;
+            for (let w = 3; w >= 0; w--) {
+                let count = 0;
+                for (let d = 0; d < 7; d++) {
+                    const date = new Date(now);
+                    date.setDate(date.getDate() - (w * 7 + d));
+                    const dateStr = formatDate(date);
+                    data.tasks.forEach(task => {
+                        if (isCompleted(task.id, dateStr)) count++;
+                    });
+                }
+                monthData.push({ label: `${t('weekShort')}${4-w}`, value: count });
+                monthTotal += count;
+            }
+            renderStatBlock('month', monthData, taskCount * 7, monthTotal);
+
+            // Yearly stats (12 months)
+            const yearData = [];
+            let yearTotal = 0;
             for (let i = 11; i >= 0; i--) {
                 const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
                 const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
                 const val = data.monthlyStats[key] || 0;
-                if (val > maxVal) maxVal = val;
-                bars.push({ key, val, month: months[d.getMonth()] });
+                yearData.push({ label: months[d.getMonth()], value: val });
+                yearTotal += val;
             }
+            const maxMonthlyPossible = taskCount * 30;
+            renderStatBlock('year', yearData, maxMonthlyPossible, yearTotal);
+        }
 
-            container.innerHTML = bars.map(b => `
-                <div class="month-bar" title="${b.month}: ${b.val}">
-                    <div class="month-bar-fill" style="height:${(b.val / maxVal) * 100}%"></div>
-                </div>
-            `).join('');
+        function renderStatBlock(id, items, maxPossible, total) {
+            const chart = document.getElementById(`${id}-chart`);
+            const labels = document.getElementById(`${id}-labels`);
+            const totalEl = document.getElementById(`${id}-total`);
 
-            labelsContainer.innerHTML = bars.map(b => `<span>${b.month}</span>`).join('');
+            const maxVal = Math.max(maxPossible, ...items.map(i => i.value), 1);
+
+            chart.innerHTML = items.map(item => {
+                const pct = Math.min((item.value / maxVal) * 100, 100);
+                return `
+                    <div class="stat-bar">
+                        <div class="stat-bar-value">${item.value}</div>
+                        <div class="stat-bar-fill" style="height:${pct}%"></div>
+                    </div>
+                `;
+            }).join('');
+
+            labels.innerHTML = items.map(i => `<span>${i.label}</span>`).join('');
+            totalEl.textContent = total;
         }
 
         // ==================== ACHIEVEMENTS ====================
