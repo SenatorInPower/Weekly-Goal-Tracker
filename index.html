@@ -595,6 +595,216 @@
             display: none;
         }
 
+        /* Wheel Time Picker */
+        .wheel-picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .wheel-picker-overlay.show {
+            display: flex;
+        }
+
+        .wheel-picker {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            width: 280px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .wheel-picker-title {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .wheel-picker-wheels {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wheel-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wheel-column label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .wheel-container {
+            height: 150px;
+            width: 70px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 12px;
+            background: var(--bg);
+        }
+
+        .wheel-container::before,
+        .wheel-container::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 50px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .wheel-container::before {
+            top: 0;
+            background: linear-gradient(to bottom, var(--bg), transparent);
+        }
+
+        .wheel-container::after {
+            bottom: 0;
+            background: linear-gradient(to top, var(--bg), transparent);
+        }
+
+        .wheel-highlight {
+            position: absolute;
+            top: 50%;
+            left: 5px;
+            right: 5px;
+            height: 40px;
+            transform: translateY(-50%);
+            background: var(--accent);
+            opacity: 0.2;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .wheel-scroll {
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .wheel-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .wheel-item {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 500;
+            scroll-snap-align: center;
+            color: var(--text);
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .wheel-item:hover {
+            color: var(--accent);
+        }
+
+        .wheel-separator {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-secondary);
+        }
+
+        .wheel-picker-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .wheel-picker-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .wheel-picker-btn.cancel {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .wheel-picker-btn.confirm {
+            background: var(--accent-secondary);
+            color: white;
+        }
+
+        .wheel-picker-btn.clear {
+            background: var(--danger);
+            color: white;
+            flex: 0.5;
+        }
+
+        /* Duration Picker */
+        .duration-picker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .duration-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .duration-btn:hover {
+            opacity: 0.8;
+        }
+
+        .duration-display {
+            min-width: 60px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .time-input-btn {
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-align: left;
+            width: 100%;
+        }
+
+        .time-input-btn:hover {
+            border-color: var(--accent);
+        }
+
         /* Modal */
         .modal-overlay {
             position: fixed;
@@ -990,8 +1200,18 @@
                     <select id="edit-task-category"></select>
                 </div>
                 <div>
-                    <label data-i18n="time">Время (мин)</label>
-                    <input type="number" id="edit-task-time" min="1" max="480">
+                    <label data-i18n="duration">Длительность</label>
+                    <button type="button" class="time-input-btn" id="edit-duration-btn" onclick="openDurationPicker()">
+                        <span id="edit-duration-display">— мин</span>
+                    </button>
+                    <input type="hidden" id="edit-task-time">
+                </div>
+                <div>
+                    <label data-i18n="startTime">Время начала</label>
+                    <button type="button" class="time-input-btn" id="edit-time-btn" onclick="openWheelPicker('reminder')">
+                        <span id="edit-reminder-display">—:—</span>
+                    </button>
+                    <input type="hidden" id="edit-task-reminder">
                 </div>
                 <div>
                     <label data-i18n="repeat">Повтор</label>
@@ -1012,10 +1232,6 @@
                     <label data-i18n="comment">Комментарий</label>
                     <textarea id="edit-task-comment" data-i18n-placeholder="notePlaceholder" placeholder="Заметка..."></textarea>
                 </div>
-                <div>
-                    <label data-i18n="reminder">Напоминание</label>
-                    <input type="time" id="edit-task-reminder">
-                </div>
                 <div class="modal-buttons">
                     <button type="button" class="modal-btn cancel" onclick="closeEditModal()" data-i18n="cancel">Отмена</button>
                     <button type="submit" class="modal-btn save" data-i18n="save">Сохранить</button>
@@ -1030,6 +1246,55 @@
         <div class="notification-content">
             <div class="notification-title" id="notification-title"></div>
             <div class="notification-text" id="notification-text"></div>
+        </div>
+    </div>
+
+    <!-- Wheel Time Picker -->
+    <div class="wheel-picker-overlay" id="wheel-picker">
+        <div class="wheel-picker">
+            <div class="wheel-picker-title" id="wheel-picker-title">Выберите время</div>
+            <div class="wheel-picker-wheels">
+                <div class="wheel-column">
+                    <label>Часы</label>
+                    <div class="wheel-container">
+                        <div class="wheel-highlight"></div>
+                        <div class="wheel-scroll" id="wheel-hours"></div>
+                    </div>
+                </div>
+                <div class="wheel-separator">:</div>
+                <div class="wheel-column">
+                    <label>Минуты</label>
+                    <div class="wheel-container">
+                        <div class="wheel-highlight"></div>
+                        <div class="wheel-scroll" id="wheel-minutes"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="wheel-picker-buttons">
+                <button class="wheel-picker-btn clear" onclick="clearWheelPicker()">✕</button>
+                <button class="wheel-picker-btn cancel" onclick="closeWheelPicker()">Отмена</button>
+                <button class="wheel-picker-btn confirm" onclick="confirmWheelPicker()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duration Picker -->
+    <div class="wheel-picker-overlay" id="duration-picker">
+        <div class="wheel-picker">
+            <div class="wheel-picker-title" id="duration-picker-title">Длительность (мин)</div>
+            <div class="wheel-picker-wheels">
+                <div class="wheel-column">
+                    <div class="wheel-container" style="width: 90px;">
+                        <div class="wheel-highlight"></div>
+                        <div class="wheel-scroll" id="wheel-duration"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="wheel-picker-buttons">
+                <button class="wheel-picker-btn clear" onclick="clearDurationPicker()">✕</button>
+                <button class="wheel-picker-btn cancel" onclick="closeDurationPicker()">Отмена</button>
+                <button class="wheel-picker-btn confirm" onclick="confirmDurationPicker()">OK</button>
+            </div>
         </div>
     </div>
 
@@ -2001,12 +2266,160 @@
             if (e.target.id === 'edit-modal') closeEditModal();
         });
 
+        // ==================== WHEEL PICKER ====================
+        let wheelPickerTarget = null;
+        let wheelPickerCallback = null;
+
+        function initWheelPicker() {
+            const hoursContainer = document.getElementById('wheel-hours');
+            const minutesContainer = document.getElementById('wheel-minutes');
+            const durationContainer = document.getElementById('wheel-duration');
+
+            // Hours 0-23
+            hoursContainer.innerHTML = '<div class="wheel-item" data-value=""></div>' +
+                Array.from({length: 24}, (_, i) =>
+                    `<div class="wheel-item" data-value="${i}">${String(i).padStart(2, '0')}</div>`
+                ).join('') + '<div class="wheel-item" data-value=""></div>';
+
+            // Minutes 0-59 (step 5)
+            minutesContainer.innerHTML = '<div class="wheel-item" data-value=""></div>' +
+                Array.from({length: 12}, (_, i) =>
+                    `<div class="wheel-item" data-value="${i*5}">${String(i*5).padStart(2, '0')}</div>`
+                ).join('') + '<div class="wheel-item" data-value=""></div>';
+
+            // Duration 5-180 min
+            const durations = [5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 150, 180];
+            durationContainer.innerHTML = '<div class="wheel-item" data-value=""></div>' +
+                durations.map(d => `<div class="wheel-item" data-value="${d}">${d}</div>`).join('') +
+                '<div class="wheel-item" data-value=""></div>';
+        }
+
+        function openWheelPicker(target, currentValue) {
+            wheelPickerTarget = target;
+            const picker = document.getElementById('wheel-picker');
+            picker.classList.add('show');
+
+            const hoursScroll = document.getElementById('wheel-hours');
+            const minutesScroll = document.getElementById('wheel-minutes');
+
+            if (currentValue && currentValue.includes(':')) {
+                const [h, m] = currentValue.split(':').map(Number);
+                setTimeout(() => {
+                    hoursScroll.scrollTop = (h + 1) * 50 - 75;
+                    minutesScroll.scrollTop = (Math.floor(m / 5) + 1) * 50 - 75;
+                }, 50);
+            } else {
+                const now = new Date();
+                setTimeout(() => {
+                    hoursScroll.scrollTop = (now.getHours() + 1) * 50 - 75;
+                    minutesScroll.scrollTop = (Math.floor(now.getMinutes() / 5) + 1) * 50 - 75;
+                }, 50);
+            }
+        }
+
+        function closeWheelPicker() {
+            document.getElementById('wheel-picker').classList.remove('show');
+            wheelPickerTarget = null;
+        }
+
+        function clearWheelPicker() {
+            if (wheelPickerTarget === 'reminder') {
+                document.getElementById('edit-task-reminder').value = '';
+                document.getElementById('edit-reminder-display').textContent = '—:—';
+            }
+            closeWheelPicker();
+        }
+
+        function confirmWheelPicker() {
+            const hoursScroll = document.getElementById('wheel-hours');
+            const minutesScroll = document.getElementById('wheel-minutes');
+
+            const hourIndex = Math.round(hoursScroll.scrollTop / 50);
+            const minIndex = Math.round(minutesScroll.scrollTop / 50);
+
+            const hourItems = hoursScroll.querySelectorAll('.wheel-item[data-value]');
+            const minItems = minutesScroll.querySelectorAll('.wheel-item[data-value]');
+
+            const hour = hourItems[hourIndex]?.dataset.value || '0';
+            const min = minItems[minIndex]?.dataset.value || '0';
+
+            if (hour !== '') {
+                const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+
+                if (wheelPickerTarget === 'reminder') {
+                    document.getElementById('edit-task-reminder').value = timeStr;
+                    document.getElementById('edit-reminder-display').textContent = timeStr;
+                }
+            }
+
+            closeWheelPicker();
+        }
+
+        function openDurationPicker(currentValue) {
+            const picker = document.getElementById('duration-picker');
+            picker.classList.add('show');
+
+            const durationScroll = document.getElementById('wheel-duration');
+            const durations = [5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 150, 180];
+
+            if (currentValue) {
+                const idx = durations.indexOf(parseInt(currentValue));
+                if (idx !== -1) {
+                    setTimeout(() => {
+                        durationScroll.scrollTop = (idx + 1) * 50 - 75;
+                    }, 50);
+                }
+            } else {
+                setTimeout(() => {
+                    durationScroll.scrollTop = 5 * 50 - 75; // Default to 30 min
+                }, 50);
+            }
+        }
+
+        function closeDurationPicker() {
+            document.getElementById('duration-picker').classList.remove('show');
+        }
+
+        function clearDurationPicker() {
+            document.getElementById('edit-task-time').value = '';
+            document.getElementById('edit-duration-display').textContent = '— мин';
+            closeDurationPicker();
+        }
+
+        function confirmDurationPicker() {
+            const durationScroll = document.getElementById('wheel-duration');
+            const index = Math.round(durationScroll.scrollTop / 50);
+            const items = durationScroll.querySelectorAll('.wheel-item[data-value]');
+            const duration = items[index]?.dataset.value;
+
+            if (duration && duration !== '') {
+                document.getElementById('edit-task-time').value = duration;
+                document.getElementById('edit-duration-display').textContent = `${duration} мин`;
+            }
+
+            closeDurationPicker();
+        }
+
+        // Close pickers on overlay click
+        document.getElementById('wheel-picker').addEventListener('click', e => {
+            if (e.target.id === 'wheel-picker') closeWheelPicker();
+        });
+        document.getElementById('duration-picker').addEventListener('click', e => {
+            if (e.target.id === 'duration-picker') closeDurationPicker();
+        });
+
         // ==================== PWA ====================
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(() => {});
         }
 
         // ==================== START ====================
+        // Force dark theme for new users
+        if (!localStorage.getItem('weeklyGoalTracker')) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
+        initWheelPicker();
         init();
     </script>
 </body>
