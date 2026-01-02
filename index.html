@@ -206,6 +206,50 @@
             opacity: 0.8;
         }
 
+        /* Task Templates */
+        .templates-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .templates-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .templates-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .template-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .template-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .template-btn.added {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
         /* FIXED Tracker Table */
         .tracker-wrapper {
             overflow-x: auto;
@@ -1257,6 +1301,10 @@
                 </div>
                 <button type="submit" class="add-btn" data-i18n="add">Добавить</button>
             </form>
+            <div class="templates-section">
+                <div class="templates-label" data-i18n="orChooseTemplate">Или выберите готовую:</div>
+                <div class="templates-grid" id="templates-grid"></div>
+            </div>
         </section>
 
         <!-- Tracker -->
@@ -1496,6 +1544,7 @@
         const TRANSLATIONS = {
             ru: {
                 appName: 'Трекер Целей',
+                orChooseTemplate: 'Или выберите готовую:',
                 addTask: 'Добавить задачу',
                 taskName: 'Название',
                 taskNamePlaceholder: 'Название задачи',
@@ -1565,6 +1614,7 @@
             },
             en: {
                 appName: 'Goal Tracker',
+                orChooseTemplate: 'Or choose a template:',
                 addTask: 'Add Task',
                 taskName: 'Name',
                 taskNamePlaceholder: 'Task name',
@@ -1651,8 +1701,24 @@
             { id: 'marathoner', icon: '🏅', check: d => d.totalCompleted >= 50 },
             { id: 'master', icon: '👑', check: d => d.totalCompleted >= 100 },
             { id: 'early_bird', icon: '🐦', check: d => d.earlyBirdUnlocked },
-            { id: 'on_track', icon: '🎯', check: d => d.perfectWeeksInRow >= 3 }
+            { id: 'on_track', icon: '🎯', check: d => d.perfectWeeksInRow >= 3 },
+            { id: 'sober_week', icon: '🍷', check: d => getTaskStreak('no_alcohol') >= 7 },
+            { id: 'sober_month', icon: '🏅', check: d => getTaskStreak('no_alcohol') >= 30 },
+            { id: 'smoke_free_week', icon: '🚭', check: d => getTaskStreak('no_smoking') >= 7 },
+            { id: 'smoke_free_month', icon: '💪', check: d => getTaskStreak('no_smoking') >= 30 }
         ];
+
+        const TASK_TEMPLATES = {
+            no_alcohol: { name: { ru: 'Не пить алкоголь', en: 'No alcohol' }, category: 'health', icon: '🍷' },
+            no_smoking: { name: { ru: 'Не курить', en: 'No smoking' }, category: 'health', icon: '🚭' },
+            no_sweets: { name: { ru: 'Не есть сладкое', en: 'No sweets' }, category: 'health', icon: '🍬' },
+            exercise: { name: { ru: 'Тренировка', en: 'Exercise' }, category: 'health', icon: '💪' },
+            reading: { name: { ru: 'Чтение', en: 'Reading' }, category: 'study', icon: '📚' },
+            meditation: { name: { ru: 'Медитация', en: 'Meditation' }, category: 'personal', icon: '🧘' },
+            water: { name: { ru: 'Пить воду (8 стаканов)', en: 'Drink water (8 glasses)' }, category: 'health', icon: '💧' },
+            sleep: { name: { ru: 'Сон до 23:00', en: 'Sleep by 11 PM' }, category: 'health', icon: '😴' },
+            walk: { name: { ru: 'Прогулка 30 мин', en: '30 min walk' }, category: 'health', icon: '🚶' }
+        };
 
         const ACHIEVEMENT_NAMES = {
             ru: {
@@ -1664,7 +1730,11 @@
                 marathoner: 'Марафонец',
                 master: 'Мастер',
                 early_bird: 'Ранняя пташка',
-                on_track: 'Всё по плану'
+                on_track: 'Всё по плану',
+                sober_week: 'Трезвая неделя',
+                sober_month: 'Трезвый месяц',
+                smoke_free_week: 'Неделя без сигарет',
+                smoke_free_month: 'Месяц без сигарет'
             },
             en: {
                 first_step: 'First Step',
@@ -1675,7 +1745,11 @@
                 marathoner: 'Marathoner',
                 master: 'Master',
                 early_bird: 'Early Bird',
-                on_track: 'On Track'
+                on_track: 'On Track',
+                sober_week: 'Sober Week',
+                sober_month: 'Sober Month',
+                smoke_free_week: 'Smoke-Free Week',
+                smoke_free_month: 'Smoke-Free Month'
             }
         };
 
@@ -1689,7 +1763,11 @@
                 marathoner: 'Выполните 50 задач всего',
                 master: 'Выполните 100 задач всего',
                 early_bird: 'Выполните задачу до 6:00 утра',
-                on_track: 'Закройте 3 идеальные недели подряд'
+                on_track: 'Закройте 3 идеальные недели подряд',
+                sober_week: 'Не пейте алкоголь 7 дней подряд',
+                sober_month: 'Не пейте алкоголь 30 дней подряд',
+                smoke_free_week: 'Не курите 7 дней подряд',
+                smoke_free_month: 'Не курите 30 дней подряд'
             },
             en: {
                 first_step: 'Complete your first task',
@@ -1700,7 +1778,11 @@
                 marathoner: 'Complete 50 tasks total',
                 master: 'Complete 100 tasks total',
                 early_bird: 'Complete a task before 6:00 AM',
-                on_track: 'Complete 3 perfect weeks in a row'
+                on_track: 'Complete 3 perfect weeks in a row',
+                sober_week: 'Stay sober for 7 days straight',
+                sober_month: 'Stay sober for 30 days straight',
+                smoke_free_week: 'Don\'t smoke for 7 days straight',
+                smoke_free_month: 'Don\'t smoke for 30 days straight'
             }
         };
 
@@ -1751,6 +1833,7 @@
             populateCategorySelects();
             renderWeekDisplay();
             renderTasks();
+            renderTemplates();
             renderProgressStats();
             renderAchievements();
             renderStats();
@@ -1796,6 +1879,7 @@
             applyLanguage();
             populateCategorySelects();
             renderTasks();
+            renderTemplates();
             renderProgressStats();
             renderAchievements();
             renderStats();
@@ -2056,6 +2140,46 @@
             document.getElementById('task-time').value = '';
             renderTasks();
             renderStats();
+            renderTemplates();
+            SOUNDS.check();
+        }
+
+        function renderTemplates() {
+            const grid = document.getElementById('templates-grid');
+            const lang = data.lang;
+
+            grid.innerHTML = Object.entries(TASK_TEMPLATES).map(([id, tmpl]) => {
+                const exists = data.tasks.some(t => t.templateId === id);
+                return `
+                    <button class="template-btn ${exists ? 'added' : ''}" onclick="addTemplateTask('${id}')" ${exists ? 'disabled' : ''}>
+                        <span>${tmpl.icon}</span>
+                        <span>${tmpl.name[lang]}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function addTemplateTask(templateId) {
+            if (data.tasks.some(t => t.templateId === templateId)) return;
+
+            const tmpl = TASK_TEMPLATES[templateId];
+            const task = {
+                id: Date.now().toString(),
+                templateId: templateId,
+                name: tmpl.name[data.lang],
+                category: tmpl.category,
+                time: null,
+                repeat: 'daily',
+                tags: [],
+                comment: '',
+                reminder: null,
+                createdAt: formatDate(new Date())
+            };
+            data.tasks.push(task);
+            saveData();
+            renderTasks();
+            renderStats();
+            renderTemplates();
             SOUNDS.check();
         }
 
@@ -2072,6 +2196,7 @@
                 data.totalCompleted = Math.max(0, data.totalCompleted - removed);
                 saveData();
                 renderTasks();
+                renderTemplates();
                 renderProgressStats();
                 renderStats();
                 recheckAllAchievements();
@@ -2409,6 +2534,19 @@
             while (streak < 365) {
                 const ds = formatDate(d);
                 if (!data.tasks.every(t => isCompleted(t.id, ds))) break;
+                streak++;
+                d.setDate(d.getDate() - 1);
+            }
+            return streak;
+        }
+
+        function getTaskStreak(templateId) {
+            const task = data.tasks.find(t => t.templateId === templateId);
+            if (!task) return 0;
+            let streak = 0, d = new Date();
+            while (streak < 365) {
+                const ds = formatDate(d);
+                if (!isCompleted(task.id, ds)) break;
                 streak++;
                 d.setDate(d.getDate() - 1);
             }
