@@ -17,8 +17,7 @@
     <link rel="manifest" href="manifest.json">
 
     <!-- Icons (inline SVG) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234a90d9'/><stop offset='100%25' stop-color='%232ecc71'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><path d='M25 50 L42 67 L75 33' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='20' y1='22' x2='80' y2='22' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234a90d9'/><stop offset='100%25' stop-color='%232ecc71'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><path d='M25 50 L42 67 L75 33' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><line x1='20' y1='22' x2='80' y2='22' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234a90d9'/><stop offset='100%25' stop-color='%232ecc71'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='url(%23g)'/><path d='M25 50 L42 67 L75 33' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <style>
         * {
             margin: 0;
@@ -89,20 +88,31 @@
             color: var(--accent);
         }
 
-        .theme-toggle {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            color: var(--text);
-            font-size: 1rem;
-            transition: all 0.3s;
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        .theme-toggle:hover {
+        .control-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-btn:hover {
             background: var(--accent);
             color: white;
+            border-color: var(--accent);
         }
 
         .week-nav {
@@ -133,7 +143,6 @@
 
         .nav-btn:hover {
             opacity: 0.8;
-            transform: translateY(-2px);
         }
 
         /* Card */
@@ -153,10 +162,10 @@
 
         /* Add Task Form */
         .add-task-form {
-            display: flex;
+            display: grid;
+            grid-template-columns: 2fr 1fr 80px 1fr auto;
             gap: 10px;
-            flex-wrap: wrap;
-            align-items: flex-start;
+            align-items: end;
         }
 
         .form-group {
@@ -170,62 +179,43 @@
             color: var(--text-secondary);
         }
 
-        .add-task-form input,
-        .add-task-form select,
-        .add-task-form textarea {
-            padding: 10px 15px;
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: 8px;
             background: var(--bg);
             color: var(--text);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            width: 100%;
         }
 
-        .add-task-form input[type="text"] {
-            min-width: 200px;
-        }
-
-        .add-task-form input[type="number"] {
-            width: 80px;
-        }
-
-        .add-task-form textarea {
-            min-width: 200px;
-            height: 42px;
-            resize: vertical;
-        }
-
-        .add-task-form button {
+        .add-btn {
             background: var(--accent-secondary);
             color: white;
             border: none;
-            padding: 10px 25px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s;
-            align-self: flex-end;
+            height: 42px;
         }
 
-        .add-task-form button:hover {
+        .add-btn:hover {
             opacity: 0.8;
-            transform: translateY(-2px);
         }
 
-        /* Tracker Table */
+        /* FIXED Tracker Table */
+        .tracker-wrapper {
+            overflow-x: auto;
+        }
+
         .tracker-table {
             width: 100%;
             border-collapse: collapse;
-            overflow-x: auto;
-            display: block;
-        }
-
-        .tracker-table thead,
-        .tracker-table tbody,
-        .tracker-table tr {
-            display: table;
-            width: 100%;
             table-layout: fixed;
+            min-width: 800px;
         }
 
         .tracker-table th,
@@ -233,69 +223,98 @@
             padding: 12px 8px;
             text-align: center;
             border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
         .tracker-table th {
             background: var(--bg);
             font-weight: 600;
             color: var(--text-secondary);
+            font-size: 0.85rem;
         }
 
-        .tracker-table th.today,
+        /* Fixed column widths */
+        .tracker-table .col-task { width: 20%; text-align: left; }
+        .tracker-table .col-category { width: 12%; }
+        .tracker-table .col-day { width: 8%; }
+        .tracker-table .col-progress { width: 10%; }
+        .tracker-table .col-actions { width: 6%; }
+
+        .tracker-table th.today {
+            background: var(--accent);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
         .tracker-table td.today {
             background: rgba(74, 144, 217, 0.1);
         }
 
-        [data-theme="dark"] .tracker-table th.today,
         [data-theme="dark"] .tracker-table td.today {
-            background: rgba(155, 89, 182, 0.2);
+            background: rgba(155, 89, 182, 0.15);
         }
 
-        .task-name-cell {
+        .task-cell {
             text-align: left !important;
         }
 
         .task-name {
             font-weight: 500;
             cursor: pointer;
-            display: inline-block;
+            display: block;
+            margin-bottom: 2px;
         }
 
         .task-name:hover {
             color: var(--accent);
         }
 
-        .task-comment {
-            font-size: 0.75rem;
+        .task-meta {
+            font-size: 0.7rem;
             color: var(--text-secondary);
-            margin-top: 2px;
         }
 
-        .task-time {
-            font-size: 0.7rem;
-            color: var(--accent);
-            margin-top: 2px;
+        .task-tags {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--accent);
+            color: white;
         }
 
         .category-badge {
             display: inline-block;
             padding: 4px 8px;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 0.75rem;
             background: var(--bg);
+            white-space: nowrap;
         }
 
         /* Checkbox */
         .day-checkbox {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             appearance: none;
             border: 2px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             background: var(--bg);
             position: relative;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .day-checkbox:hover {
+            border-color: var(--accent);
         }
 
         .day-checkbox:checked {
@@ -310,36 +329,31 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
-            animation: checkmark 0.3s ease;
-        }
-
-        @keyframes checkmark {
-            0% { transform: translate(-50%, -50%) scale(0); }
-            50% { transform: translate(-50%, -50%) scale(1.3); }
-            100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         /* Progress Bar */
+        .progress-container {
+            width: 100%;
+        }
+
         .progress-bar {
             width: 100%;
             height: 8px;
             background: var(--border);
             border-radius: 4px;
             overflow: hidden;
-            min-width: 60px;
         }
 
         .progress-fill {
             height: 100%;
             border-radius: 4px;
-            transition: width 0.5s ease, background 0.3s;
-            min-width: 2px;
+            transition: width 0.3s;
         }
 
         .progress-text {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
             margin-top: 4px;
         }
@@ -347,38 +361,43 @@
         /* Action Buttons */
         .action-btns {
             display: flex;
-            gap: 5px;
+            gap: 4px;
             justify-content: center;
         }
 
-        .edit-btn,
-        .delete-btn {
+        .action-btn {
             background: none;
             border: none;
             cursor: pointer;
             font-size: 1rem;
-            opacity: 0.6;
-            transition: opacity 0.3s;
-            padding: 2px 5px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            padding: 4px;
         }
 
-        .edit-btn {
-            color: var(--accent);
-        }
-
-        .delete-btn {
-            color: var(--danger);
-        }
-
-        .edit-btn:hover,
-        .delete-btn:hover {
+        .action-btn:hover {
             opacity: 1;
+        }
+
+        /* Drag handle */
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-secondary);
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .task-row.dragging {
+            opacity: 0.5;
+            background: var(--accent);
         }
 
         /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
         }
 
@@ -391,8 +410,8 @@
 
         .donut-chart {
             position: relative;
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
         }
 
         .donut-chart svg {
@@ -401,7 +420,7 @@
 
         .donut-chart circle {
             fill: none;
-            stroke-width: 15;
+            stroke-width: 12;
         }
 
         .donut-bg {
@@ -411,7 +430,7 @@
         .donut-progress {
             stroke: var(--accent-secondary);
             stroke-linecap: round;
-            transition: stroke-dashoffset 0.5s ease, stroke 0.3s;
+            transition: stroke-dashoffset 0.5s;
         }
 
         .donut-center {
@@ -423,39 +442,25 @@
         }
 
         .donut-percent {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            color: var(--text);
         }
 
         .donut-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
         }
 
         /* Category Progress */
         .category-progress {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .category-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
-        }
-
-        .category-name {
-            font-weight: 500;
-        }
-
-        .category-percent {
-            color: var(--text-secondary);
-        }
-
-        .no-categories {
-            color: var(--text-secondary);
-            text-align: center;
-            padding: 20px;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
         }
 
         /* Streak */
@@ -464,8 +469,7 @@
         }
 
         .streak-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
         }
 
         .streak-icon.active {
@@ -485,33 +489,27 @@
 
         .streak-label {
             color: var(--text-secondary);
-            margin-bottom: 15px;
-        }
-
-        .streak-best {
             font-size: 0.9rem;
-            color: var(--text-secondary);
         }
 
         /* Achievements */
         .achievements-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 12px;
         }
 
         .achievement {
             text-align: center;
-            padding: 15px 10px;
+            padding: 12px 8px;
             border-radius: 12px;
             background: var(--bg);
             transition: all 0.3s;
-            cursor: pointer;
         }
 
         .achievement.locked {
             filter: grayscale(100%);
-            opacity: 0.5;
+            opacity: 0.4;
         }
 
         .achievement.unlocked {
@@ -519,19 +517,51 @@
         }
 
         .achievement-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
+            font-size: 1.8rem;
         }
 
         .achievement-name {
-            font-size: 0.75rem;
-            font-weight: 500;
+            font-size: 0.7rem;
+            margin-top: 4px;
         }
 
-        .achievement-date {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
+        /* Monthly Stats */
+        .monthly-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 120px;
+            gap: 4px;
+            padding: 10px 0;
+        }
+
+        .month-bar {
+            flex: 1;
+            background: var(--border);
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .month-bar:hover {
+            background: var(--accent);
+        }
+
+        .month-bar-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--accent-secondary);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s;
+        }
+
+        .month-label {
+            font-size: 0.6rem;
+            text-align: center;
             margin-top: 4px;
+            color: var(--text-secondary);
         }
 
         /* Data Actions */
@@ -542,30 +572,23 @@
         }
 
         .data-btn {
-            padding: 10px 20px;
+            padding: 10px 16px;
             border: 1px solid var(--border);
             border-radius: 8px;
             background: var(--bg);
             color: var(--text);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: all 0.3s;
         }
 
         .data-btn:hover {
             background: var(--accent);
             color: white;
-            border-color: var(--accent);
-        }
-
-        .data-btn.danger {
-            border-color: var(--danger);
-            color: var(--danger);
         }
 
         .data-btn.danger:hover {
             background: var(--danger);
-            color: white;
         }
 
         #import-file {
@@ -579,11 +602,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 20px;
         }
 
         .modal-overlay.show {
@@ -594,9 +618,10 @@
             background: var(--card-bg);
             padding: 25px;
             border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 5px 30px var(--shadow);
+            width: 100%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-title {
@@ -612,26 +637,59 @@
         }
 
         .modal-form label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            display: block;
         }
 
         .modal-form input,
         .modal-form select,
         .modal-form textarea {
-            padding: 10px 15px;
+            padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: 8px;
             background: var(--bg);
             color: var(--text);
-            font-size: 1rem;
+            font-size: 0.95rem;
             width: 100%;
         }
 
         .modal-form textarea {
             min-height: 80px;
             resize: vertical;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+        }
+
+        .tags-input input {
+            border: none;
+            background: none;
+            flex: 1;
+            min-width: 100px;
+            padding: 4px;
+        }
+
+        .tags-input .tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tags-input .tag button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         .modal-buttons {
@@ -645,9 +703,8 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
             border: none;
-            transition: all 0.3s;
         }
 
         .modal-btn.cancel {
@@ -661,23 +718,22 @@
             color: white;
         }
 
-        .modal-btn:hover {
-            opacity: 0.8;
-        }
-
         /* Notification */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
             background: var(--card-bg);
-            padding: 20px 25px;
+            padding: 16px 20px;
             border-radius: 12px;
             box-shadow: 0 5px 20px var(--shadow);
             z-index: 1001;
             transform: translateX(150%);
-            transition: transform 0.5s ease;
-            max-width: 300px;
+            transition: transform 0.4s ease;
+            max-width: 280px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .notification.show {
@@ -685,18 +741,21 @@
         }
 
         .notification-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .notification-content {
+            flex: 1;
         }
 
         .notification-title {
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .notification-text {
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         /* Confetti */
@@ -713,104 +772,55 @@
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 40px 20px;
             color: var(--text-secondary);
         }
 
         .empty-state-icon {
             font-size: 3rem;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .tracker-table thead {
-                display: none;
-            }
-
-            .tracker-table,
-            .tracker-table tbody,
-            .tracker-table tr {
-                display: block;
-            }
-
-            .tracker-table tr {
-                margin-bottom: 20px;
-                background: var(--bg);
-                border-radius: 12px;
-                padding: 15px;
-            }
-
-            .tracker-table td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px 0;
-                border-bottom: 1px solid var(--border);
-                text-align: right;
-            }
-
-            .tracker-table td::before {
-                content: attr(data-label);
-                font-weight: 600;
-                color: var(--text-secondary);
-            }
-
-            .tracker-table td:last-child {
-                border-bottom: none;
-            }
-
-            .task-name-cell {
-                text-align: right !important;
-            }
-
-            .days-row {
-                display: flex;
-                gap: 5px;
-                justify-content: flex-end;
-                flex-wrap: wrap;
-            }
-
-            .day-checkbox {
-                width: 32px;
-                height: 32px;
-            }
-
-            .header-top {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .week-nav {
-                flex-direction: column;
-            }
-
+        @media (max-width: 900px) {
             .add-task-form {
-                flex-direction: column;
+                grid-template-columns: 1fr 1fr;
             }
 
-            .form-group {
-                width: 100%;
+            .add-task-form .form-group:first-child {
+                grid-column: 1 / -1;
             }
 
-            .add-task-form input,
-            .add-task-form select,
-            .add-task-form textarea {
-                width: 100%;
-            }
-
-            .add-task-form button {
-                width: 100%;
+            .add-btn {
+                grid-column: 1 / -1;
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
             .container {
                 padding: 10px;
             }
 
-            .card {
-                padding: 15px;
+            .header-top {
+                flex-direction: column;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .add-task-form {
+                grid-template-columns: 1fr;
+            }
+
+            .tracker-table {
+                font-size: 0.85rem;
+            }
+
+            .day-checkbox {
+                width: 28px;
+                height: 28px;
             }
         }
     </style>
@@ -821,128 +831,146 @@
         <header class="header">
             <div class="header-top">
                 <div class="logo">Weekly Goal Tracker</div>
-                <button class="theme-toggle" onclick="toggleTheme()">
-                    <span id="theme-icon">🌙</span> <span id="theme-text">Тёмная тема</span>
-                </button>
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleLanguage()" title="Switch language">
+                        <span id="lang-flag">🇬🇧</span>
+                        <span id="lang-code">EN</span>
+                    </button>
+                    <button class="control-btn" onclick="toggleNotifications()" id="notif-btn" title="Notifications">
+                        🔔 <span id="notif-status"></span>
+                    </button>
+                    <button class="control-btn" onclick="toggleSound()" id="sound-btn" title="Sound">
+                        🔊
+                    </button>
+                    <button class="control-btn" onclick="toggleTheme()" id="theme-btn">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                </div>
             </div>
             <nav class="week-nav">
-                <button class="nav-btn" onclick="changeWeek(-1)">← Предыдущая</button>
+                <button class="nav-btn" onclick="changeWeek(-1)">← <span data-i18n="prev">Пред.</span></button>
                 <div class="week-display" id="week-display"></div>
-                <button class="nav-btn" onclick="goToToday()">Сегодня</button>
-                <button class="nav-btn" onclick="changeWeek(1)">Следующая →</button>
+                <button class="nav-btn" onclick="goToToday()" data-i18n="today">Сегодня</button>
+                <button class="nav-btn" onclick="changeWeek(1)"><span data-i18n="next">След.</span> →</button>
             </nav>
         </header>
 
         <!-- Add Task -->
         <section class="card">
-            <h2 class="card-title">Добавить задачу</h2>
+            <h2 class="card-title" data-i18n="addTask">Добавить задачу</h2>
             <form class="add-task-form" onsubmit="addTask(event)">
                 <div class="form-group">
-                    <label>Название</label>
-                    <input type="text" id="task-name" placeholder="Название задачи" required>
+                    <label data-i18n="taskName">Название</label>
+                    <input type="text" id="task-name" data-i18n-placeholder="taskNamePlaceholder" placeholder="Название задачи" required>
                 </div>
                 <div class="form-group">
-                    <label>Категория</label>
-                    <select id="task-category">
-                        <option value="work">💼 Работа</option>
-                        <option value="health">🏃 Здоровье</option>
-                        <option value="study">📚 Учёба</option>
-                        <option value="personal">🏠 Личное</option>
-                        <option value="other">📌 Другое</option>
-                    </select>
+                    <label data-i18n="category">Категория</label>
+                    <select id="task-category"></select>
                 </div>
                 <div class="form-group">
-                    <label>Время (мин)</label>
+                    <label data-i18n="time">Мин.</label>
                     <input type="number" id="task-time" placeholder="30" min="1" max="480">
                 </div>
                 <div class="form-group">
-                    <label>Комментарий</label>
-                    <input type="text" id="task-comment" placeholder="Заметка (опционально)">
+                    <label data-i18n="repeat">Повтор</label>
+                    <select id="task-repeat">
+                        <option value="none" data-i18n="repeatNone">Нет</option>
+                        <option value="daily" data-i18n="repeatDaily">Ежедневно</option>
+                        <option value="weekdays" data-i18n="repeatWeekdays">Будни</option>
+                        <option value="weekends" data-i18n="repeatWeekends">Выходные</option>
+                    </select>
                 </div>
-                <button type="submit">Добавить</button>
+                <button type="submit" class="add-btn" data-i18n="add">Добавить</button>
             </form>
         </section>
 
         <!-- Tracker -->
         <section class="card">
-            <h2 class="card-title">Трекер задач</h2>
-            <table class="tracker-table" id="tracker-table">
-                <thead>
-                    <tr>
-                        <th style="width: 22%">Задача</th>
-                        <th style="width: 10%">Категория</th>
-                        <th id="day-0">Пн</th>
-                        <th id="day-1">Вт</th>
-                        <th id="day-2">Ср</th>
-                        <th id="day-3">Чт</th>
-                        <th id="day-4">Пт</th>
-                        <th id="day-5">Сб</th>
-                        <th id="day-6">Вс</th>
-                        <th style="width: 8%">Прогресс</th>
-                        <th style="width: 8%"></th>
-                    </tr>
-                </thead>
-                <tbody id="tasks-body">
-                </tbody>
-            </table>
+            <h2 class="card-title" data-i18n="taskTracker">Трекер задач</h2>
+            <div class="tracker-wrapper">
+                <table class="tracker-table" id="tracker-table">
+                    <thead>
+                        <tr>
+                            <th class="col-task" data-i18n="task">Задача</th>
+                            <th class="col-category" data-i18n="category">Категория</th>
+                            <th class="col-day" id="day-0">Пн</th>
+                            <th class="col-day" id="day-1">Вт</th>
+                            <th class="col-day" id="day-2">Ср</th>
+                            <th class="col-day" id="day-3">Чт</th>
+                            <th class="col-day" id="day-4">Пт</th>
+                            <th class="col-day" id="day-5">Сб</th>
+                            <th class="col-day" id="day-6">Вс</th>
+                            <th class="col-progress" data-i18n="progress">Прогресс</th>
+                            <th class="col-actions"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasks-body"></tbody>
+                </table>
+            </div>
             <div class="empty-state" id="empty-state">
                 <div class="empty-state-icon">📝</div>
-                <p>Пока нет задач. Добавьте первую задачу выше!</p>
+                <p data-i18n="noTasks">Нет задач. Добавьте первую!</p>
             </div>
         </section>
 
         <!-- Statistics -->
         <section class="stats-grid">
             <div class="card">
-                <h2 class="card-title">Прогресс недели</h2>
+                <h2 class="card-title" data-i18n="weekProgress">Прогресс недели</h2>
                 <div class="donut-container">
                     <div class="donut-chart">
-                        <svg width="150" height="150" viewBox="0 0 150 150">
-                            <circle class="donut-bg" cx="75" cy="75" r="60"></circle>
-                            <circle class="donut-progress" id="donut-progress" cx="75" cy="75" r="60"
-                                stroke-dasharray="377" stroke-dashoffset="377"></circle>
+                        <svg width="140" height="140" viewBox="0 0 140 140">
+                            <circle class="donut-bg" cx="70" cy="70" r="54"></circle>
+                            <circle class="donut-progress" id="donut-progress" cx="70" cy="70" r="54" stroke-dasharray="339" stroke-dashoffset="339"></circle>
                         </svg>
                         <div class="donut-center">
                             <div class="donut-percent" id="total-percent">0%</div>
-                            <div class="donut-label">выполнено</div>
+                            <div class="donut-label" data-i18n="completed">выполнено</div>
                         </div>
                     </div>
-                    <p id="total-stats" style="margin-top: 15px; color: var(--text-secondary);">
-                        Выполнено 0 из 0
-                    </p>
+                    <p id="total-stats" style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;"></p>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="card-title">По категориям</h2>
+                <h2 class="card-title" data-i18n="byCategory">По категориям</h2>
                 <div id="category-stats"></div>
             </div>
 
             <div class="card">
-                <h2 class="card-title">Серия дней</h2>
+                <h2 class="card-title" data-i18n="streak">Серия дней</h2>
                 <div class="streak-container">
                     <div class="streak-icon" id="streak-icon">🔥</div>
                     <div class="streak-number" id="current-streak">0</div>
-                    <div class="streak-label">дней подряд</div>
-                    <div class="streak-best">Лучший результат: <span id="best-streak">0</span> дней</div>
+                    <div class="streak-label" data-i18n="daysInRow">дней подряд</div>
+                    <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary);">
+                        <span data-i18n="bestResult">Лучший:</span> <span id="best-streak">0</span>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <!-- Monthly Stats -->
+        <section class="card">
+            <h2 class="card-title" data-i18n="yearStats">Статистика за год</h2>
+            <div class="monthly-chart" id="monthly-chart"></div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); padding: 0 2px;" id="month-labels"></div>
+        </section>
+
         <!-- Achievements -->
         <section class="card">
-            <h2 class="card-title">Достижения</h2>
+            <h2 class="card-title" data-i18n="achievements">Достижения</h2>
             <div class="achievements-grid" id="achievements-grid"></div>
         </section>
 
         <!-- Data Management -->
         <section class="card">
-            <h2 class="card-title">Управление данными</h2>
+            <h2 class="card-title" data-i18n="dataManagement">Управление данными</h2>
             <div class="data-actions">
-                <button class="data-btn" onclick="exportData()">📥 Экспорт</button>
-                <button class="data-btn" onclick="document.getElementById('import-file').click()">📤 Импорт</button>
+                <button class="data-btn" onclick="exportData()">📥 <span data-i18n="export">Экспорт</span></button>
+                <button class="data-btn" onclick="document.getElementById('import-file').click()">📤 <span data-i18n="import">Импорт</span></button>
                 <input type="file" id="import-file" accept=".json" onchange="importData(event)">
-                <button class="data-btn danger" onclick="resetData()">🗑️ Сбросить данные</button>
+                <button class="data-btn danger" onclick="resetData()">🗑️ <span data-i18n="reset">Сброс</span></button>
             </div>
         </section>
     </div>
@@ -950,120 +978,374 @@
     <!-- Edit Modal -->
     <div class="modal-overlay" id="edit-modal">
         <div class="modal">
-            <h3 class="modal-title">Редактировать задачу</h3>
+            <h3 class="modal-title" data-i18n="editTask">Редактировать задачу</h3>
             <form class="modal-form" onsubmit="saveTaskEdit(event)">
                 <input type="hidden" id="edit-task-id">
                 <div>
-                    <label>Название</label>
+                    <label data-i18n="taskName">Название</label>
                     <input type="text" id="edit-task-name" required>
                 </div>
                 <div>
-                    <label>Категория</label>
-                    <select id="edit-task-category">
-                        <option value="work">💼 Работа</option>
-                        <option value="health">🏃 Здоровье</option>
-                        <option value="study">📚 Учёба</option>
-                        <option value="personal">🏠 Личное</option>
-                        <option value="other">📌 Другое</option>
-                    </select>
+                    <label data-i18n="category">Категория</label>
+                    <select id="edit-task-category"></select>
                 </div>
                 <div>
-                    <label>Время (мин)</label>
+                    <label data-i18n="time">Время (мин)</label>
                     <input type="number" id="edit-task-time" min="1" max="480">
                 </div>
                 <div>
-                    <label>Комментарий</label>
-                    <textarea id="edit-task-comment" placeholder="Заметка"></textarea>
+                    <label data-i18n="repeat">Повтор</label>
+                    <select id="edit-task-repeat">
+                        <option value="none" data-i18n="repeatNone">Нет</option>
+                        <option value="daily" data-i18n="repeatDaily">Ежедневно</option>
+                        <option value="weekdays" data-i18n="repeatWeekdays">Будни</option>
+                        <option value="weekends" data-i18n="repeatWeekends">Выходные</option>
+                    </select>
+                </div>
+                <div>
+                    <label data-i18n="tags">Теги</label>
+                    <div class="tags-input" id="tags-input">
+                        <input type="text" id="tag-input" data-i18n-placeholder="addTag" placeholder="Добавить тег..." onkeydown="handleTagInput(event)">
+                    </div>
+                </div>
+                <div>
+                    <label data-i18n="comment">Комментарий</label>
+                    <textarea id="edit-task-comment" data-i18n-placeholder="notePlaceholder" placeholder="Заметка..."></textarea>
+                </div>
+                <div>
+                    <label data-i18n="reminder">Напоминание</label>
+                    <input type="time" id="edit-task-reminder">
                 </div>
                 <div class="modal-buttons">
-                    <button type="button" class="modal-btn cancel" onclick="closeEditModal()">Отмена</button>
-                    <button type="submit" class="modal-btn save">Сохранить</button>
+                    <button type="button" class="modal-btn cancel" onclick="closeEditModal()" data-i18n="cancel">Отмена</button>
+                    <button type="submit" class="modal-btn save" data-i18n="save">Сохранить</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Notification -->
+    <!-- Notification Toast -->
     <div class="notification" id="notification">
         <div class="notification-icon" id="notification-icon"></div>
-        <div class="notification-title" id="notification-title"></div>
-        <div class="notification-text" id="notification-text"></div>
+        <div class="notification-content">
+            <div class="notification-title" id="notification-title"></div>
+            <div class="notification-text" id="notification-text"></div>
+        </div>
     </div>
 
     <!-- Confetti Canvas -->
     <canvas class="confetti" id="confetti-canvas"></canvas>
 
     <script>
-        // ==================== DATA ====================
+        // ==================== TRANSLATIONS ====================
+        const TRANSLATIONS = {
+            ru: {
+                addTask: 'Добавить задачу',
+                taskName: 'Название',
+                taskNamePlaceholder: 'Название задачи',
+                category: 'Категория',
+                time: 'Мин.',
+                repeat: 'Повтор',
+                repeatNone: 'Нет',
+                repeatDaily: 'Ежедневно',
+                repeatWeekdays: 'Будни',
+                repeatWeekends: 'Выходные',
+                add: 'Добавить',
+                taskTracker: 'Трекер задач',
+                task: 'Задача',
+                progress: 'Прогресс',
+                noTasks: 'Нет задач. Добавьте первую!',
+                weekProgress: 'Прогресс недели',
+                completed: 'выполнено',
+                byCategory: 'По категориям',
+                streak: 'Серия дней',
+                daysInRow: 'дней подряд',
+                bestResult: 'Лучший:',
+                yearStats: 'Статистика за год',
+                achievements: 'Достижения',
+                dataManagement: 'Управление данными',
+                export: 'Экспорт',
+                import: 'Импорт',
+                reset: 'Сброс',
+                editTask: 'Редактировать задачу',
+                tags: 'Теги',
+                addTag: 'Добавить тег...',
+                comment: 'Комментарий',
+                notePlaceholder: 'Заметка...',
+                reminder: 'Напоминание',
+                cancel: 'Отмена',
+                save: 'Сохранить',
+                prev: 'Пред.',
+                next: 'След.',
+                today: 'Сегодня',
+                completedOf: 'Выполнено {0} из {1}',
+                days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                months: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+                monthsFull: ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'],
+                categories: {
+                    work: '💼 Работа',
+                    health: '🏃 Здоровье',
+                    study: '📚 Учёба',
+                    personal: '🏠 Личное',
+                    other: '📌 Другое'
+                },
+                newAchievement: 'Новое достижение!',
+                reminderTitle: 'Напоминание',
+                reminderText: 'Пора выполнить: {0}',
+                deleteConfirm: 'Удалить задачу?',
+                resetConfirm: 'Удалить все данные? Это необратимо!',
+                exportDone: 'Экспорт завершён',
+                importDone: 'Импорт завершён',
+                dataSaved: 'Данные сохранены',
+                dataLoaded: 'Данные загружены',
+                dataReset: 'Данные сброшены',
+                notifEnabled: 'Уведомления включены',
+                notifDisabled: 'Уведомления отключены',
+                noCategoryData: 'Добавьте задачи'
+            },
+            en: {
+                addTask: 'Add Task',
+                taskName: 'Name',
+                taskNamePlaceholder: 'Task name',
+                category: 'Category',
+                time: 'Min.',
+                repeat: 'Repeat',
+                repeatNone: 'None',
+                repeatDaily: 'Daily',
+                repeatWeekdays: 'Weekdays',
+                repeatWeekends: 'Weekends',
+                add: 'Add',
+                taskTracker: 'Task Tracker',
+                task: 'Task',
+                progress: 'Progress',
+                noTasks: 'No tasks yet. Add one!',
+                weekProgress: 'Week Progress',
+                completed: 'completed',
+                byCategory: 'By Category',
+                streak: 'Day Streak',
+                daysInRow: 'days in a row',
+                bestResult: 'Best:',
+                yearStats: 'Year Statistics',
+                achievements: 'Achievements',
+                dataManagement: 'Data Management',
+                export: 'Export',
+                import: 'Import',
+                reset: 'Reset',
+                editTask: 'Edit Task',
+                tags: 'Tags',
+                addTag: 'Add tag...',
+                comment: 'Comment',
+                notePlaceholder: 'Note...',
+                reminder: 'Reminder',
+                cancel: 'Cancel',
+                save: 'Save',
+                prev: 'Prev',
+                next: 'Next',
+                today: 'Today',
+                completedOf: 'Completed {0} of {1}',
+                days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                monthsFull: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                categories: {
+                    work: '💼 Work',
+                    health: '🏃 Health',
+                    study: '📚 Study',
+                    personal: '🏠 Personal',
+                    other: '📌 Other'
+                },
+                newAchievement: 'New Achievement!',
+                reminderTitle: 'Reminder',
+                reminderText: 'Time to do: {0}',
+                deleteConfirm: 'Delete this task?',
+                resetConfirm: 'Delete all data? This cannot be undone!',
+                exportDone: 'Export complete',
+                importDone: 'Import complete',
+                dataSaved: 'Data saved',
+                dataLoaded: 'Data loaded',
+                dataReset: 'Data reset',
+                notifEnabled: 'Notifications enabled',
+                notifDisabled: 'Notifications disabled',
+                noCategoryData: 'Add tasks'
+            }
+        };
+
         const CATEGORIES = {
-            work: { name: 'Работа', icon: '💼', color: '#3498db' },
-            health: { name: 'Здоровье', icon: '🏃', color: '#2ecc71' },
-            study: { name: 'Учёба', icon: '📚', color: '#9b59b6' },
-            personal: { name: 'Личное', icon: '🏠', color: '#e74c3c' },
-            other: { name: 'Другое', icon: '📌', color: '#95a5a6' }
+            work: { color: '#3498db' },
+            health: { color: '#2ecc71' },
+            study: { color: '#9b59b6' },
+            personal: { color: '#e74c3c' },
+            other: { color: '#95a5a6' }
         };
 
         const ACHIEVEMENTS = [
-            { id: 'first_step', name: 'Первый шаг', desc: 'Выполнить первую задачу', icon: '🌱', check: (d) => d.totalCompleted >= 1 },
-            { id: 'perfect_day', name: 'Идеальный день', desc: 'Все задачи за день', icon: '⭐', check: (d, date) => checkPerfectDay(d, date) },
-            { id: 'perfect_week', name: 'Идеальная неделя', desc: '100% за неделю', icon: '🏆', check: (d) => checkPerfectWeekCondition(d) },
-            { id: 'streak_7', name: 'Streak 7', desc: 'Серия 7 дней подряд', icon: '🔥', check: (d) => d.streak.best >= 7 },
-            { id: 'streak_30', name: 'Streak 30', desc: 'Серия 30 дней', icon: '💎', check: (d) => d.streak.best >= 30 },
-            { id: 'marathoner', name: 'Марафонец', desc: '50 выполненных задач', icon: '🏅', check: (d) => d.totalCompleted >= 50 },
-            { id: 'master', name: 'Мастер', desc: '100 выполненных задач', icon: '👑', check: (d) => d.totalCompleted >= 100 },
-            { id: 'early_bird', name: 'Ранняя пташка', desc: 'Отметить задачу до 9:00', icon: '🐦', check: (d) => d.earlyBirdUnlocked },
-            { id: 'on_track', name: 'Всё по плану', desc: '3 идеальных недели подряд', icon: '🎯', check: (d) => d.perfectWeeksInRow >= 3 }
+            { id: 'first_step', icon: '🌱', check: d => d.totalCompleted >= 1 },
+            { id: 'perfect_day', icon: '⭐', check: (d, date) => checkPerfectDay(d, date) },
+            { id: 'perfect_week', icon: '🏆', check: d => checkPerfectWeekCondition(d) },
+            { id: 'streak_7', icon: '🔥', check: d => d.streak.best >= 7 },
+            { id: 'streak_30', icon: '💎', check: d => d.streak.best >= 30 },
+            { id: 'marathoner', icon: '🏅', check: d => d.totalCompleted >= 50 },
+            { id: 'master', icon: '👑', check: d => d.totalCompleted >= 100 },
+            { id: 'early_bird', icon: '🐦', check: d => d.earlyBirdUnlocked },
+            { id: 'on_track', icon: '🎯', check: d => d.perfectWeeksInRow >= 3 }
         ];
 
-        const DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-        const MONTH_NAMES = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+        const ACHIEVEMENT_NAMES = {
+            ru: {
+                first_step: 'Первый шаг',
+                perfect_day: 'Идеальный день',
+                perfect_week: 'Идеальная неделя',
+                streak_7: 'Streak 7',
+                streak_30: 'Streak 30',
+                marathoner: 'Марафонец',
+                master: 'Мастер',
+                early_bird: 'Ранняя пташка',
+                on_track: 'Всё по плану'
+            },
+            en: {
+                first_step: 'First Step',
+                perfect_day: 'Perfect Day',
+                perfect_week: 'Perfect Week',
+                streak_7: 'Streak 7',
+                streak_30: 'Streak 30',
+                marathoner: 'Marathoner',
+                master: 'Master',
+                early_bird: 'Early Bird',
+                on_track: 'On Track'
+            }
+        };
 
+        // ==================== SOUNDS ====================
+        const SOUNDS = {
+            check: () => playTone(800, 0.1, 'sine'),
+            uncheck: () => playTone(400, 0.1, 'sine'),
+            achievement: () => {
+                playTone(523, 0.15, 'sine');
+                setTimeout(() => playTone(659, 0.15, 'sine'), 150);
+                setTimeout(() => playTone(784, 0.2, 'sine'), 300);
+            },
+            complete: () => {
+                playTone(600, 0.1, 'triangle');
+                setTimeout(() => playTone(800, 0.15, 'triangle'), 100);
+            }
+        };
+
+        let audioCtx = null;
+
+        function playTone(freq, duration, type) {
+            if (!data.soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        // ==================== STATE ====================
         let currentWeekStart = getWeekStart(new Date());
         let data = loadData();
+        let editingTags = [];
+        let draggedRow = null;
 
         // ==================== INITIALIZATION ====================
         function init() {
             applyTheme();
+            applyLanguage();
+            populateCategorySelects();
             renderWeekDisplay();
             renderTasks();
             renderStats();
             renderAchievements();
+            renderMonthlyStats();
             highlightToday();
+            updateSoundButton();
+            updateNotifButton();
+            setupReminders();
+            applyRecurringTasks();
         }
 
-        // ==================== DATA MANAGEMENT ====================
+        // ==================== i18n ====================
+        function t(key) {
+            return TRANSLATIONS[data.lang]?.[key] || TRANSLATIONS.ru[key] || key;
+        }
+
+        function applyLanguage() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (TRANSLATIONS[data.lang]?.[key]) {
+                    el.textContent = TRANSLATIONS[data.lang][key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.dataset.i18nPlaceholder;
+                if (TRANSLATIONS[data.lang]?.[key]) {
+                    el.placeholder = TRANSLATIONS[data.lang][key];
+                }
+            });
+            document.getElementById('lang-flag').textContent = data.lang === 'ru' ? '🇬🇧' : '🌐';
+            document.getElementById('lang-code').textContent = data.lang === 'ru' ? 'EN' : 'RU';
+
+            // Update day headers
+            const days = t('days');
+            for (let i = 0; i < 7; i++) {
+                const th = document.getElementById(`day-${i}`);
+                if (th) th.textContent = days[i];
+            }
+        }
+
+        function toggleLanguage() {
+            data.lang = data.lang === 'ru' ? 'en' : 'ru';
+            saveData();
+            applyLanguage();
+            populateCategorySelects();
+            renderTasks();
+            renderStats();
+            renderAchievements();
+            renderMonthlyStats();
+            renderWeekDisplay();
+        }
+
+        function populateCategorySelects() {
+            const cats = t('categories');
+            const html = Object.entries(cats).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+            document.getElementById('task-category').innerHTML = html;
+            document.getElementById('edit-task-category').innerHTML = html;
+        }
+
+        // ==================== DATA ====================
         function loadData() {
-            const defaultData = {
+            const defaults = {
                 tasks: [],
                 completions: {},
                 achievements: {},
                 streak: { current: 0, best: 0, lastDate: null },
-                perfectWeeks: 0,
                 perfectWeeksInRow: 0,
                 totalCompleted: 0,
-                theme: 'light',
-                earlyBirdUnlocked: false
+                theme: 'dark',
+                lang: 'ru',
+                soundEnabled: true,
+                notificationsEnabled: false,
+                earlyBirdUnlocked: false,
+                monthlyStats: {}
             };
-
             try {
                 const saved = localStorage.getItem('weeklyGoalTracker');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    return { ...defaultData, ...parsed };
-                }
-            } catch (e) {
-                console.error('Error loading data:', e);
-            }
-
-            return defaultData;
+                if (saved) return { ...defaults, ...JSON.parse(saved) };
+            } catch (e) {}
+            return defaults;
         }
 
         function saveData() {
             try {
                 localStorage.setItem('weeklyGoalTracker', JSON.stringify(data));
-            } catch (e) {
-                console.error('Error saving data:', e);
-            }
+            } catch (e) {}
         }
 
         function exportData() {
@@ -1071,26 +1353,24 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `weekly-tracker-backup-${formatDate(new Date())}.json`;
+            a.download = `goal-tracker-${formatDate(new Date())}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            showNotification('📥', 'Экспорт завершён', 'Данные сохранены в файл');
+            showNotification('📥', t('exportDone'), t('dataSaved'));
         }
 
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = e => {
                 try {
-                    const imported = JSON.parse(e.target.result);
-                    data = { ...loadData(), ...imported };
+                    data = { ...loadData(), ...JSON.parse(e.target.result) };
                     saveData();
                     init();
-                    showNotification('📤', 'Импорт завершён', 'Данные успешно загружены');
+                    showNotification('📤', t('importDone'), t('dataLoaded'));
                 } catch (err) {
-                    alert('Ошибка импорта: неверный формат файла');
+                    alert('Error importing file');
                 }
             };
             reader.readAsText(file);
@@ -1098,15 +1378,15 @@
         }
 
         function resetData() {
-            if (confirm('Вы уверены, что хотите удалить все данные? Это действие необратимо!')) {
+            if (confirm(t('resetConfirm'))) {
                 localStorage.removeItem('weeklyGoalTracker');
                 data = loadData();
                 init();
-                showNotification('🗑️', 'Данные удалены', 'Все данные были сброшены');
+                showNotification('🗑️', t('dataReset'), '');
             }
         }
 
-        // ==================== THEME ====================
+        // ==================== THEME & SOUND ====================
         function toggleTheme() {
             data.theme = data.theme === 'light' ? 'dark' : 'light';
             applyTheme();
@@ -1115,18 +1395,63 @@
 
         function applyTheme() {
             document.documentElement.setAttribute('data-theme', data.theme);
-            const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
-            if (data.theme === 'dark') {
-                icon.textContent = '☀️';
-                text.textContent = 'Светлая тема';
+            document.getElementById('theme-icon').textContent = data.theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        function toggleSound() {
+            data.soundEnabled = !data.soundEnabled;
+            updateSoundButton();
+            saveData();
+            if (data.soundEnabled) SOUNDS.check();
+        }
+
+        function updateSoundButton() {
+            document.getElementById('sound-btn').textContent = data.soundEnabled ? '🔊' : '🔇';
+        }
+
+        // ==================== NOTIFICATIONS ====================
+        function toggleNotifications() {
+            if (!data.notificationsEnabled) {
+                if ('Notification' in window) {
+                    Notification.requestPermission().then(perm => {
+                        data.notificationsEnabled = perm === 'granted';
+                        updateNotifButton();
+                        saveData();
+                        showNotification('🔔', data.notificationsEnabled ? t('notifEnabled') : t('notifDisabled'), '');
+                    });
+                }
             } else {
-                icon.textContent = '🌙';
-                text.textContent = 'Тёмная тема';
+                data.notificationsEnabled = false;
+                updateNotifButton();
+                saveData();
             }
         }
 
-        // ==================== DATE UTILITIES ====================
+        function updateNotifButton() {
+            document.getElementById('notif-status').textContent = data.notificationsEnabled ? 'ON' : 'OFF';
+        }
+
+        function sendNotification(title, body) {
+            if (data.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, { body, icon: '📋' });
+            }
+        }
+
+        function setupReminders() {
+            setInterval(() => {
+                const now = new Date();
+                const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                const today = formatDate(now);
+
+                data.tasks.forEach(task => {
+                    if (task.reminder === timeStr && !isCompleted(task.id, today)) {
+                        sendNotification(t('reminderTitle'), t('reminderText').replace('{0}', task.name));
+                    }
+                });
+            }, 60000);
+        }
+
+        // ==================== DATE UTILS ====================
         function getWeekStart(date) {
             const d = new Date(date);
             const day = d.getDay();
@@ -1143,17 +1468,13 @@
         function formatWeekDisplay(startDate) {
             const endDate = new Date(startDate);
             endDate.setDate(endDate.getDate() + 6);
-
-            const startDay = startDate.getDate();
-            const startMonth = MONTH_NAMES[startDate.getMonth()];
-            const endDay = endDate.getDate();
-            const endMonth = MONTH_NAMES[endDate.getMonth()];
+            const months = t('monthsFull');
+            const sd = startDate.getDate(), sm = months[startDate.getMonth()];
+            const ed = endDate.getDate(), em = months[endDate.getMonth()];
             const year = endDate.getFullYear();
-
-            if (startDate.getMonth() === endDate.getMonth()) {
-                return `${startDay} — ${endDay} ${endMonth} ${year}`;
-            }
-            return `${startDay} ${startMonth} — ${endDay} ${endMonth} ${year}`;
+            return startDate.getMonth() === endDate.getMonth()
+                ? `${sd} — ${ed} ${em} ${year}`
+                : `${sd} ${sm} — ${ed} ${em} ${year}`;
         }
 
         function getWeekDates() {
@@ -1167,7 +1488,7 @@
         }
 
         function changeWeek(delta) {
-            currentWeekStart.setDate(currentWeekStart.getDate() + (delta * 7));
+            currentWeekStart.setDate(currentWeekStart.getDate() + delta * 7);
             renderWeekDisplay();
             renderTasks();
             renderStats();
@@ -1189,62 +1510,68 @@
         function highlightToday() {
             const today = formatDate(new Date());
             const weekDates = getWeekDates();
-
             for (let i = 0; i < 7; i++) {
                 const th = document.getElementById(`day-${i}`);
-                if (th) {
-                    th.classList.toggle('today', weekDates[i] === today);
-                }
+                if (th) th.classList.toggle('today', weekDates[i] === today);
             }
-
             document.querySelectorAll('.day-cell').forEach(cell => {
-                const date = cell.dataset.date;
-                cell.classList.toggle('today', date === today);
+                cell.classList.toggle('today', cell.dataset.date === today);
+            });
+        }
+
+        // ==================== RECURRING TASKS ====================
+        function applyRecurringTasks() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const todayStr = formatDate(today);
+
+            data.tasks.forEach(task => {
+                if (!task.repeat || task.repeat === 'none') return;
+
+                const shouldCheck =
+                    (task.repeat === 'daily') ||
+                    (task.repeat === 'weekdays' && dayOfWeek >= 1 && dayOfWeek <= 5) ||
+                    (task.repeat === 'weekends' && (dayOfWeek === 0 || dayOfWeek === 6));
+
+                // Mark as not completed for new day if auto-recurring
+                // This just ensures recurring tasks appear each day
             });
         }
 
         // ==================== TASKS ====================
         function addTask(event) {
             event.preventDefault();
-
-            const nameInput = document.getElementById('task-name');
-            const categorySelect = document.getElementById('task-category');
-            const timeInput = document.getElementById('task-time');
-            const commentInput = document.getElementById('task-comment');
-
             const task = {
                 id: Date.now().toString(),
-                name: nameInput.value.trim(),
-                category: categorySelect.value,
-                time: timeInput.value ? parseInt(timeInput.value) : null,
-                comment: commentInput.value.trim(),
+                name: document.getElementById('task-name').value.trim(),
+                category: document.getElementById('task-category').value,
+                time: document.getElementById('task-time').value ? parseInt(document.getElementById('task-time').value) : null,
+                repeat: document.getElementById('task-repeat').value,
+                tags: [],
+                comment: '',
+                reminder: null,
                 createdAt: formatDate(new Date())
             };
-
             data.tasks.push(task);
             saveData();
-
-            nameInput.value = '';
-            timeInput.value = '';
-            commentInput.value = '';
-
+            document.getElementById('task-name').value = '';
+            document.getElementById('task-time').value = '';
             renderTasks();
             renderStats();
+            SOUNDS.check();
         }
 
         function deleteTask(taskId) {
-            if (confirm('Удалить эту задачу?')) {
-                data.tasks = data.tasks.filter(t => t.id !== taskId);
-                // Remove completions and recalculate total
-                let removedCount = 0;
+            if (confirm(t('deleteConfirm'))) {
+                let removed = 0;
                 Object.keys(data.completions).forEach(date => {
                     if (data.completions[date]?.[taskId]) {
-                        removedCount++;
+                        removed++;
                         delete data.completions[date][taskId];
                     }
                 });
-                data.totalCompleted = Math.max(0, data.totalCompleted - removedCount);
-
+                data.tasks = data.tasks.filter(t => t.id !== taskId);
+                data.totalCompleted = Math.max(0, data.totalCompleted - removed);
                 saveData();
                 renderTasks();
                 renderStats();
@@ -1255,13 +1582,15 @@
         function openEditModal(taskId) {
             const task = data.tasks.find(t => t.id === taskId);
             if (!task) return;
-
             document.getElementById('edit-task-id').value = taskId;
             document.getElementById('edit-task-name').value = task.name;
             document.getElementById('edit-task-category').value = task.category;
             document.getElementById('edit-task-time').value = task.time || '';
+            document.getElementById('edit-task-repeat').value = task.repeat || 'none';
             document.getElementById('edit-task-comment').value = task.comment || '';
-
+            document.getElementById('edit-task-reminder').value = task.reminder || '';
+            editingTags = [...(task.tags || [])];
+            renderTagsInput();
             document.getElementById('edit-modal').classList.add('show');
         }
 
@@ -1271,46 +1600,79 @@
 
         function saveTaskEdit(event) {
             event.preventDefault();
-
             const taskId = document.getElementById('edit-task-id').value;
             const task = data.tasks.find(t => t.id === taskId);
             if (!task) return;
-
             task.name = document.getElementById('edit-task-name').value.trim();
             task.category = document.getElementById('edit-task-category').value;
             task.time = document.getElementById('edit-task-time').value ? parseInt(document.getElementById('edit-task-time').value) : null;
+            task.repeat = document.getElementById('edit-task-repeat').value;
             task.comment = document.getElementById('edit-task-comment').value.trim();
-
+            task.reminder = document.getElementById('edit-task-reminder').value || null;
+            task.tags = [...editingTags];
             saveData();
             closeEditModal();
             renderTasks();
-            renderStats();
+            SOUNDS.check();
+        }
+
+        // Tags
+        function renderTagsInput() {
+            const container = document.getElementById('tags-input');
+            const input = document.getElementById('tag-input');
+            container.innerHTML = '';
+            editingTags.forEach((tag, i) => {
+                const el = document.createElement('span');
+                el.className = 'tag';
+                el.innerHTML = `${tag} <button type="button" onclick="removeTag(${i})">×</button>`;
+                container.appendChild(el);
+            });
+            container.appendChild(input);
+        }
+
+        function handleTagInput(e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const val = e.target.value.trim().replace(',', '');
+                if (val && !editingTags.includes(val)) {
+                    editingTags.push(val);
+                    renderTagsInput();
+                }
+                e.target.value = '';
+            }
+        }
+
+        function removeTag(index) {
+            editingTags.splice(index, 1);
+            renderTagsInput();
         }
 
         function toggleCompletion(taskId, date) {
-            if (!data.completions[date]) {
-                data.completions[date] = {};
-            }
-
+            if (!data.completions[date]) data.completions[date] = {};
             const wasCompleted = data.completions[date][taskId];
             data.completions[date][taskId] = !wasCompleted;
 
             if (!wasCompleted) {
                 data.totalCompleted++;
-
-                // Check early bird (before 9:00)
+                SOUNDS.check();
                 const now = new Date();
-                if (now.getHours() < 9) {
-                    data.earlyBirdUnlocked = true;
-                }
+                if (now.getHours() < 9) data.earlyBirdUnlocked = true;
+
+                // Update monthly stats
+                const month = date.substring(0, 7);
+                data.monthlyStats[month] = (data.monthlyStats[month] || 0) + 1;
             } else {
                 data.totalCompleted = Math.max(0, data.totalCompleted - 1);
+                SOUNDS.uncheck();
+                const month = date.substring(0, 7);
+                data.monthlyStats[month] = Math.max(0, (data.monthlyStats[month] || 0) - 1);
             }
 
             updateStreak();
             saveData();
             renderTasks();
             renderStats();
+            renderMonthlyStats();
             recheckAllAchievements();
         }
 
@@ -1318,59 +1680,89 @@
             return data.completions[date]?.[taskId] || false;
         }
 
+        // Drag and Drop
+        function handleDragStart(e, taskId) {
+            draggedRow = taskId;
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedRow = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e, targetId) {
+            e.preventDefault();
+            if (!draggedRow || draggedRow === targetId) return;
+            const fromIdx = data.tasks.findIndex(t => t.id === draggedRow);
+            const toIdx = data.tasks.findIndex(t => t.id === targetId);
+            if (fromIdx === -1 || toIdx === -1) return;
+            const [moved] = data.tasks.splice(fromIdx, 1);
+            data.tasks.splice(toIdx, 0, moved);
+            saveData();
+            renderTasks();
+        }
+
         function renderTasks() {
             const tbody = document.getElementById('tasks-body');
             const emptyState = document.getElementById('empty-state');
             const weekDates = getWeekDates();
+            const cats = t('categories');
 
             if (data.tasks.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
             }
-
             emptyState.style.display = 'none';
 
             tbody.innerHTML = data.tasks.map(task => {
-                const category = CATEGORIES[task.category];
-                const completedDays = weekDates.filter(date => isCompleted(task.id, date)).length;
-                const progress = Math.round((completedDays / 7) * 100);
-                const progressColor = getProgressColor(progress);
+                const cat = CATEGORIES[task.category];
+                const catName = cats[task.category];
+                const completed = weekDates.filter(d => isCompleted(task.id, d)).length;
+                const progress = Math.round((completed / 7) * 100);
+                const color = progress >= 70 ? '#27ae60' : progress >= 40 ? '#f39c12' : '#e74c3c';
 
-                const timeDisplay = task.time ? `⏱ ${task.time} мин` : '';
-                const commentDisplay = task.comment ? escapeHtml(task.comment) : '';
+                const meta = [];
+                if (task.time) meta.push(`⏱${task.time}m`);
+                if (task.repeat && task.repeat !== 'none') meta.push(`🔄`);
+                if (task.reminder) meta.push(`⏰${task.reminder}`);
+
+                const tagsHtml = (task.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('');
 
                 return `
-                    <tr>
-                        <td class="task-name-cell" data-label="Задача">
-                            <div class="task-name" onclick="openEditModal('${task.id}')" title="Нажмите для редактирования">
-                                ${escapeHtml(task.name)}
-                            </div>
-                            ${commentDisplay ? `<div class="task-comment">${commentDisplay}</div>` : ''}
-                            ${timeDisplay ? `<div class="task-time">${timeDisplay}</div>` : ''}
+                    <tr class="task-row" draggable="true"
+                        ondragstart="handleDragStart(event, '${task.id}')"
+                        ondragend="handleDragEnd(event)"
+                        ondragover="handleDragOver(event)"
+                        ondrop="handleDrop(event, '${task.id}')">
+                        <td class="task-cell">
+                            <span class="drag-handle">⋮⋮</span>
+                            <span class="task-name" onclick="openEditModal('${task.id}')">${escapeHtml(task.name)}</span>
+                            ${meta.length ? `<div class="task-meta">${meta.join(' ')}</div>` : ''}
+                            ${tagsHtml ? `<div class="task-tags">${tagsHtml}</div>` : ''}
                         </td>
-                        <td data-label="Категория">
-                            <span class="category-badge" style="border-left: 3px solid ${category.color}">
-                                ${category.icon} ${category.name}
-                            </span>
-                        </td>
-                        ${weekDates.map((date, i) => `
-                            <td class="day-cell" data-label="${DAY_NAMES[i]}" data-date="${date}">
-                                <input type="checkbox" class="day-checkbox"
-                                    ${isCompleted(task.id, date) ? 'checked' : ''}
+                        <td><span class="category-badge" style="border-left:3px solid ${cat.color}">${catName}</span></td>
+                        ${weekDates.map(date => `
+                            <td class="day-cell" data-date="${date}">
+                                <input type="checkbox" class="day-checkbox" ${isCompleted(task.id, date) ? 'checked' : ''}
                                     onchange="toggleCompletion('${task.id}', '${date}')">
                             </td>
                         `).join('')}
-                        <td data-label="Прогресс">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${Math.max(progress, 2)}%; background: ${progressColor}"></div>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar"><div class="progress-fill" style="width:${progress}%;background:${color}"></div></div>
+                                <div class="progress-text">${progress}%</div>
                             </div>
-                            <div class="progress-text">${progress}%</div>
                         </td>
                         <td>
                             <div class="action-btns">
-                                <button class="edit-btn" onclick="openEditModal('${task.id}')" title="Редактировать">✏️</button>
-                                <button class="delete-btn" onclick="deleteTask('${task.id}')" title="Удалить">×</button>
+                                <button class="action-btn" onclick="openEditModal('${task.id}')">✏️</button>
+                                <button class="action-btn" onclick="deleteTask('${task.id}')">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -1387,67 +1779,51 @@
 
         function renderTotalProgress() {
             const weekDates = getWeekDates();
-            const totalPossible = data.tasks.length * 7;
-            let totalCompleted = 0;
+            const total = data.tasks.length * 7;
+            let completed = 0;
+            data.tasks.forEach(task => weekDates.forEach(d => { if (isCompleted(task.id, d)) completed++; }));
 
-            data.tasks.forEach(task => {
-                weekDates.forEach(date => {
-                    if (isCompleted(task.id, date)) totalCompleted++;
-                });
-            });
-
-            const percent = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
-            const circumference = 2 * Math.PI * 60;
-            const offset = circumference - (percent / 100) * circumference;
-            const color = getProgressColor(percent);
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+            const circ = 2 * Math.PI * 54;
+            const offset = circ - (pct / 100) * circ;
+            const color = pct >= 70 ? '#27ae60' : pct >= 40 ? '#f39c12' : '#e74c3c';
 
             document.getElementById('donut-progress').style.strokeDashoffset = offset;
             document.getElementById('donut-progress').style.stroke = color;
-            document.getElementById('total-percent').textContent = `${percent}%`;
-            document.getElementById('total-stats').textContent = `Выполнено ${totalCompleted} из ${totalPossible}`;
+            document.getElementById('total-percent').textContent = `${pct}%`;
+            document.getElementById('total-stats').textContent = t('completedOf').replace('{0}', completed).replace('{1}', total);
         }
 
         function renderCategoryStats() {
             const container = document.getElementById('category-stats');
             const weekDates = getWeekDates();
             const stats = {};
+            const cats = t('categories');
 
-            Object.keys(CATEGORIES).forEach(cat => {
-                stats[cat] = { total: 0, completed: 0 };
-            });
-
+            Object.keys(CATEGORIES).forEach(k => stats[k] = { total: 0, done: 0 });
             data.tasks.forEach(task => {
                 stats[task.category].total += 7;
-                weekDates.forEach(date => {
-                    if (isCompleted(task.id, date)) {
-                        stats[task.category].completed++;
-                    }
-                });
+                weekDates.forEach(d => { if (isCompleted(task.id, d)) stats[task.category].done++; });
             });
 
-            const hasCategories = Object.values(stats).some(s => s.total > 0);
-
-            if (!hasCategories) {
-                container.innerHTML = '<div class="no-categories">Добавьте задачи для отображения статистики</div>';
+            const hasData = Object.values(stats).some(s => s.total > 0);
+            if (!hasData) {
+                container.innerHTML = `<div style="text-align:center;color:var(--text-secondary);padding:20px">${t('noCategoryData')}</div>`;
                 return;
             }
 
             container.innerHTML = Object.entries(CATEGORIES).map(([key, cat]) => {
                 const s = stats[key];
                 if (s.total === 0) return '';
-
-                const percent = Math.round((s.completed / s.total) * 100);
-                const color = getProgressColor(percent);
-
+                const pct = Math.round((s.done / s.total) * 100);
+                const color = pct >= 70 ? '#27ae60' : pct >= 40 ? '#f39c12' : '#e74c3c';
                 return `
                     <div class="category-progress">
                         <div class="category-header">
-                            <span class="category-name">${cat.icon} ${cat.name}</span>
-                            <span class="category-percent">${percent}%</span>
+                            <span>${cats[key]}</span>
+                            <span>${pct}%</span>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${Math.max(percent, 2)}%; background: ${color}"></div>
-                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:${Math.max(pct, 2)}%;background:${color}"></div></div>
                     </div>
                 `;
             }).join('');
@@ -1456,87 +1832,73 @@
         function renderStreakStats() {
             document.getElementById('current-streak').textContent = data.streak.current;
             document.getElementById('best-streak').textContent = data.streak.best;
-
-            const icon = document.getElementById('streak-icon');
-            if (data.streak.current > 0) {
-                icon.classList.add('active');
-            } else {
-                icon.classList.remove('active');
-            }
+            document.getElementById('streak-icon').classList.toggle('active', data.streak.current > 0);
         }
 
         function updateStreak() {
             const today = formatDate(new Date());
             const yesterday = formatDate(new Date(Date.now() - 86400000));
+            const allToday = data.tasks.length > 0 && data.tasks.every(t => isCompleted(t.id, today));
 
-            // Check if all tasks are completed today
-            const allCompletedToday = data.tasks.length > 0 &&
-                data.tasks.every(task => isCompleted(task.id, today));
-
-            if (allCompletedToday) {
-                if (data.streak.lastDate === yesterday) {
-                    data.streak.current++;
-                } else if (data.streak.lastDate !== today) {
-                    data.streak.current = 1;
-                }
+            if (allToday) {
+                if (data.streak.lastDate === yesterday) data.streak.current++;
+                else if (data.streak.lastDate !== today) data.streak.current = 1;
                 data.streak.lastDate = today;
                 data.streak.best = Math.max(data.streak.best, data.streak.current);
-            } else {
-                // Reset current streak if today is not complete
-                if (data.streak.lastDate === today) {
-                    // Was complete today, now not - find actual streak
-                    data.streak.current = calculateCurrentStreak();
-                    if (data.streak.current === 0) {
-                        data.streak.lastDate = null;
-                    }
-                }
+            } else if (data.streak.lastDate === today) {
+                data.streak.current = calcStreak();
+                if (data.streak.current === 0) data.streak.lastDate = null;
             }
         }
 
-        function calculateCurrentStreak() {
+        function calcStreak() {
             if (data.tasks.length === 0) return 0;
-
-            let streak = 0;
-            let checkDate = new Date();
-            checkDate.setDate(checkDate.getDate() - 1); // Start from yesterday
-
-            while (true) {
-                const dateStr = formatDate(checkDate);
-                const allCompleted = data.tasks.every(task => isCompleted(task.id, dateStr));
-
-                if (allCompleted) {
-                    streak++;
-                    checkDate.setDate(checkDate.getDate() - 1);
-                } else {
-                    break;
-                }
-
-                // Safety limit
-                if (streak > 365) break;
+            let streak = 0, d = new Date();
+            d.setDate(d.getDate() - 1);
+            while (streak < 365) {
+                const ds = formatDate(d);
+                if (!data.tasks.every(t => isCompleted(t.id, ds))) break;
+                streak++;
+                d.setDate(d.getDate() - 1);
             }
-
             return streak;
         }
 
-        function getProgressColor(percent) {
-            if (percent >= 70) return '#27ae60';
-            if (percent >= 40) return '#f39c12';
-            return '#e74c3c';
+        function renderMonthlyStats() {
+            const container = document.getElementById('monthly-chart');
+            const labelsContainer = document.getElementById('month-labels');
+            const months = t('months');
+            const now = new Date();
+            const bars = [];
+            const labels = [];
+
+            let maxVal = 1;
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                const val = data.monthlyStats[key] || 0;
+                if (val > maxVal) maxVal = val;
+                bars.push({ key, val, month: months[d.getMonth()] });
+            }
+
+            container.innerHTML = bars.map(b => `
+                <div class="month-bar" title="${b.month}: ${b.val}">
+                    <div class="month-bar-fill" style="height:${(b.val / maxVal) * 100}%"></div>
+                </div>
+            `).join('');
+
+            labelsContainer.innerHTML = bars.map(b => `<span>${b.month}</span>`).join('');
         }
 
         // ==================== ACHIEVEMENTS ====================
         function renderAchievements() {
-            const container = document.getElementById('achievements-grid');
-
-            container.innerHTML = ACHIEVEMENTS.map(ach => {
+            const names = ACHIEVEMENT_NAMES[data.lang];
+            document.getElementById('achievements-grid').innerHTML = ACHIEVEMENTS.map(ach => {
                 const unlocked = data.achievements[ach.id];
-                const date = unlocked ? new Date(unlocked).toLocaleDateString('ru-RU') : '';
-
                 return `
-                    <div class="achievement ${unlocked ? 'unlocked' : 'locked'}" title="${ach.desc}">
+                    <div class="achievement ${unlocked ? 'unlocked' : 'locked'}" title="${names[ach.id]}">
                         <div class="achievement-icon">${ach.icon}</div>
-                        <div class="achievement-name">${ach.name}</div>
-                        ${unlocked ? `<div class="achievement-date">${date}</div>` : ''}
+                        <div class="achievement-name">${names[ach.id]}</div>
                     </div>
                 `;
             }).join('');
@@ -1544,195 +1906,108 @@
 
         function unlockAchievement(id) {
             if (data.achievements[id]) return false;
-
             data.achievements[id] = Date.now();
             saveData();
-
-            const ach = ACHIEVEMENTS.find(a => a.id === id);
-            if (ach) {
-                showNotification(ach.icon, 'Новое достижение!', ach.name);
-
-                if (id === 'perfect_week') {
-                    launchConfetti();
-                }
-            }
-
+            const names = ACHIEVEMENT_NAMES[data.lang];
+            showNotification(ACHIEVEMENTS.find(a => a.id === id)?.icon || '🏆', t('newAchievement'), names[id]);
+            SOUNDS.achievement();
+            if (id === 'perfect_week') launchConfetti();
             renderAchievements();
             return true;
         }
 
         function revokeAchievement(id) {
-            if (!data.achievements[id]) return false;
-
+            if (!data.achievements[id]) return;
             delete data.achievements[id];
             saveData();
             renderAchievements();
-            return true;
         }
 
         function recheckAllAchievements() {
             const today = formatDate(new Date());
-
+            const revocable = ['first_step', 'perfect_day', 'perfect_week', 'marathoner', 'master', 'on_track'];
             ACHIEVEMENTS.forEach(ach => {
-                const shouldHave = ach.check(data, today);
-                const hasIt = !!data.achievements[ach.id];
-
-                if (shouldHave && !hasIt) {
-                    unlockAchievement(ach.id);
-                } else if (!shouldHave && hasIt) {
-                    // Only revoke certain achievements that can be "lost"
-                    // Don't revoke: early_bird (once unlocked, stays), streak achievements based on best
-                    const revocable = ['first_step', 'perfect_day', 'perfect_week', 'marathoner', 'master', 'on_track'];
-                    if (revocable.includes(ach.id)) {
-                        revokeAchievement(ach.id);
-                    }
-                }
+                const should = ach.check(data, today);
+                const has = !!data.achievements[ach.id];
+                if (should && !has) unlockAchievement(ach.id);
+                else if (!should && has && revocable.includes(ach.id)) revokeAchievement(ach.id);
             });
         }
 
         function checkPerfectDay(d, date) {
             if (!date) date = formatDate(new Date());
-            return d.tasks.length > 0 && d.tasks.every(task => isCompleted(task.id, date));
+            return d.tasks.length > 0 && d.tasks.every(t => isCompleted(t.id, date));
         }
 
         function checkPerfectWeekCondition(d) {
-            const weekDates = getWeekDates();
-            if (d.tasks.length === 0) return false;
-
-            return weekDates.every(date =>
-                d.tasks.every(task => isCompleted(task.id, date))
-            );
+            const dates = getWeekDates();
+            return d.tasks.length > 0 && dates.every(date => d.tasks.every(t => isCompleted(t.id, date)));
         }
 
-        // ==================== NOTIFICATIONS ====================
+        // ==================== UI HELPERS ====================
         function showNotification(icon, title, text) {
-            const notification = document.getElementById('notification');
+            const el = document.getElementById('notification');
             document.getElementById('notification-icon').textContent = icon;
             document.getElementById('notification-title').textContent = title;
             document.getElementById('notification-text').textContent = text;
-
-            notification.classList.add('show');
-
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3500);
         }
 
-        // ==================== CONFETTI ====================
         function launchConfetti() {
             const canvas = document.getElementById('confetti-canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-
             const particles = [];
             const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
-
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 120; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height - canvas.height,
-                    vx: (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 8,
                     vy: Math.random() * 3 + 2,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     size: Math.random() * 8 + 4,
-                    rotation: Math.random() * 360
+                    rot: Math.random() * 360
                 });
             }
-
             let frame = 0;
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-
                 particles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.1;
-                    p.rotation += 5;
-
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.rot += 5;
                     ctx.save();
                     ctx.translate(p.x, p.y);
-                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.rotate(p.rot * Math.PI / 180);
                     ctx.fillStyle = p.color;
                     ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
                     ctx.restore();
                 });
-
-                frame++;
-                if (frame < 200) {
-                    requestAnimationFrame(animate);
-                } else {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                }
+                if (++frame < 180) requestAnimationFrame(animate);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
-
             animate();
+            SOUNDS.complete();
         }
 
-        // ==================== UTILITIES ====================
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // Close modal on outside click
-        document.getElementById('edit-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEditModal();
-            }
+        document.getElementById('edit-modal').addEventListener('click', e => {
+            if (e.target.id === 'edit-modal') closeEditModal();
         });
+
+        // ==================== PWA ====================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
 
         // ==================== START ====================
         init();
-
-        // ==================== PWA SERVICE WORKER ====================
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registered:', reg.scope))
-                    .catch(err => console.log('Service Worker registration failed:', err));
-            });
-        }
-
-        // Install prompt for PWA
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // Show install button
-            showInstallButton();
-        });
-
-        function showInstallButton() {
-            const header = document.querySelector('.header-top');
-            if (!document.getElementById('install-btn')) {
-                const btn = document.createElement('button');
-                btn.id = 'install-btn';
-                btn.className = 'nav-btn';
-                btn.innerHTML = '📲 Установить';
-                btn.onclick = installApp;
-                header.insertBefore(btn, header.querySelector('.theme-toggle'));
-            }
-        }
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choice) => {
-                    if (choice.outcome === 'accepted') {
-                        console.log('App installed');
-                        document.getElementById('install-btn')?.remove();
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        }
-
-        window.addEventListener('appinstalled', () => {
-            console.log('App installed successfully');
-            document.getElementById('install-btn')?.remove();
-        });
     </script>
 </body>
 </html>
