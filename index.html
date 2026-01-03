@@ -2830,6 +2830,9 @@
                 Object.keys(data.completions).forEach(date => {
                     if (data.completions[date]?.[taskId]) {
                         removed++;
+                        // Update monthly stats
+                        const month = date.substring(0, 7);
+                        data.monthlyStats[month] = Math.max(0, (data.monthlyStats[month] || 0) - 1);
                         delete data.completions[date][taskId];
                     }
                 });
@@ -3851,6 +3854,9 @@
                 Object.keys(data.completions).forEach(date => {
                     if (data.completions[date]?.[taskId]) {
                         data.totalCompleted = Math.max(0, data.totalCompleted - 1);
+                        // Update monthly stats
+                        const month = date.substring(0, 7);
+                        data.monthlyStats[month] = Math.max(0, (data.monthlyStats[month] || 0) - 1);
                         delete data.completions[date][taskId];
                     }
                 });
@@ -3863,6 +3869,7 @@
             renderTemplates();
             renderChallenges();
             renderProgressStats();
+            renderStats();
         }
 
         function renderChallenges() {
