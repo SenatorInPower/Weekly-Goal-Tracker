@@ -3438,15 +3438,11 @@
         PRESET_PROFILES.vadym = PRESET_PROFILES.baksik;
 
         function loadPresetByCode() {
-            alert('loadPresetByCode called');
             const code = document.getElementById('preset-code-input').value.trim().toLowerCase();
-            alert('Code entered: ' + code);
             if (!code) {
                 showNotification('⚠️', t('enterPresetCode'), '');
                 return;
             }
-            alert('Checking PRESET_PROFILES for: ' + code);
-            alert('Available presets: ' + Object.keys(PRESET_PROFILES).join(', '));
             if (!PRESET_PROFILES[code]) {
                 showNotification('❌', t('invalidPresetCode'), '');
                 return;
@@ -3455,14 +3451,10 @@
         }
 
         function loadPresetProfile(presetName) {
-            alert('Loading preset: ' + presetName);
             const preset = PRESET_PROFILES[presetName];
             if (!preset) {
-                alert('Preset not found: ' + presetName);
                 return;
             }
-
-            alert('Found preset with ' + preset.tasks.length + ' tasks');
 
             // Generate unique IDs for tasks
             const now = Date.now();
@@ -3482,8 +3474,12 @@
             data.completions = {};
 
             saveData();
-            alert('Saved! Tasks count: ' + data.tasks.length);
-            init();
+            try {
+                init();
+            } catch(e) {
+                alert('Error in init(): ' + e.message);
+                console.error(e);
+            }
             closeProfileModal();
             showNotification('✅', t('presetLoaded'), preset.name);
         }
