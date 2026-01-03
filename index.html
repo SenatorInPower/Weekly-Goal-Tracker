@@ -2528,7 +2528,12 @@
         }
 
         function deleteTask(taskId) {
+            alert('Deleting task ID: ' + taskId + ' (type: ' + typeof taskId + ')');
+            alert('Current task IDs: ' + data.tasks.map(t => t.id + '(' + typeof t.id + ')').join(', '));
             if (confirm(t('deleteConfirm'))) {
+                const before = data.tasks.length;
+                data.tasks = data.tasks.filter(t => String(t.id) !== String(taskId));
+                alert('Tasks before: ' + before + ', after: ' + data.tasks.length);
                 let removed = 0;
                 Object.keys(data.completions).forEach(date => {
                     if (data.completions[date]?.[taskId]) {
@@ -2536,7 +2541,6 @@
                         delete data.completions[date][taskId];
                     }
                 });
-                data.tasks = data.tasks.filter(t => t.id !== taskId);
                 data.totalCompleted = Math.max(0, data.totalCompleted - removed);
                 saveData();
                 renderTasks();
@@ -3295,8 +3299,7 @@
                     { id: 12, name: 'Сон до 23:00', category: 'health', time: 0, reminder: '22:30', repeat: 'daily' },
                     { id: 13, name: 'Дневник/Рефлексия', category: 'personal', time: 10, reminder: '22:00', repeat: 'daily' },
                     { id: 14, name: 'Anki карточки', category: 'study', time: 15, reminder: '', repeat: 'daily' },
-                    { id: 15, name: 'Практика печати', category: 'study', time: 10, reminder: '', repeat: 'daily' },
-                    { id: 16, name: 'CTF задачи', category: 'work', time: 30, reminder: '', repeat: 'daily' }
+                    { id: 15, name: 'CTF задачи', category: 'work', time: 30, reminder: '', repeat: 'daily' }
                 ],
                 challenges: [
                     { id: 1, name: '30 дней бега', totalDays: 30, completedDays: [] },
