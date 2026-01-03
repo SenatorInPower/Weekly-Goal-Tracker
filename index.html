@@ -1823,21 +1823,12 @@
             <h3 class="modal-title" data-i18n="addChallenge">Новый челлендж</h3>
 
             <div class="profile-section">
-                <label>Готовые челленджи</label>
-                <div class="challenge-templates">
-                    <button class="template-btn" onclick="selectChallengeTemplate('good_girl')">
-                        <span>👧</span>
-                        <span>Хорошая девочка</span>
-                    </button>
-                    <button class="template-btn" onclick="selectChallengeTemplate('good_boy')">
-                        <span>👦</span>
-                        <span>Хороший мальчик</span>
-                    </button>
-                </div>
+                <label data-i18n="readyChallenges">Ready challenges</label>
+                <div class="challenge-templates" id="challenge-templates-grid"></div>
                 <div id="challenge-template-desc" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 10px; display: none;"></div>
             </div>
 
-            <div style="text-align: center; color: var(--text-secondary); margin: 15px 0;">— или создайте свой —</div>
+            <div style="text-align: center; color: var(--text-secondary); margin: 15px 0;" id="or-create-own"></div>
 
             <div class="profile-section">
                 <label data-i18n="challengeName">Название челленджа</label>
@@ -1975,6 +1966,7 @@
                 loadPresetConfirm: 'Загрузить профиль? Текущие задачи будут заменены.',
                 presetLoaded: 'Профиль загружен',
                 orChooseTemplate: 'Или выберите готовую:',
+                readyChallenges: 'Готовые челленджи',
                 addTask: 'Добавить задачу',
                 taskName: 'Название',
                 taskNamePlaceholder: 'Название задачи',
@@ -2090,6 +2082,7 @@
                 loadPresetConfirm: 'Load profile? Current tasks will be replaced.',
                 presetLoaded: 'Profile loaded',
                 orChooseTemplate: 'Or choose a template:',
+                readyChallenges: 'Ready challenges',
                 addTask: 'Add Task',
                 taskName: 'Name',
                 taskNamePlaceholder: 'Task name',
@@ -2202,6 +2195,7 @@
                 loadPresetConfirm: 'โหลดโปรไฟล์? งานปัจจุบันจะถูกแทนที่',
                 presetLoaded: 'โหลดโปรไฟล์แล้ว',
                 orChooseTemplate: 'หรือเลือกเทมเพลต:',
+                readyChallenges: 'ความท้าทายพร้อม',
                 addTask: 'เพิ่มงาน',
                 taskName: 'ชื่อ',
                 taskNamePlaceholder: 'ชื่องาน',
@@ -2314,6 +2308,7 @@
                 loadPresetConfirm: '¿Cargar perfil? Las tareas actuales serán reemplazadas.',
                 presetLoaded: 'Perfil cargado',
                 orChooseTemplate: 'O elige una plantilla:',
+                readyChallenges: 'Desafíos listos',
                 addTask: 'Agregar tarea',
                 taskName: 'Nombre',
                 taskNamePlaceholder: 'Nombre de la tarea',
@@ -2426,6 +2421,7 @@
                 loadPresetConfirm: 'Profil laden? Aktuelle Aufgaben werden ersetzt.',
                 presetLoaded: 'Profil geladen',
                 orChooseTemplate: 'Oder wähle eine Vorlage:',
+                readyChallenges: 'Fertige Herausforderungen',
                 addTask: 'Aufgabe hinzufügen',
                 taskName: 'Name',
                 taskNamePlaceholder: 'Aufgabenname',
@@ -2538,6 +2534,7 @@
                 loadPresetConfirm: 'Charger le profil? Les tâches actuelles seront remplacées.',
                 presetLoaded: 'Profil chargé',
                 orChooseTemplate: 'Ou choisissez un modèle:',
+                readyChallenges: 'Défis prêts',
                 addTask: 'Ajouter une tâche',
                 taskName: 'Nom',
                 taskNamePlaceholder: 'Nom de la tâche',
@@ -2650,6 +2647,7 @@
                 loadPresetConfirm: '加载配置？当前任务将被替换。',
                 presetLoaded: '配置已加载',
                 orChooseTemplate: '或选择模板：',
+                readyChallenges: '现成挑战',
                 addTask: '添加任务',
                 taskName: '名称',
                 taskNamePlaceholder: '任务名称',
@@ -2762,6 +2760,7 @@
                 loadPresetConfirm: 'プロフィールを読み込む？現在のタスクは置き換えられます。',
                 presetLoaded: 'プロフィール読み込み済み',
                 orChooseTemplate: 'またはテンプレートを選択：',
+                readyChallenges: '用意されたチャレンジ',
                 addTask: 'タスクを追加',
                 taskName: '名前',
                 taskNamePlaceholder: 'タスク名',
@@ -2874,6 +2873,7 @@
                 loadPresetConfirm: 'Завантажити профіль? Поточні завдання будуть замінені.',
                 presetLoaded: 'Профіль завантажено',
                 orChooseTemplate: 'Або оберіть шаблон:',
+                readyChallenges: 'Готові челенджі',
                 addTask: 'Додати завдання',
                 taskName: 'Назва',
                 taskNamePlaceholder: 'Назва завдання',
@@ -2986,6 +2986,7 @@
                 loadPresetConfirm: 'Carregar perfil? As tarefas atuais serão substituídas.',
                 presetLoaded: 'Perfil carregado',
                 orChooseTemplate: 'Ou escolha um modelo:',
+                readyChallenges: 'Desafios prontos',
                 addTask: 'Adicionar tarefa',
                 taskName: 'Nome',
                 taskNamePlaceholder: 'Nome da tarefa',
@@ -3098,6 +3099,7 @@
                 loadPresetConfirm: '프로필을 불러오시겠습니까? 현재 작업이 대체됩니다.',
                 presetLoaded: '프로필 불러옴',
                 orChooseTemplate: '또는 템플릿 선택:',
+                readyChallenges: '준비된 챌린지',
                 addTask: '작업 추가',
                 taskName: '이름',
                 taskNamePlaceholder: '작업 이름',
@@ -3427,6 +3429,7 @@
             renderWeekDisplay();
             renderTasks();
             renderTemplates();
+            renderChallengeTemplates();
             renderProgressStats();
             renderAchievements();
             renderChallenges();
@@ -3476,6 +3479,7 @@
                 populateCategorySelects();
                 renderTasks();
                 renderTemplates();
+                renderChallengeTemplates();
                 renderProgressStats();
                 renderAchievements();
                 renderChallenges();
@@ -3750,13 +3754,50 @@
 
             grid.innerHTML = Object.entries(TASK_TEMPLATES).map(([id, tmpl]) => {
                 const exists = data.tasks.some(t => t.templateId === id);
+                const name = tmpl.name[lang] || tmpl.name.en || tmpl.name.ru;
                 return `
                     <button class="template-btn ${exists ? 'added' : ''}" onclick="addTemplateTask('${id}')" ${exists ? 'disabled' : ''}>
                         <span>${tmpl.icon}</span>
-                        <span>${tmpl.name[lang]}</span>
+                        <span>${name}</span>
                     </button>
                 `;
             }).join('');
+        }
+
+        function renderChallengeTemplates() {
+            const grid = document.getElementById('challenge-templates-grid');
+            const lang = data.lang || 'en';
+
+            if (grid) {
+                grid.innerHTML = Object.entries(CHALLENGE_TEMPLATES).map(([id, tmpl]) => {
+                    const name = tmpl.name[lang] || tmpl.name.en;
+                    return `
+                        <button class="template-btn" onclick="selectChallengeTemplate('${id}')">
+                            <span>${tmpl.icon}</span>
+                            <span>${name}</span>
+                        </button>
+                    `;
+                }).join('');
+            }
+
+            // Update "or create own" text
+            const orCreateOwn = document.getElementById('or-create-own');
+            if (orCreateOwn) {
+                const texts = {
+                    ru: '— или создайте свой —',
+                    en: '— or create your own —',
+                    th: '— หรือสร้างของคุณเอง —',
+                    es: '— o crea el tuyo —',
+                    de: '— oder erstelle dein eigenes —',
+                    fr: '— ou créez le vôtre —',
+                    zh: '— 或创建自己的 —',
+                    ja: '— または自分で作成 —',
+                    uk: '— або створіть свій —',
+                    pt: '— ou crie o seu —',
+                    ko: '— 또는 직접 만들기 —'
+                };
+                orCreateOwn.textContent = texts[lang] || texts.en;
+            }
         }
 
         function addTemplateTask(templateId) {
@@ -3766,7 +3807,7 @@
             const task = {
                 id: Date.now().toString(),
                 templateId: templateId,
-                name: tmpl.name[data.lang],
+                name: tmpl.name[data.lang] || tmpl.name.en || tmpl.name.ru,
                 category: tmpl.category,
                 time: null,
                 repeat: 'daily',
@@ -4688,15 +4729,15 @@
             if (!template) return;
 
             selectedChallengeTemplate = templateId;
-            const lang = data.language || 'ru';
+            const lang = data.lang || 'en';
 
             // Update UI
-            document.getElementById('challenge-name').value = template.name[lang];
+            document.getElementById('challenge-name').value = template.name[lang] || template.name.en;
             document.getElementById('challenge-days').value = template.days;
 
             // Show description
             const descEl = document.getElementById('challenge-template-desc');
-            descEl.textContent = template.description[lang];
+            descEl.textContent = template.description[lang] || template.description.en;
             descEl.style.display = 'block';
 
             // Highlight selected button
@@ -4727,14 +4768,14 @@
             // Create linked tasks if template selected
             if (selectedChallengeTemplate && CHALLENGE_TEMPLATES[selectedChallengeTemplate]) {
                 const template = CHALLENGE_TEMPLATES[selectedChallengeTemplate];
-                const lang = data.language || 'ru';
+                const lang = data.lang || 'en';
 
                 template.tasks.forEach((taskDef, i) => {
                     const taskTemplate = TASK_TEMPLATES[taskDef.template];
                     if (taskTemplate) {
                         const task = {
                             id: String(challengeId + '_' + i),
-                            name: taskTemplate.name[lang],
+                            name: taskTemplate.name[lang] || taskTemplate.name.en || taskTemplate.name.ru,
                             category: taskTemplate.category,
                             icon: taskTemplate.icon,
                             time: null,
