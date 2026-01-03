@@ -250,6 +250,207 @@
             pointer-events: none;
         }
 
+        /* Profile & Greeting */
+        .greeting {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .greeting-name {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .profile-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .profile-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Challenges */
+        .challenges-section {
+            margin-top: 15px;
+        }
+
+        .challenge-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .challenge-card.completed {
+            border-left-color: var(--success);
+            opacity: 0.7;
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .challenge-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .challenge-trophy {
+            font-size: 1.5rem;
+        }
+
+        .challenge-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .challenge-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .challenge-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--warning), var(--success));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .challenge-stats {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .challenge-days-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .challenge-day {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+        }
+
+        .challenge-day.done {
+            background: var(--success);
+            color: white;
+        }
+
+        .challenge-day.today {
+            border: 2px solid var(--accent);
+        }
+
+        .challenge-day.future {
+            opacity: 0.4;
+        }
+
+        .add-challenge-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .add-challenge-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Profile Modal */
+        .profile-section {
+            margin-bottom: 20px;
+        }
+
+        .profile-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .profile-section input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .profile-code-box {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            word-break: break-all;
+            margin: 10px 0;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .profile-actions button {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
         /* FIXED Tracker Table */
         .tracker-wrapper {
             overflow-x: auto;
@@ -1249,8 +1450,12 @@
         <!-- Header -->
         <header class="header">
             <div class="header-top">
-                <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
+                <div>
+                    <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
+                    <div class="greeting"><span data-i18n="hello">Привет</span>, <span class="greeting-name" id="greeting-name">Гость</span>!</div>
+                </div>
                 <div class="header-controls">
+                    <button class="profile-btn" onclick="openProfileModal()">👤 <span data-i18n="profile">Профиль</span></button>
                     <button class="control-btn" onclick="toggleLanguage()" title="Switch language">
                         <span id="lang-flag">🇬🇧</span>
                         <span id="lang-code">EN</span>
@@ -1411,6 +1616,13 @@
             <div class="achievements-grid" id="achievements-grid"></div>
         </section>
 
+        <!-- Challenges -->
+        <section class="card">
+            <h2 class="card-title" data-i18n="challenges">Челленджи</h2>
+            <div class="challenges-section" id="challenges-list"></div>
+            <button class="add-challenge-btn" onclick="openChallengeModal()">+ <span data-i18n="addChallenge">Новый челлендж</span></button>
+        </section>
+
         <!-- Data Management -->
         <section class="card">
             <h2 class="card-title" data-i18n="dataManagement">Управление данными</h2>
@@ -1475,6 +1687,71 @@
                     <button type="submit" class="modal-btn save" data-i18n="save">Сохранить</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profile-modal">
+        <div class="modal">
+            <h3 class="modal-title" data-i18n="profile">Профиль</h3>
+            <div class="profile-section">
+                <label data-i18n="profileName">Ваше имя</label>
+                <input type="text" id="profile-name" data-i18n-placeholder="enterName" placeholder="Введите имя...">
+            </div>
+            <div class="profile-section">
+                <label data-i18n="profileCode">Код профиля</label>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;" data-i18n="codeHint">Используйте код для переноса данных на другое устройство</p>
+                <div class="profile-code-box" id="profile-code-display"></div>
+                <div class="profile-actions">
+                    <button class="btn-primary" onclick="generateProfileCode()"><span data-i18n="generateCode">Создать код</span></button>
+                    <button class="btn-secondary" onclick="copyProfileCode()"><span data-i18n="copyCode">Копировать</span></button>
+                </div>
+            </div>
+            <div class="profile-section">
+                <label data-i18n="restoreProfile">Восстановить из кода</label>
+                <input type="text" id="restore-code-input" data-i18n-placeholder="enterCode" placeholder="Вставьте код...">
+                <div class="profile-actions" style="margin-top: 10px;">
+                    <button class="btn-primary" onclick="restoreFromCode()"><span data-i18n="restore">Восстановить</span></button>
+                </div>
+            </div>
+            <div class="profile-section">
+                <label data-i18n="presetProfiles">Готовые профили</label>
+                <div class="profile-actions">
+                    <button class="btn-secondary" onclick="loadPresetProfile('baksik')">Baksik</button>
+                </div>
+            </div>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button type="button" class="modal-btn cancel" onclick="closeProfileModal()" data-i18n="close">Закрыть</button>
+                <button type="button" class="modal-btn save" onclick="saveProfile()" data-i18n="save">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
+    <div class="modal-overlay" id="challenge-modal">
+        <div class="modal">
+            <h3 class="modal-title" data-i18n="addChallenge">Новый челлендж</h3>
+            <div class="profile-section">
+                <label data-i18n="challengeName">Название челленджа</label>
+                <input type="text" id="challenge-name" data-i18n-placeholder="challengeNameHint" placeholder="Например: 30 дней бега">
+            </div>
+            <div class="profile-section">
+                <label data-i18n="challengeDays">Количество дней</label>
+                <select id="challenge-days">
+                    <option value="7">7 дней</option>
+                    <option value="14">14 дней</option>
+                    <option value="21">21 день</option>
+                    <option value="30" selected>30 дней</option>
+                    <option value="60">60 дней</option>
+                    <option value="90">90 дней</option>
+                    <option value="100">100 дней</option>
+                    <option value="365">365 дней</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="modal-btn cancel" onclick="closeChallengeModal()" data-i18n="cancel">Отмена</button>
+                <button type="button" class="modal-btn save" onclick="createChallenge()" data-i18n="create">Создать</button>
+            </div>
         </div>
     </div>
 
@@ -1544,6 +1821,44 @@
         const TRANSLATIONS = {
             ru: {
                 appName: 'Трекер Целей',
+                hello: 'Привет',
+                guest: 'Гость',
+                profile: 'Профиль',
+                profileCode: 'Код профиля',
+                enterCode: 'Введите код для восстановления',
+                generateCode: 'Создать код',
+                restoreProfile: 'Восстановить',
+                profileName: 'Ваше имя',
+                profileSaved: 'Профиль сохранён',
+                profileRestored: 'Профиль восстановлен',
+                invalidCode: 'Неверный код',
+                copyCode: 'Код скопирован',
+                challenges: 'Челленджи',
+                addChallenge: 'Новый челлендж',
+                challengeName: 'Название челленджа',
+                challengeDays: 'Дней',
+                challengeStart: 'Дата начала',
+                daysLeft: 'осталось',
+                challengeComplete: 'Челлендж завершён!',
+                noChallenges: 'Нет активных челленджей',
+                enterChallengeName: 'Введите название',
+                challengeCreated: 'Челлендж создан',
+                deleteChallenge: 'Удалить челлендж?',
+                generateFirst: 'Сначала создайте код',
+                codeCopied: 'Код скопирован',
+                enterCodeFirst: 'Введите код',
+                guest: 'Гость',
+                close: 'Закрыть',
+                create: 'Создать',
+                enterName: 'Введите имя...',
+                codeHint: 'Используйте код для переноса данных',
+                generateCode: 'Создать код',
+                restore: 'Восстановить',
+                enterCode: 'Вставьте код...',
+                challengeNameHint: 'Например: 30 дней бега',
+                presetProfiles: 'Готовые профили',
+                loadPresetConfirm: 'Загрузить профиль? Текущие задачи будут заменены.',
+                presetLoaded: 'Профиль загружен',
                 orChooseTemplate: 'Или выберите готовую:',
                 addTask: 'Добавить задачу',
                 taskName: 'Название',
@@ -1614,6 +1929,44 @@
             },
             en: {
                 appName: 'Goal Tracker',
+                hello: 'Hello',
+                guest: 'Guest',
+                profile: 'Profile',
+                profileCode: 'Profile Code',
+                enterCode: 'Enter code to restore',
+                generateCode: 'Generate Code',
+                restoreProfile: 'Restore',
+                profileName: 'Your name',
+                profileSaved: 'Profile saved',
+                profileRestored: 'Profile restored',
+                invalidCode: 'Invalid code',
+                copyCode: 'Code copied',
+                challenges: 'Challenges',
+                addChallenge: 'New Challenge',
+                challengeName: 'Challenge name',
+                challengeDays: 'Days',
+                challengeStart: 'Start date',
+                daysLeft: 'left',
+                challengeComplete: 'Challenge complete!',
+                noChallenges: 'No active challenges',
+                enterChallengeName: 'Enter challenge name',
+                challengeCreated: 'Challenge created',
+                deleteChallenge: 'Delete challenge?',
+                generateFirst: 'Generate code first',
+                codeCopied: 'Code copied',
+                enterCodeFirst: 'Enter code',
+                guest: 'Guest',
+                close: 'Close',
+                create: 'Create',
+                enterName: 'Enter name...',
+                codeHint: 'Use code to transfer data',
+                generateCode: 'Generate code',
+                restore: 'Restore',
+                enterCode: 'Paste code...',
+                challengeNameHint: 'e.g. 30 days of running',
+                presetProfiles: 'Preset profiles',
+                loadPresetConfirm: 'Load profile? Current tasks will be replaced.',
+                presetLoaded: 'Profile loaded',
                 orChooseTemplate: 'Or choose a template:',
                 addTask: 'Add Task',
                 taskName: 'Name',
@@ -1836,12 +2189,14 @@
             renderTemplates();
             renderProgressStats();
             renderAchievements();
+            renderChallenges();
             renderStats();
             highlightToday();
             updateSoundButton();
             updateNotifButton();
             setupReminders();
             applyRecurringTasks();
+            updateGreeting();
         }
 
         // ==================== i18n ====================
@@ -1882,8 +2237,10 @@
             renderTemplates();
             renderProgressStats();
             renderAchievements();
+            renderChallenges();
             renderStats();
             renderWeekDisplay();
+            updateGreeting();
         }
 
         function populateCategorySelects() {
@@ -1907,7 +2264,9 @@
                 soundEnabled: true,
                 notificationsEnabled: false,
                 earlyBirdUnlocked: false,
-                monthlyStats: {}
+                monthlyStats: {},
+                challenges: [],
+                profile: { name: '' }
             };
             try {
                 const saved = localStorage.getItem('weeklyGoalTracker');
@@ -2751,6 +3110,14 @@
             if (e.target.id === 'edit-modal') closeEditModal();
         });
 
+        document.getElementById('profile-modal').addEventListener('click', e => {
+            if (e.target.id === 'profile-modal') closeProfileModal();
+        });
+
+        document.getElementById('challenge-modal').addEventListener('click', e => {
+            if (e.target.id === 'challenge-modal') closeChallengeModal();
+        });
+
         // ==================== WHEEL PICKER ====================
         let wheelPickerTarget = null;
         let wheelPickerCallback = null;
@@ -2913,6 +3280,306 @@
                 }
             });
         });
+
+        // ==================== PROFILE ====================
+        function openProfileModal() {
+            document.getElementById('profile-modal').classList.add('active');
+            document.getElementById('profile-name').value = data.profile?.name || '';
+            document.getElementById('profile-code-display').textContent = '';
+            document.getElementById('restore-code-input').value = '';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.remove('active');
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('profile-name').value.trim();
+            if (!data.profile) data.profile = {};
+            data.profile.name = name;
+            saveData();
+            updateGreeting();
+            closeProfileModal();
+            showNotification('👤', t('profileSaved'), name || t('guest'));
+        }
+
+        function updateGreeting() {
+            const nameEl = document.getElementById('greeting-name');
+            if (nameEl) {
+                nameEl.textContent = data.profile?.name || t('guest');
+            }
+        }
+
+        // Simple encryption for profile code (XOR with key)
+        function encryptData(str) {
+            const key = 'GoalTracker2024!';
+            let result = '';
+            for (let i = 0; i < str.length; i++) {
+                result += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            return btoa(unescape(encodeURIComponent(result)));
+        }
+
+        function decryptData(encoded) {
+            try {
+                const key = 'GoalTracker2024!';
+                const str = decodeURIComponent(escape(atob(encoded)));
+                let result = '';
+                for (let i = 0; i < str.length; i++) {
+                    result += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+                }
+                return result;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function generateProfileCode() {
+            const exportData = {
+                tasks: data.tasks,
+                completions: data.completions,
+                achievements: data.achievements,
+                challenges: data.challenges || [],
+                profile: data.profile,
+                streak: data.streak,
+                totalCompleted: data.totalCompleted,
+                monthlyStats: data.monthlyStats
+            };
+            const code = encryptData(JSON.stringify(exportData));
+            document.getElementById('profile-code-display').textContent = code;
+        }
+
+        function copyProfileCode() {
+            const code = document.getElementById('profile-code-display').textContent;
+            if (!code) {
+                showNotification('⚠️', t('generateFirst'), '');
+                return;
+            }
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('📋', t('codeCopied'), '');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('📋', t('codeCopied'), '');
+            });
+        }
+
+        function restoreFromCode() {
+            const code = document.getElementById('restore-code-input').value.trim();
+            if (!code) {
+                showNotification('⚠️', t('enterCodeFirst'), '');
+                return;
+            }
+            const decrypted = decryptData(code);
+            if (!decrypted) {
+                showNotification('❌', t('invalidCode'), '');
+                return;
+            }
+            try {
+                const imported = JSON.parse(decrypted);
+                data.tasks = imported.tasks || [];
+                data.completions = imported.completions || {};
+                data.achievements = imported.achievements || {};
+                data.challenges = imported.challenges || [];
+                data.profile = imported.profile || { name: '' };
+                data.streak = imported.streak || { current: 0, best: 0, lastDate: null };
+                data.totalCompleted = imported.totalCompleted || 0;
+                data.monthlyStats = imported.monthlyStats || {};
+                saveData();
+                init();
+                closeProfileModal();
+                showNotification('✅', t('profileRestored'), data.profile.name || '');
+            } catch (e) {
+                showNotification('❌', t('invalidCode'), '');
+            }
+        }
+
+        // ==================== PRESET PROFILES ====================
+        const PRESET_PROFILES = {
+            baksik: {
+                name: 'Baksik',
+                tasks: [
+                    { id: 1, name: 'Бег вечером', category: 'health', time: 30, reminder: '20:00', repeat: 'daily' },
+                    { id: 2, name: 'Английский утро', category: 'learning', time: 30, reminder: '08:00', repeat: 'daily' },
+                    { id: 3, name: 'Английский вечер', category: 'learning', time: 30, reminder: '19:00', repeat: 'daily' },
+                    { id: 4, name: 'Гидропоника', category: 'learning', time: 15, reminder: '', repeat: 'daily' },
+                    { id: 5, name: 'Подземные сооружения', category: 'learning', time: 15, reminder: '', repeat: 'daily' },
+                    { id: 6, name: 'Hardware Hacking', category: 'learning', time: 15, reminder: '', repeat: 'daily' },
+                    { id: 7, name: 'LeetCode', category: 'work', time: 30, reminder: '', repeat: 'daily' },
+                    { id: 8, name: 'Книга: Феноменология духа', category: 'learning', time: 20, reminder: '', repeat: 'daily' },
+                    { id: 9, name: 'Rust изучение', category: 'learning', time: 20, reminder: '', repeat: 'daily' },
+                    { id: 10, name: 'Медитация', category: 'health', time: 10, reminder: '07:00', repeat: 'daily' },
+                    { id: 11, name: 'Вода 2 литра', category: 'health', time: 0, reminder: '', repeat: 'daily' },
+                    { id: 12, name: 'Сон до 23:00', category: 'health', time: 0, reminder: '22:30', repeat: 'daily' },
+                    { id: 13, name: 'Дневник/Рефлексия', category: 'personal', time: 10, reminder: '22:00', repeat: 'daily' },
+                    { id: 14, name: 'Anki карточки', category: 'learning', time: 15, reminder: '', repeat: 'daily' },
+                    { id: 15, name: 'Практика печати', category: 'learning', time: 10, reminder: '', repeat: 'daily' },
+                    { id: 16, name: 'CTF задачи', category: 'work', time: 30, reminder: '', repeat: 'daily' }
+                ],
+                challenges: [
+                    { id: 1, name: '30 дней бега', totalDays: 30, startDate: formatDate(new Date()), completedDays: [] },
+                    { id: 2, name: '21 день медитации', totalDays: 21, startDate: formatDate(new Date()), completedDays: [] }
+                ]
+            }
+        };
+
+        function loadPresetProfile(presetName) {
+            const preset = PRESET_PROFILES[presetName];
+            if (!preset) return;
+
+            if (!confirm(t('loadPresetConfirm'))) return;
+
+            // Generate unique IDs for tasks
+            const now = Date.now();
+            data.tasks = preset.tasks.map((task, i) => ({
+                ...task,
+                id: now + i
+            }));
+
+            // Generate unique IDs for challenges
+            data.challenges = preset.challenges.map((ch, i) => ({
+                ...ch,
+                id: now + 1000 + i,
+                startDate: formatDate(new Date())
+            }));
+
+            data.profile = { name: preset.name };
+            data.completions = {};
+
+            saveData();
+            init();
+            closeProfileModal();
+            showNotification('✅', t('presetLoaded'), preset.name);
+        }
+
+        // ==================== CHALLENGES ====================
+        function openChallengeModal() {
+            document.getElementById('challenge-modal').classList.add('active');
+            document.getElementById('challenge-name').value = '';
+            document.getElementById('challenge-days').value = '30';
+        }
+
+        function closeChallengeModal() {
+            document.getElementById('challenge-modal').classList.remove('active');
+        }
+
+        function createChallenge() {
+            const name = document.getElementById('challenge-name').value.trim();
+            const days = parseInt(document.getElementById('challenge-days').value);
+            if (!name) {
+                showNotification('⚠️', t('enterChallengeName'), '');
+                return;
+            }
+            if (!data.challenges) data.challenges = [];
+            const challenge = {
+                id: Date.now(),
+                name: name,
+                totalDays: days,
+                startDate: formatDate(new Date()),
+                completedDays: []
+            };
+            data.challenges.push(challenge);
+            saveData();
+            renderChallenges();
+            closeChallengeModal();
+            showNotification('🏆', t('challengeCreated'), name);
+        }
+
+        function toggleChallengeDay(challengeId, dayIndex) {
+            const challenge = data.challenges.find(c => c.id === challengeId);
+            if (!challenge) return;
+
+            const startDate = new Date(challenge.startDate);
+            const targetDate = new Date(startDate);
+            targetDate.setDate(startDate.getDate() + dayIndex);
+            const dateStr = formatDate(targetDate);
+            const today = formatDate(new Date());
+
+            // Can only toggle today or past days
+            if (dateStr > today) return;
+
+            const idx = challenge.completedDays.indexOf(dateStr);
+            if (idx >= 0) {
+                challenge.completedDays.splice(idx, 1);
+            } else {
+                challenge.completedDays.push(dateStr);
+            }
+            saveData();
+            renderChallenges();
+
+            // Check if challenge completed
+            if (challenge.completedDays.length === challenge.totalDays) {
+                showNotification('🏆', t('challengeComplete'), challenge.name);
+            }
+        }
+
+        function deleteChallenge(challengeId) {
+            if (!confirm(t('deleteChallenge'))) return;
+            data.challenges = data.challenges.filter(c => c.id !== challengeId);
+            saveData();
+            renderChallenges();
+        }
+
+        function renderChallenges() {
+            const container = document.getElementById('challenges-list');
+            if (!container) return;
+            if (!data.challenges || data.challenges.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-secondary); text-align: center; padding: 20px;" data-i18n="noChallenges">${t('noChallenges')}</p>`;
+                return;
+            }
+
+            const today = new Date();
+            const todayStr = formatDate(today);
+
+            container.innerHTML = data.challenges.map(challenge => {
+                const startDate = new Date(challenge.startDate);
+                const completedCount = challenge.completedDays.length;
+                const progress = (completedCount / challenge.totalDays) * 100;
+                const isComplete = completedCount === challenge.totalDays;
+
+                // Generate day grid
+                let daysHtml = '';
+                for (let i = 0; i < challenge.totalDays; i++) {
+                    const dayDate = new Date(startDate);
+                    dayDate.setDate(startDate.getDate() + i);
+                    const dayStr = formatDate(dayDate);
+                    const isDone = challenge.completedDays.includes(dayStr);
+                    const isToday = dayStr === todayStr;
+                    const isFuture = dayStr > todayStr;
+
+                    let classes = 'challenge-day';
+                    if (isDone) classes += ' done';
+                    if (isToday) classes += ' today';
+                    if (isFuture) classes += ' future';
+
+                    daysHtml += `<div class="${classes}" onclick="toggleChallengeDay(${challenge.id}, ${i})" title="${dayStr}">${i + 1}</div>`;
+                }
+
+                return `
+                    <div class="challenge-card ${isComplete ? 'completed' : ''}">
+                        <div class="challenge-header">
+                            <span class="challenge-name">${challenge.name}</span>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="challenge-trophy">${isComplete ? '🏆' : '🎯'}</span>
+                                <button onclick="deleteChallenge(${challenge.id})" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="${t('delete')}">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="challenge-progress">
+                            <div class="challenge-bar">
+                                <div class="challenge-bar-fill" style="width: ${progress}%"></div>
+                            </div>
+                            <span class="challenge-stats">${completedCount}/${challenge.totalDays}</span>
+                        </div>
+                        <div class="challenge-days-grid">${daysHtml}</div>
+                    </div>
+                `;
+            }).join('');
+        }
 
         // ==================== PWA ====================
         if ('serviceWorker' in navigator) {
