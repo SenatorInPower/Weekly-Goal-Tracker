@@ -1715,9 +1715,10 @@
                 </div>
             </div>
             <div class="profile-section">
-                <label data-i18n="presetProfiles">Готовые профили</label>
-                <div class="profile-actions">
-                    <button class="btn-secondary" onclick="loadPresetProfile('baksik')">Baksik</button>
+                <label data-i18n="presetCode">Код пресета</label>
+                <input type="text" id="preset-code-input" data-i18n-placeholder="enterPresetCode" placeholder="Введите код пресета...">
+                <div class="profile-actions" style="margin-top: 10px;">
+                    <button class="btn-secondary" onclick="loadPresetByCode()"><span data-i18n="loadPreset">Загрузить пресет</span></button>
                 </div>
             </div>
             <div class="modal-buttons" style="margin-top: 20px;">
@@ -1856,7 +1857,10 @@
                 restore: 'Восстановить',
                 enterCode: 'Вставьте код...',
                 challengeNameHint: 'Например: 30 дней бега',
-                presetProfiles: 'Готовые профили',
+                presetCode: 'Код пресета',
+                enterPresetCode: 'Введите код пресета',
+                invalidPresetCode: 'Неверный код пресета',
+                loadPreset: 'Загрузить пресет',
                 loadPresetConfirm: 'Загрузить профиль? Текущие задачи будут заменены.',
                 presetLoaded: 'Профиль загружен',
                 orChooseTemplate: 'Или выберите готовую:',
@@ -1964,7 +1968,10 @@
                 restore: 'Restore',
                 enterCode: 'Paste code...',
                 challengeNameHint: 'e.g. 30 days of running',
-                presetProfiles: 'Preset profiles',
+                presetCode: 'Preset code',
+                enterPresetCode: 'Enter preset code',
+                invalidPresetCode: 'Invalid preset code',
+                loadPreset: 'Load preset',
                 loadPresetConfirm: 'Load profile? Current tasks will be replaced.',
                 presetLoaded: 'Profile loaded',
                 orChooseTemplate: 'Or choose a template:',
@@ -3422,11 +3429,24 @@
                     { id: 16, name: 'CTF задачи', category: 'work', time: 30, reminder: '', repeat: 'daily' }
                 ],
                 challenges: [
-                    { id: 1, name: '30 дней бега', totalDays: 30, startDate: formatDate(new Date()), completedDays: [] },
-                    { id: 2, name: '21 день медитации', totalDays: 21, startDate: formatDate(new Date()), completedDays: [] }
+                    { id: 1, name: '30 дней бега', totalDays: 30, completedDays: [] },
+                    { id: 2, name: '21 день медитации', totalDays: 21, completedDays: [] }
                 ]
             }
         };
+
+        function loadPresetByCode() {
+            const code = document.getElementById('preset-code-input').value.trim().toLowerCase();
+            if (!code) {
+                showNotification('⚠️', t('enterPresetCode'), '');
+                return;
+            }
+            if (!PRESET_PROFILES[code]) {
+                showNotification('❌', t('invalidPresetCode'), '');
+                return;
+            }
+            loadPresetProfile(code);
+        }
 
         function loadPresetProfile(presetName) {
             const preset = PRESET_PROFILES[presetName];
