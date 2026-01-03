@@ -82,10 +82,36 @@
             gap: 10px;
         }
 
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--accent);
+        }
+
+        .lang-select {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .lang-select:hover {
+            border-color: var(--accent);
         }
 
         .header-controls {
@@ -1523,13 +1549,25 @@
         <!-- Header -->
         <header class="header">
             <div class="header-top">
-                <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
+                <div class="logo-group">
+                    <img src="./icon-192.png" alt="Logo" class="header-icon">
+                    <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
+                </div>
                 <div class="header-controls">
                     <button class="profile-btn" onclick="openPresetModal()">📋 <span data-i18n="myPreset">Мой пресет</span></button>
-                    <button class="control-btn" onclick="toggleLanguage()" title="Switch language">
-                        <span id="lang-flag">🇬🇧</span>
-                        <span id="lang-code">EN</span>
-                    </button>
+                    <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)" title="Select language">
+                        <option value="en">🇬🇧 EN</option>
+                        <option value="ru">🇷🇺 RU</option>
+                        <option value="uk">🇺🇦 UK</option>
+                        <option value="th">🇹🇭 TH</option>
+                        <option value="es">🇪🇸 ES</option>
+                        <option value="de">🇩🇪 DE</option>
+                        <option value="fr">🇫🇷 FR</option>
+                        <option value="zh">🇨🇳 ZH</option>
+                        <option value="ja">🇯🇵 JA</option>
+                        <option value="pt">🇧🇷 PT</option>
+                        <option value="ko">🇰🇷 KO</option>
+                    </select>
                     <button class="control-btn" onclick="toggleNotifications()" id="notif-btn" title="Notifications">
                         🔔 <span id="notif-status"></span>
                     </button>
@@ -3114,7 +3152,7 @@
 
         // ==================== i18n ====================
         function t(key) {
-            return TRANSLATIONS[data.lang]?.[key] || TRANSLATIONS.ru[key] || key;
+            return TRANSLATIONS[data.lang]?.[key] || TRANSLATIONS.en[key] || key;
         }
 
         function applyLanguage() {
@@ -3130,23 +3168,9 @@
                     el.placeholder = TRANSLATIONS[data.lang][key];
                 }
             });
-            // Show next language flag/code
-            const langInfo = {
-                ru: { flag: '🇬🇧', code: 'EN' },
-                en: { flag: '🇹🇭', code: 'TH' },
-                th: { flag: '🇪🇸', code: 'ES' },
-                es: { flag: '🇩🇪', code: 'DE' },
-                de: { flag: '🇫🇷', code: 'FR' },
-                fr: { flag: '🇨🇳', code: 'ZH' },
-                zh: { flag: '🇯🇵', code: 'JA' },
-                ja: { flag: '🇺🇦', code: 'UK' },
-                uk: { flag: '🇧🇷', code: 'PT' },
-                pt: { flag: '🇰🇷', code: 'KO' },
-                ko: { flag: '🇷🇺', code: 'RU' }
-            };
-            const next = langInfo[data.lang] || langInfo.ru;
-            document.getElementById('lang-flag').textContent = next.flag;
-            document.getElementById('lang-code').textContent = next.code;
+            // Set language select value
+            const langSelect = document.getElementById('lang-select');
+            if (langSelect) langSelect.value = data.lang;
 
             // Update day headers
             const days = t('days');
@@ -3156,20 +3180,20 @@
             }
         }
 
-        function toggleLanguage() {
-            // Cycle through all supported languages
-            const currentIdx = SUPPORTED_LANGS.indexOf(data.lang);
-            data.lang = SUPPORTED_LANGS[(currentIdx + 1) % SUPPORTED_LANGS.length];
-            saveData();
-            applyLanguage();
-            populateCategorySelects();
-            renderTasks();
-            renderTemplates();
-            renderProgressStats();
-            renderAchievements();
-            renderChallenges();
-            renderStats();
-            renderWeekDisplay();
+        function setLanguage(lang) {
+            if (SUPPORTED_LANGS.includes(lang)) {
+                data.lang = lang;
+                saveData();
+                applyLanguage();
+                populateCategorySelects();
+                renderTasks();
+                renderTemplates();
+                renderProgressStats();
+                renderAchievements();
+                renderChallenges();
+                renderStats();
+                renderWeekDisplay();
+            }
         }
 
         function populateCategorySelects() {
@@ -3189,7 +3213,7 @@
                 perfectWeeksInRow: 0,
                 totalCompleted: 0,
                 theme: 'dark',
-                lang: 'ru',
+                lang: 'en',
                 soundEnabled: true,
                 notificationsEnabled: false,
                 earlyBirdUnlocked: false,
