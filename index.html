@@ -1699,29 +1699,17 @@
                 <input type="text" id="profile-name" data-i18n-placeholder="enterName" placeholder="Введите имя...">
             </div>
             <div class="profile-section">
-                <label data-i18n="profileCode">Код профиля</label>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;" data-i18n="codeHint">Используйте код для переноса данных на другое устройство</p>
-                <div class="profile-code-box" id="profile-code-display"></div>
-                <div class="profile-actions">
-                    <button class="btn-primary" onclick="generateProfileCode()"><span data-i18n="generateCode">Создать код</span></button>
-                    <button class="btn-secondary" onclick="copyProfileCode()"><span data-i18n="copyCode">Копировать</span></button>
-                </div>
-            </div>
-            <div class="profile-section">
-                <label data-i18n="restoreProfile">Восстановить из кода</label>
-                <input type="text" id="restore-code-input" data-i18n-placeholder="enterCode" placeholder="Вставьте код...">
-                <div class="profile-actions" style="margin-top: 10px;">
-                    <button class="btn-primary" onclick="restoreFromCode()"><span data-i18n="restore">Восстановить</span></button>
-                </div>
-            </div>
-            <div class="profile-section">
                 <label data-i18n="presetCode">Код пресета</label>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">Введите код для загрузки готового набора задач</p>
                 <input type="text" id="preset-code-input" data-i18n-placeholder="enterPresetCode" placeholder="Введите код пресета...">
                 <div class="profile-actions" style="margin-top: 10px;">
                     <button class="btn-secondary" onclick="loadPresetByCode()"><span data-i18n="loadPreset">Загрузить пресет</span></button>
                 </div>
             </div>
-            <div class="modal-buttons" style="margin-top: 20px;">
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 15px; text-align: center;">
+                Для переноса данных используйте Экспорт/Импорт внизу страницы
+            </p>
+            <div class="modal-buttons" style="margin-top: 15px;">
                 <button type="button" class="modal-btn cancel" onclick="closeProfileModal()" data-i18n="close">Закрыть</button>
                 <button type="button" class="modal-btn save" onclick="saveProfile()" data-i18n="save">Сохранить</button>
             </div>
@@ -3292,8 +3280,6 @@
         function openProfileModal() {
             document.getElementById('profile-modal').classList.add('show');
             document.getElementById('profile-name').value = data.profile?.name || '';
-            document.getElementById('profile-code-display').textContent = '';
-            document.getElementById('restore-code-input').value = '';
             document.getElementById('preset-code-input').value = '';
         }
 
@@ -3315,116 +3301,6 @@
             const nameEl = document.getElementById('greeting-name');
             if (nameEl) {
                 nameEl.textContent = data.profile?.name || t('guest');
-            }
-        }
-
-        // Simple encryption for profile code (XOR with key)
-        function encryptData(str) {
-            const key = 'GoalTracker2024!';
-            let result = '';
-            for (let i = 0; i < str.length; i++) {
-                result += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-            }
-            return btoa(unescape(encodeURIComponent(result)));
-        }
-
-        function decryptData(encoded) {
-            try {
-                const key = 'GoalTracker2024!';
-                const str = decodeURIComponent(escape(atob(encoded)));
-                let result = '';
-                for (let i = 0; i < str.length; i++) {
-                    result += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-                }
-                return result;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function generateProfileCode() {
-            // Compact format: only essential data for task restoration
-            const compact = {
-                n: data.profile?.name || '',
-                t: data.tasks.map(t => ({
-                    m: t.name,
-                    c: t.category,
-                    d: t.time || 0,
-                    r: t.reminder || '',
-                    p: t.repeat || 'none'
-                }))
-            };
-            const json = JSON.stringify(compact);
-            // Simple compression: remove spaces, use short encoding
-            const code = btoa(unescape(encodeURIComponent(json))).replace(/=/g, '');
-            document.getElementById('profile-code-display').textContent = code;
-        }
-
-        function copyProfileCode() {
-            const code = document.getElementById('profile-code-display').textContent;
-            if (!code) {
-                showNotification('⚠️', t('generateFirst'), '');
-                return;
-            }
-            navigator.clipboard.writeText(code).then(() => {
-                showNotification('📋', t('codeCopied'), '');
-            }).catch(() => {
-                // Fallback for older browsers
-                const textarea = document.createElement('textarea');
-                textarea.value = code;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showNotification('📋', t('codeCopied'), '');
-            });
-        }
-
-        function restoreFromCode() {
-            const code = document.getElementById('restore-code-input').value.trim();
-            if (!code) {
-                showNotification('⚠️', t('enterCodeFirst'), '');
-                return;
-            }
-            try {
-                // Decode compact format
-                const json = decodeURIComponent(escape(atob(code + '==')));
-                const imported = JSON.parse(json);
-
-                // Check if it's compact format (has 'n' and 't') or old format
-                if (imported.n !== undefined && imported.t) {
-                    // Compact format
-                    const now = Date.now();
-                    data.profile = { name: imported.n };
-                    data.tasks = imported.t.map((t, i) => ({
-                        id: now + i,
-                        name: t.m,
-                        category: t.c,
-                        time: t.d || null,
-                        reminder: t.r || null,
-                        repeat: t.p || 'none',
-                        tags: [],
-                        comment: ''
-                    }));
-                    data.completions = {};
-                    data.challenges = [];
-                } else {
-                    // Old full format
-                    data.tasks = imported.tasks || [];
-                    data.completions = imported.completions || {};
-                    data.achievements = imported.achievements || {};
-                    data.challenges = imported.challenges || [];
-                    data.profile = imported.profile || { name: '' };
-                    data.streak = imported.streak || { current: 0, best: 0, lastDate: null };
-                    data.totalCompleted = imported.totalCompleted || 0;
-                    data.monthlyStats = imported.monthlyStats || {};
-                }
-                saveData();
-                init();
-                closeProfileModal();
-                showNotification('✅', t('profileRestored'), data.profile.name || '');
-            } catch (e) {
-                showNotification('❌', t('invalidCode'), '');
             }
         }
 
