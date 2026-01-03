@@ -3294,6 +3294,7 @@
             document.getElementById('profile-name').value = data.profile?.name || '';
             document.getElementById('profile-code-display').textContent = '';
             document.getElementById('restore-code-input').value = '';
+            document.getElementById('preset-code-input').value = '';
         }
 
         function closeProfileModal() {
@@ -3342,17 +3343,20 @@
         }
 
         function generateProfileCode() {
-            const exportData = {
-                tasks: data.tasks,
-                completions: data.completions,
-                achievements: data.achievements,
-                challenges: data.challenges || [],
-                profile: data.profile,
-                streak: data.streak,
-                totalCompleted: data.totalCompleted,
-                monthlyStats: data.monthlyStats
+            // Compact format: only essential data for task restoration
+            const compact = {
+                n: data.profile?.name || '',
+                t: data.tasks.map(t => ({
+                    m: t.name,
+                    c: t.category,
+                    d: t.time || 0,
+                    r: t.reminder || '',
+                    p: t.repeat || 'none'
+                }))
             };
-            const code = encryptData(JSON.stringify(exportData));
+            const json = JSON.stringify(compact);
+            // Simple compression: remove spaces, use short encoding
+            const code = btoa(unescape(encodeURIComponent(json))).replace(/=/g, '');
             document.getElementById('profile-code-display').textContent = code;
         }
 
@@ -3382,21 +3386,39 @@
                 showNotification('⚠️', t('enterCodeFirst'), '');
                 return;
             }
-            const decrypted = decryptData(code);
-            if (!decrypted) {
-                showNotification('❌', t('invalidCode'), '');
-                return;
-            }
             try {
-                const imported = JSON.parse(decrypted);
-                data.tasks = imported.tasks || [];
-                data.completions = imported.completions || {};
-                data.achievements = imported.achievements || {};
-                data.challenges = imported.challenges || [];
-                data.profile = imported.profile || { name: '' };
-                data.streak = imported.streak || { current: 0, best: 0, lastDate: null };
-                data.totalCompleted = imported.totalCompleted || 0;
-                data.monthlyStats = imported.monthlyStats || {};
+                // Decode compact format
+                const json = decodeURIComponent(escape(atob(code + '==')));
+                const imported = JSON.parse(json);
+
+                // Check if it's compact format (has 'n' and 't') or old format
+                if (imported.n !== undefined && imported.t) {
+                    // Compact format
+                    const now = Date.now();
+                    data.profile = { name: imported.n };
+                    data.tasks = imported.t.map((t, i) => ({
+                        id: now + i,
+                        name: t.m,
+                        category: t.c,
+                        time: t.d || null,
+                        reminder: t.r || null,
+                        repeat: t.p || 'none',
+                        tags: [],
+                        comment: ''
+                    }));
+                    data.completions = {};
+                    data.challenges = [];
+                } else {
+                    // Old full format
+                    data.tasks = imported.tasks || [];
+                    data.completions = imported.completions || {};
+                    data.achievements = imported.achievements || {};
+                    data.challenges = imported.challenges || [];
+                    data.profile = imported.profile || { name: '' };
+                    data.streak = imported.streak || { current: 0, best: 0, lastDate: null };
+                    data.totalCompleted = imported.totalCompleted || 0;
+                    data.monthlyStats = imported.monthlyStats || {};
+                }
                 saveData();
                 init();
                 closeProfileModal();
@@ -3474,12 +3496,7 @@
             data.completions = {};
 
             saveData();
-            try {
-                init();
-            } catch(e) {
-                alert('Error in init(): ' + e.message);
-                console.error(e);
-            }
+            init();
             closeProfileModal();
             showNotification('✅', t('presetLoaded'), preset.name);
         }
