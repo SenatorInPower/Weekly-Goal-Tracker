@@ -3306,16 +3306,6 @@
             data.profile.name = name;
             saveData();
             updateGreeting();
-
-            // Check if this is a known preset name
-            const presetKey = name.toLowerCase();
-            if (PRESET_PROFILES[presetKey] && data.tasks.length === 0) {
-                if (confirm(t('loadPresetConfirm'))) {
-                    loadPresetProfile(presetKey);
-                    return;
-                }
-            }
-
             closeProfileModal();
             showNotification('👤', t('profileSaved'), name || t('guest'));
         }
@@ -3462,9 +3452,10 @@
 
         function loadPresetProfile(presetName) {
             const preset = PRESET_PROFILES[presetName];
-            if (!preset) return;
-
-            if (!confirm(t('loadPresetConfirm'))) return;
+            if (!preset) {
+                console.log('Preset not found:', presetName);
+                return;
+            }
 
             // Generate unique IDs for tasks
             const now = Date.now();
