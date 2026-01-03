@@ -3326,11 +3326,11 @@
                 return;
             }
 
-            // Generate unique IDs for tasks
+            // Generate unique IDs for tasks (as strings like regular tasks)
             const now = Date.now();
             data.tasks = preset.tasks.map((task, i) => ({
                 ...task,
-                id: now + i
+                id: String(now + i)
             }));
 
             // Generate unique IDs for challenges
