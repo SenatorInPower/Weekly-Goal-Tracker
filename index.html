@@ -2770,6 +2770,51 @@
             renderProgressStats();
             renderStats();
             recheckAllAchievements();
+
+            // Auto-check challenge day if all challenge tasks completed
+            autoCheckChallengeDay(taskId, date);
+        }
+
+        function autoCheckChallengeDay(taskId, date) {
+            const task = data.tasks.find(t => String(t.id) === String(taskId));
+            if (!task || !task.challengeId) return;
+
+            const challenge = data.challenges?.find(c => c.id === task.challengeId);
+            if (!challenge) return;
+
+            // Check if this date is within challenge period
+            const startDate = new Date(challenge.startDate);
+            const dateObj = new Date(date);
+            const dayIndex = Math.floor((dateObj - startDate) / (1000 * 60 * 60 * 24));
+            if (dayIndex < 0 || dayIndex >= challenge.totalDays) return;
+
+            // Check if all challenge tasks completed for this date
+            const linkedTasks = data.tasks.filter(t => t.challengeId === challenge.id);
+            const allCompleted = linkedTasks.every(t => data.completions[date]?.[t.id]);
+
+            const alreadyDone = challenge.completedDays.includes(date);
+
+            if (allCompleted && !alreadyDone) {
+                // Auto-check the day
+                challenge.completedDays.push(date);
+                saveData();
+                renderChallenges();
+                showNotification('✅', 'День челленджа закрыт', challenge.name);
+
+                // Check if challenge completed
+                if (challenge.completedDays.length === challenge.totalDays) {
+                    showNotification('🏆', t('challengeComplete'), challenge.name);
+                    checkAchievements();
+                }
+            } else if (!allCompleted && alreadyDone) {
+                // Uncheck the day if task unchecked
+                const idx = challenge.completedDays.indexOf(date);
+                if (idx >= 0) {
+                    challenge.completedDays.splice(idx, 1);
+                    saveData();
+                    renderChallenges();
+                }
+            }
         }
 
         function isCompleted(taskId, date) {
