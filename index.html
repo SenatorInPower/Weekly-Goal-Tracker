@@ -1450,12 +1450,9 @@
         <!-- Header -->
         <header class="header">
             <div class="header-top">
-                <div>
-                    <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
-                    <div class="greeting"><span data-i18n="hello">Привет</span>, <span class="greeting-name" id="greeting-name">Гость</span>!</div>
-                </div>
+                <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
                 <div class="header-controls">
-                    <button class="profile-btn" onclick="openProfileModal()">👤 <span data-i18n="profile">Профиль</span></button>
+                    <button class="profile-btn" onclick="openPresetModal()">📋 <span data-i18n="myPreset">Мой пресет</span></button>
                     <button class="control-btn" onclick="toggleLanguage()" title="Switch language">
                         <span id="lang-flag">🇬🇧</span>
                         <span id="lang-code">EN</span>
@@ -1690,28 +1687,19 @@
         </div>
     </div>
 
-    <!-- Profile Modal -->
-    <div class="modal-overlay" id="profile-modal">
+    <!-- Preset Modal -->
+    <div class="modal-overlay" id="preset-modal">
         <div class="modal">
-            <h3 class="modal-title" data-i18n="profile">Профиль</h3>
+            <h3 class="modal-title" data-i18n="myPreset">Мой пресет</h3>
             <div class="profile-section">
-                <label data-i18n="profileName">Ваше имя</label>
-                <input type="text" id="profile-name" data-i18n-placeholder="enterName" placeholder="Введите имя...">
-            </div>
-            <div class="profile-section">
-                <label data-i18n="presetCode">Код пресета</label>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">Введите код для загрузки готового набора задач</p>
-                <input type="text" id="preset-code-input" data-i18n-placeholder="enterPresetCode" placeholder="Введите код пресета...">
-                <div class="profile-actions" style="margin-top: 10px;">
-                    <button class="btn-secondary" onclick="loadPresetByCode()"><span data-i18n="loadPreset">Загрузить пресет</span></button>
+                <label data-i18n="enterPresetCode">Введите код</label>
+                <input type="text" id="preset-code-input" placeholder="Введите код...">
+                <div class="profile-actions" style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="loadPresetByCode()" data-i18n="load">Загрузить</button>
                 </div>
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 15px; text-align: center;">
-                Для переноса данных используйте Экспорт/Импорт внизу страницы
-            </p>
-            <div class="modal-buttons" style="margin-top: 15px;">
-                <button type="button" class="modal-btn cancel" onclick="closeProfileModal()" data-i18n="close">Закрыть</button>
-                <button type="button" class="modal-btn save" onclick="saveProfile()" data-i18n="save">Сохранить</button>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button type="button" class="modal-btn cancel" onclick="closePresetModal()" data-i18n="close">Закрыть</button>
             </div>
         </div>
     </div>
@@ -1845,6 +1833,8 @@
                 restore: 'Восстановить',
                 enterCode: 'Вставьте код...',
                 challengeNameHint: 'Например: 30 дней бега',
+                myPreset: 'Мой пресет',
+                load: 'Загрузить',
                 presetCode: 'Код пресета',
                 enterPresetCode: 'Введите код пресета',
                 invalidPresetCode: 'Неверный код пресета',
@@ -1956,6 +1946,8 @@
                 restore: 'Restore',
                 enterCode: 'Paste code...',
                 challengeNameHint: 'e.g. 30 days of running',
+                myPreset: 'My preset',
+                load: 'Load',
                 presetCode: 'Preset code',
                 enterPresetCode: 'Enter preset code',
                 invalidPresetCode: 'Invalid preset code',
@@ -2191,7 +2183,6 @@
             updateNotifButton();
             setupReminders();
             applyRecurringTasks();
-            updateGreeting();
         }
 
         // ==================== i18n ====================
@@ -2235,7 +2226,6 @@
             renderChallenges();
             renderStats();
             renderWeekDisplay();
-            updateGreeting();
         }
 
         function populateCategorySelects() {
@@ -3105,8 +3095,8 @@
             if (e.target.id === 'edit-modal') closeEditModal();
         });
 
-        document.getElementById('profile-modal').addEventListener('click', e => {
-            if (e.target.id === 'profile-modal') closeProfileModal();
+        document.getElementById('preset-modal').addEventListener('click', e => {
+            if (e.target.id === 'preset-modal') closePresetModal();
         });
 
         document.getElementById('challenge-modal').addEventListener('click', e => {
@@ -3276,32 +3266,14 @@
             });
         });
 
-        // ==================== PROFILE ====================
-        function openProfileModal() {
-            document.getElementById('profile-modal').classList.add('show');
-            document.getElementById('profile-name').value = data.profile?.name || '';
+        // ==================== PRESET ====================
+        function openPresetModal() {
+            document.getElementById('preset-modal').classList.add('show');
             document.getElementById('preset-code-input').value = '';
         }
 
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.remove('show');
-        }
-
-        function saveProfile() {
-            const name = document.getElementById('profile-name').value.trim();
-            if (!data.profile) data.profile = {};
-            data.profile.name = name;
-            saveData();
-            updateGreeting();
-            closeProfileModal();
-            showNotification('👤', t('profileSaved'), name || t('guest'));
-        }
-
-        function updateGreeting() {
-            const nameEl = document.getElementById('greeting-name');
-            if (nameEl) {
-                nameEl.textContent = data.profile?.name || t('guest');
-            }
+        function closePresetModal() {
+            document.getElementById('preset-modal').classList.remove('show');
         }
 
         // ==================== PRESET PROFILES ====================
@@ -3373,7 +3345,7 @@
 
             saveData();
             init();
-            closeProfileModal();
+            closePresetModal();
             showNotification('✅', t('presetLoaded'), preset.name);
         }
 
