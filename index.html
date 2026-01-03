@@ -3194,27 +3194,35 @@
         ];
 
         const TASK_TEMPLATES = {
-            no_alcohol: { name: { ru: 'Не пить алкоголь', en: 'No alcohol', th: 'ไม่ดื่มแอลกอฮอล์' }, category: 'health', icon: '🍷' },
-            no_smoking: { name: { ru: 'Не курить', en: 'No smoking', th: 'ไม่สูบบุหรี่' }, category: 'health', icon: '🚭' },
-            no_sweets: { name: { ru: 'Не есть сладкое', en: 'No sweets', th: 'ไม่กินขนมหวาน' }, category: 'health', icon: '🍬' },
-            exercise: { name: { ru: 'Тренировка', en: 'Exercise', th: 'ออกกำลังกาย' }, category: 'health', icon: '💪' },
-            reading: { name: { ru: 'Чтение', en: 'Reading', th: 'อ่านหนังสือ' }, category: 'study', icon: '📚' },
-            meditation: { name: { ru: 'Медитация', en: 'Meditation', th: 'นั่งสมาธิ' }, category: 'personal', icon: '🧘' },
-            water: { name: { ru: 'Пить воду (8 стаканов)', en: 'Drink water (8 glasses)', th: 'ดื่มน้ำ (8 แก้ว)' }, category: 'health', icon: '💧' },
-            sleep: { name: { ru: 'Сон до 23:00', en: 'Sleep by 11 PM', th: 'นอนก่อน 23:00' }, category: 'health', icon: '😴' },
-            walk: { name: { ru: 'Прогулка 30 мин', en: '30 min walk', th: 'เดิน 30 นาที' }, category: 'health', icon: '🚶' }
+            no_alcohol: { name: { ru: 'Не пить алкоголь', en: 'No alcohol', th: 'ไม่ดื่มแอลกอฮอล์', es: 'Sin alcohol', de: 'Kein Alkohol', fr: 'Pas d\'alcool', zh: '不喝酒', ja: 'お酒を飲まない', uk: 'Не пити алкоголь', pt: 'Sem álcool', ko: '금주' }, category: 'health', icon: '🍷' },
+            no_smoking: { name: { ru: 'Не курить', en: 'No smoking', th: 'ไม่สูบบุหรี่', es: 'No fumar', de: 'Nicht rauchen', fr: 'Ne pas fumer', zh: '不吸烟', ja: '禁煙', uk: 'Не палити', pt: 'Não fumar', ko: '금연' }, category: 'health', icon: '🚭' },
+            no_sweets: { name: { ru: 'Не есть сладкое', en: 'No sweets', th: 'ไม่กินขนมหวาน', es: 'Sin dulces', de: 'Keine Süßigkeiten', fr: 'Pas de sucreries', zh: '不吃甜食', ja: 'お菓子を食べない', uk: 'Не їсти солодке', pt: 'Sem doces', ko: '단것 금지' }, category: 'health', icon: '🍬' },
+            exercise: { name: { ru: 'Тренировка', en: 'Exercise', th: 'ออกกำลังกาย', es: 'Ejercicio', de: 'Training', fr: 'Exercice', zh: '锻炼', ja: '運動', uk: 'Тренування', pt: 'Exercício', ko: '운동' }, category: 'health', icon: '💪' },
+            reading: { name: { ru: 'Чтение', en: 'Reading', th: 'อ่านหนังสือ', es: 'Lectura', de: 'Lesen', fr: 'Lecture', zh: '阅读', ja: '読書', uk: 'Читання', pt: 'Leitura', ko: '독서' }, category: 'study', icon: '📚' },
+            meditation: { name: { ru: 'Медитация', en: 'Meditation', th: 'นั่งสมาธิ', es: 'Meditación', de: 'Meditation', fr: 'Méditation', zh: '冥想', ja: '瞑想', uk: 'Медитація', pt: 'Meditação', ko: '명상' }, category: 'personal', icon: '🧘' },
+            water: { name: { ru: 'Пить воду (8 стаканов)', en: 'Drink water (8 glasses)', th: 'ดื่มน้ำ (8 แก้ว)', es: 'Beber agua (8 vasos)', de: 'Wasser trinken (8 Gläser)', fr: 'Boire de l\'eau (8 verres)', zh: '喝水（8杯）', ja: '水を飲む（8杯）', uk: 'Пити воду (8 склянок)', pt: 'Beber água (8 copos)', ko: '물 마시기 (8잔)' }, category: 'health', icon: '💧' },
+            sleep: { name: { ru: 'Сон до 23:00', en: 'Sleep by 11 PM', th: 'นอนก่อน 23:00', es: 'Dormir antes de las 23:00', de: 'Schlafen bis 23:00', fr: 'Dormir avant 23h', zh: '23点前睡觉', ja: '23時までに寝る', uk: 'Сон до 23:00', pt: 'Dormir até 23h', ko: '23시 전 취침' }, category: 'health', icon: '😴' },
+            walk: { name: { ru: 'Прогулка 30 мин', en: '30 min walk', th: 'เดิน 30 นาที', es: 'Caminar 30 min', de: '30 Min Spaziergang', fr: 'Marche 30 min', zh: '步行30分钟', ja: '30分ウォーキング', uk: 'Прогулянка 30 хв', pt: 'Caminhada 30 min', ko: '30분 걷기' }, category: 'health', icon: '🚶' }
         };
 
         // Challenge Templates
         const CHALLENGE_TEMPLATES = {
             good_girl: {
-                name: { ru: 'Хорошая девочка', en: 'Good Girl', th: 'สาวดี' },
+                name: { ru: 'Хорошая девочка', en: 'Good Girl', th: 'สาวดี', es: 'Buena chica', de: 'Gutes Mädchen', fr: 'Bonne fille', zh: '好女孩', ja: '良い子（女）', uk: 'Хороша дівчинка', pt: 'Boa menina', ko: '착한 소녀' },
                 icon: '👧',
                 days: 30,
                 description: {
                     ru: 'Не пить, не курить, заниматься спортом, правильно питаться',
                     en: 'No drinking, no smoking, exercise, eat healthy',
-                    th: 'ไม่ดื่ม ไม่สูบ ออกกำลังกาย กินอาหารสุขภาพ'
+                    th: 'ไม่ดื่ม ไม่สูบ ออกกำลังกาย กินอาหารสุขภาพ',
+                    es: 'Sin alcohol, sin fumar, ejercicio, comer sano',
+                    de: 'Kein Alkohol, nicht rauchen, Sport, gesund essen',
+                    fr: 'Pas d\'alcool, pas de tabac, exercice, manger sain',
+                    zh: '不喝酒、不吸烟、锻炼、健康饮食',
+                    ja: '禁酒、禁煙、運動、健康的な食事',
+                    uk: 'Не пити, не палити, займатися спортом, правильно харчуватися',
+                    pt: 'Sem álcool, sem fumar, exercício, comer saudável',
+                    ko: '금주, 금연, 운동, 건강한 식습관'
                 },
                 tasks: [
                     { template: 'no_alcohol' },
@@ -3226,13 +3234,21 @@
                 ]
             },
             good_boy: {
-                name: { ru: 'Хороший мальчик', en: 'Good Boy', th: 'หนุ่มดี' },
+                name: { ru: 'Хороший мальчик', en: 'Good Boy', th: 'หนุ่มดี', es: 'Buen chico', de: 'Guter Junge', fr: 'Bon garçon', zh: '好男孩', ja: '良い子（男）', uk: 'Хороший хлопчик', pt: 'Bom menino', ko: '착한 소년' },
                 icon: '👦',
                 days: 30,
                 description: {
                     ru: 'Не пить, не курить, тренировки, ранний сон',
                     en: 'No drinking, no smoking, workout, early sleep',
-                    th: 'ไม่ดื่ม ไม่สูบ ออกกำลังกาย นอนเร็ว'
+                    th: 'ไม่ดื่ม ไม่สูบ ออกกำลังกาย นอนเร็ว',
+                    es: 'Sin alcohol, sin fumar, entrenar, dormir temprano',
+                    de: 'Kein Alkohol, nicht rauchen, Training, früh schlafen',
+                    fr: 'Pas d\'alcool, pas de tabac, entraînement, coucher tôt',
+                    zh: '不喝酒、不吸烟、锻炼、早睡',
+                    ja: '禁酒、禁煙、トレーニング、早寝',
+                    uk: 'Не пити, не палити, тренування, ранній сон',
+                    pt: 'Sem álcool, sem fumar, treino, dormir cedo',
+                    ko: '금주, 금연, 운동, 일찍 자기'
                 },
                 tasks: [
                     { template: 'no_alcohol' },
