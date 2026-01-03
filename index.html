@@ -300,6 +300,56 @@
             opacity: 0.7;
         }
 
+        .challenge-card.failed {
+            border-left-color: var(--danger);
+            opacity: 0.6;
+        }
+
+        .challenge-day.missed {
+            background: var(--danger);
+            opacity: 0.5;
+        }
+
+        .template-btn.selected {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .challenge-templates {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .challenge-templates .template-btn {
+            display: flex;
+            flex: 1;
+            min-width: 120px;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            text-align: center;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .challenge-templates .template-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+
+        .challenge-templates .template-btn span:first-child {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
         .challenge-header {
             display: flex;
             justify-content: space-between;
@@ -1708,6 +1758,24 @@
     <div class="modal-overlay" id="challenge-modal">
         <div class="modal">
             <h3 class="modal-title" data-i18n="addChallenge">Новый челлендж</h3>
+
+            <div class="profile-section">
+                <label>Готовые челленджи</label>
+                <div class="challenge-templates">
+                    <button class="template-btn" onclick="selectChallengeTemplate('good_girl')">
+                        <span>👧</span>
+                        <span>Хорошая девочка</span>
+                    </button>
+                    <button class="template-btn" onclick="selectChallengeTemplate('good_boy')">
+                        <span>👦</span>
+                        <span>Хороший мальчик</span>
+                    </button>
+                </div>
+                <div id="challenge-template-desc" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 10px; display: none;"></div>
+            </div>
+
+            <div style="text-align: center; color: var(--text-secondary); margin: 15px 0;">— или создайте свой —</div>
+
             <div class="profile-section">
                 <label data-i18n="challengeName">Название челленджа</label>
                 <input type="text" id="challenge-name" data-i18n-placeholder="challengeNameHint" placeholder="Например: 30 дней бега">
@@ -1821,6 +1889,8 @@
                 enterChallengeName: 'Введите название',
                 challengeCreated: 'Челлендж создан',
                 deleteChallenge: 'Удалить челлендж?',
+                cantDeleteChallengeTask: 'Задача челленджа',
+                tasksNotComplete: 'Не все задачи выполнены',
                 generateFirst: 'Сначала создайте код',
                 codeCopied: 'Код скопирован',
                 enterCodeFirst: 'Введите код',
@@ -1934,6 +2004,8 @@
                 enterChallengeName: 'Enter challenge name',
                 challengeCreated: 'Challenge created',
                 deleteChallenge: 'Delete challenge?',
+                cantDeleteChallengeTask: 'Challenge task',
+                tasksNotComplete: 'Not all tasks completed',
                 generateFirst: 'Generate code first',
                 codeCopied: 'Code copied',
                 enterCodeFirst: 'Enter code',
@@ -2045,7 +2117,9 @@
             { id: 'sober_week', icon: '🍷', check: d => getTaskStreak('no_alcohol') >= 7 },
             { id: 'sober_month', icon: '🏅', check: d => getTaskStreak('no_alcohol') >= 30 },
             { id: 'smoke_free_week', icon: '🚭', check: d => getTaskStreak('no_smoking') >= 7 },
-            { id: 'smoke_free_month', icon: '💪', check: d => getTaskStreak('no_smoking') >= 30 }
+            { id: 'smoke_free_month', icon: '💪', check: d => getTaskStreak('no_smoking') >= 30 },
+            { id: 'good_girl', icon: '👧', check: d => isChallengeCompleted('good_girl') },
+            { id: 'good_boy', icon: '👦', check: d => isChallengeCompleted('good_boy') }
         ];
 
         const TASK_TEMPLATES = {
@@ -2058,6 +2132,43 @@
             water: { name: { ru: 'Пить воду (8 стаканов)', en: 'Drink water (8 glasses)' }, category: 'health', icon: '💧' },
             sleep: { name: { ru: 'Сон до 23:00', en: 'Sleep by 11 PM' }, category: 'health', icon: '😴' },
             walk: { name: { ru: 'Прогулка 30 мин', en: '30 min walk' }, category: 'health', icon: '🚶' }
+        };
+
+        // Challenge Templates
+        const CHALLENGE_TEMPLATES = {
+            good_girl: {
+                name: { ru: 'Хорошая девочка', en: 'Good Girl' },
+                icon: '👧',
+                days: 30,
+                description: {
+                    ru: 'Не пить, не курить, заниматься спортом, правильно питаться',
+                    en: 'No drinking, no smoking, exercise, eat healthy'
+                },
+                tasks: [
+                    { template: 'no_alcohol' },
+                    { template: 'no_smoking' },
+                    { template: 'no_sweets' },
+                    { template: 'exercise' },
+                    { template: 'water' },
+                    { template: 'sleep' }
+                ]
+            },
+            good_boy: {
+                name: { ru: 'Хороший мальчик', en: 'Good Boy' },
+                icon: '👦',
+                days: 30,
+                description: {
+                    ru: 'Не пить, не курить, тренировки, ранний сон',
+                    en: 'No drinking, no smoking, workout, early sleep'
+                },
+                tasks: [
+                    { template: 'no_alcohol' },
+                    { template: 'no_smoking' },
+                    { template: 'exercise' },
+                    { template: 'water' },
+                    { template: 'sleep' }
+                ]
+            }
         };
 
         const ACHIEVEMENT_NAMES = {
@@ -2074,7 +2185,9 @@
                 sober_week: 'Трезвая неделя',
                 sober_month: 'Трезвый месяц',
                 smoke_free_week: 'Неделя без сигарет',
-                smoke_free_month: 'Месяц без сигарет'
+                smoke_free_month: 'Месяц без сигарет',
+                good_girl: 'Хорошая девочка',
+                good_boy: 'Хороший мальчик'
             },
             en: {
                 first_step: 'First Step',
@@ -2089,7 +2202,9 @@
                 sober_week: 'Sober Week',
                 sober_month: 'Sober Month',
                 smoke_free_week: 'Smoke-Free Week',
-                smoke_free_month: 'Smoke-Free Month'
+                smoke_free_month: 'Smoke-Free Month',
+                good_girl: 'Good Girl',
+                good_boy: 'Good Boy'
             }
         };
 
@@ -2107,7 +2222,9 @@
                 sober_week: 'Не пейте алкоголь 7 дней подряд',
                 sober_month: 'Не пейте алкоголь 30 дней подряд',
                 smoke_free_week: 'Не курите 7 дней подряд',
-                smoke_free_month: 'Не курите 30 дней подряд'
+                smoke_free_month: 'Не курите 30 дней подряд',
+                good_girl: 'Завершите челлендж "Хорошая девочка"',
+                good_boy: 'Завершите челлендж "Хороший мальчик"'
             },
             en: {
                 first_step: 'Complete your first task',
@@ -2122,7 +2239,9 @@
                 sober_week: 'Stay sober for 7 days straight',
                 sober_month: 'Stay sober for 30 days straight',
                 smoke_free_week: 'Don\'t smoke for 7 days straight',
-                smoke_free_month: 'Don\'t smoke for 30 days straight'
+                smoke_free_month: 'Don\'t smoke for 30 days straight',
+                good_girl: 'Complete the "Good Girl" challenge',
+                good_boy: 'Complete the "Good Boy" challenge'
             }
         };
 
@@ -2528,6 +2647,15 @@
         }
 
         function deleteTask(taskId) {
+            // Check if task is linked to a challenge
+            const task = data.tasks.find(t => String(t.id) === String(taskId));
+            if (task && task.challengeId) {
+                const challenge = data.challenges?.find(c => c.id === task.challengeId);
+                const challengeName = challenge ? challenge.name : t('challenge');
+                showNotification('⚠️', t('cantDeleteChallengeTask') || 'Нельзя удалить', challengeName);
+                return;
+            }
+
             if (confirm(t('deleteConfirm'))) {
                 data.tasks = data.tasks.filter(t => String(t.id) !== String(taskId));
                 let removed = 0;
@@ -2695,6 +2823,7 @@
                 const completed = weekDates.filter(d => isCompleted(task.id, d)).length;
                 const progress = Math.round((completed / 7) * 100);
                 const color = progress >= 70 ? '#27ae60' : progress >= 40 ? '#f39c12' : '#e74c3c';
+                const isChallenge = !!task.challengeId;
 
                 const meta = [];
                 if (task.time) meta.push(`⏱${task.time}m`);
@@ -2711,7 +2840,7 @@
                         ondrop="handleDrop(event, '${task.id}')">
                         <td class="task-cell">
                             <span class="drag-handle">⋮⋮</span>
-                            <span class="task-name" onclick="openEditModal('${task.id}')">${escapeHtml(task.name)}</span>
+                            ${isChallenge ? '<span title="Задача челленджа">🔗</span> ' : ''}<span class="task-name" onclick="openEditModal('${task.id}')">${escapeHtml(task.name)}</span>
                             ${meta.length ? `<div class="task-meta">${meta.join(' ')}</div>` : ''}
                             ${tagsHtml ? `<div class="task-tags">${tagsHtml}</div>` : ''}
                         </td>
@@ -2731,7 +2860,7 @@
                         <td>
                             <div class="action-btns">
                                 <button class="action-btn" onclick="openEditModal('${task.id}')">✏️</button>
-                                <button class="action-btn" onclick="deleteTask('${task.id}')">🗑️</button>
+                                ${isChallenge ? '<button class="action-btn" style="opacity:0.3;cursor:not-allowed" title="Нельзя удалить">🔗</button>' : `<button class="action-btn" onclick="deleteTask('${task.id}')">🗑️</button>`}
                             </div>
                         </td>
                     </tr>
@@ -2753,12 +2882,13 @@
                 const catName = cats[task.category];
                 const completed = weekDates.filter(d => isCompleted(task.id, d)).length;
                 const progress = Math.round((completed / 7) * 100);
+                const isChallenge = !!task.challengeId;
 
                 return `
                     <div class="mobile-task-card">
                         <div class="mobile-task-header">
                             <div>
-                                <div class="mobile-task-name" onclick="openEditModal('${task.id}')">${escapeHtml(task.name)}</div>
+                                <div class="mobile-task-name" onclick="openEditModal('${task.id}')">${isChallenge ? '🔗 ' : ''}${escapeHtml(task.name)}</div>
                                 <div class="mobile-task-meta">
                                     <span style="border-left:3px solid ${cat.color};padding-left:6px">${catName}</span>
                                     ${task.time ? ` · ⏱${task.time}м` : ''}
@@ -2767,7 +2897,7 @@
                             </div>
                             <div class="mobile-task-actions">
                                 <button onclick="openEditModal('${task.id}')">✏️</button>
-                                <button onclick="deleteTask('${task.id}')">🗑️</button>
+                                ${isChallenge ? '<button style="opacity:0.3;cursor:not-allowed">🔗</button>' : `<button onclick="deleteTask('${task.id}')">🗑️</button>`}
                             </div>
                         </div>
                         <div class="mobile-days-grid">
@@ -3349,14 +3479,41 @@
         }
 
         // ==================== CHALLENGES ====================
+        let selectedChallengeTemplate = null;
+
         function openChallengeModal() {
             document.getElementById('challenge-modal').classList.add('show');
             document.getElementById('challenge-name').value = '';
             document.getElementById('challenge-days').value = '30';
+            selectedChallengeTemplate = null;
+            document.getElementById('challenge-template-desc').style.display = 'none';
+            document.querySelectorAll('.challenge-templates .template-btn').forEach(b => b.classList.remove('selected'));
         }
 
         function closeChallengeModal() {
             document.getElementById('challenge-modal').classList.remove('show');
+            selectedChallengeTemplate = null;
+        }
+
+        function selectChallengeTemplate(templateId) {
+            const template = CHALLENGE_TEMPLATES[templateId];
+            if (!template) return;
+
+            selectedChallengeTemplate = templateId;
+            const lang = data.language || 'ru';
+
+            // Update UI
+            document.getElementById('challenge-name').value = template.name[lang];
+            document.getElementById('challenge-days').value = template.days;
+
+            // Show description
+            const descEl = document.getElementById('challenge-template-desc');
+            descEl.textContent = template.description[lang];
+            descEl.style.display = 'block';
+
+            // Highlight selected button
+            document.querySelectorAll('.challenge-templates .template-btn').forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
         }
 
         function createChallenge() {
@@ -3367,18 +3524,56 @@
                 return;
             }
             if (!data.challenges) data.challenges = [];
+
+            const challengeId = Date.now();
             const challenge = {
-                id: Date.now(),
+                id: challengeId,
                 name: name,
                 totalDays: days,
                 startDate: formatDate(new Date()),
-                completedDays: []
+                completedDays: [],
+                templateId: selectedChallengeTemplate || null
             };
             data.challenges.push(challenge);
+
+            // Create linked tasks if template selected
+            if (selectedChallengeTemplate && CHALLENGE_TEMPLATES[selectedChallengeTemplate]) {
+                const template = CHALLENGE_TEMPLATES[selectedChallengeTemplate];
+                const lang = data.language || 'ru';
+
+                template.tasks.forEach((taskDef, i) => {
+                    const taskTemplate = TASK_TEMPLATES[taskDef.template];
+                    if (taskTemplate) {
+                        const task = {
+                            id: String(challengeId + '_' + i),
+                            name: taskTemplate.name[lang],
+                            category: taskTemplate.category,
+                            icon: taskTemplate.icon,
+                            time: null,
+                            duration: null,
+                            tags: [],
+                            challengeId: challengeId // Link to challenge
+                        };
+                        data.tasks.push(task);
+                    }
+                });
+            }
+
             saveData();
+            renderTasks();
+            renderTemplates();
             renderChallenges();
             closeChallengeModal();
             showNotification('🏆', t('challengeCreated'), name);
+        }
+
+        function isChallengeCompleted(templateId) {
+            if (!data.challenges) return false;
+            return data.challenges.some(c =>
+                c.templateId === templateId &&
+                c.completedDays &&
+                c.completedDays.length === c.totalDays
+            );
         }
 
         function toggleChallengeDay(challengeId, dayIndex) {
@@ -3396,12 +3591,30 @@
 
             const idx = challenge.completedDays.indexOf(dateStr);
             if (idx >= 0) {
+                // Unchecking - always allowed
                 challenge.completedDays.splice(idx, 1);
             } else {
+                // Checking - for template challenges, verify all tasks completed
+                if (challenge.templateId) {
+                    const linkedTasks = data.tasks.filter(t => t.challengeId === challengeId);
+                    const allCompleted = linkedTasks.every(task =>
+                        data.completions[dateStr]?.[task.id]
+                    );
+
+                    if (!allCompleted) {
+                        const incomplete = linkedTasks.filter(task =>
+                            !data.completions[dateStr]?.[task.id]
+                        );
+                        const names = incomplete.map(t => t.name).join(', ');
+                        showNotification('⚠️', t('tasksNotComplete') || 'Не все задачи выполнены', names);
+                        return;
+                    }
+                }
                 challenge.completedDays.push(dateStr);
             }
             saveData();
             renderChallenges();
+            checkAchievements();
 
             // Check if challenge completed
             if (challenge.completedDays.length === challenge.totalDays) {
@@ -3411,9 +3624,32 @@
 
         function deleteChallenge(challengeId) {
             if (!confirm(t('deleteChallenge'))) return;
+
+            // Delete linked tasks
+            const linkedTaskIds = data.tasks
+                .filter(t => t.challengeId === challengeId)
+                .map(t => t.id);
+
+            // Remove tasks
+            data.tasks = data.tasks.filter(t => t.challengeId !== challengeId);
+
+            // Remove completions for linked tasks
+            linkedTaskIds.forEach(taskId => {
+                Object.keys(data.completions).forEach(date => {
+                    if (data.completions[date]?.[taskId]) {
+                        data.totalCompleted = Math.max(0, data.totalCompleted - 1);
+                        delete data.completions[date][taskId];
+                    }
+                });
+            });
+
+            // Remove challenge
             data.challenges = data.challenges.filter(c => c.id !== challengeId);
             saveData();
+            renderTasks();
+            renderTemplates();
             renderChallenges();
+            renderProgressStats();
         }
 
         function renderChallenges() {
@@ -3433,6 +3669,10 @@
                 const progress = (completedCount / challenge.totalDays) * 100;
                 const isComplete = completedCount === challenge.totalDays;
 
+                // Check if failed (has missed days)
+                let isFailed = false;
+                let missedDays = [];
+
                 // Generate day grid
                 let daysHtml = '';
                 for (let i = 0; i < challenge.totalDays; i++) {
@@ -3442,21 +3682,40 @@
                     const isDone = challenge.completedDays.includes(dayStr);
                     const isToday = dayStr === todayStr;
                     const isFuture = dayStr > todayStr;
+                    const isPast = dayStr < todayStr;
+
+                    // Check for missed day (past, not done)
+                    const isMissed = isPast && !isDone;
+                    if (isMissed) {
+                        missedDays.push(dayStr);
+                        isFailed = true;
+                    }
 
                     let classes = 'challenge-day';
                     if (isDone) classes += ' done';
+                    else if (isMissed) classes += ' missed';
                     if (isToday) classes += ' today';
                     if (isFuture) classes += ' future';
 
                     daysHtml += `<div class="${classes}" onclick="toggleChallengeDay(${challenge.id}, ${i})" title="${dayStr}">${i + 1}</div>`;
                 }
 
+                // Determine card class
+                let cardClass = 'challenge-card';
+                if (isComplete) cardClass += ' completed';
+                else if (isFailed) cardClass += ' failed';
+
+                // Determine trophy/icon
+                let trophy = '🎯';
+                if (isComplete) trophy = '🏆';
+                else if (isFailed) trophy = '💔';
+
                 return `
-                    <div class="challenge-card ${isComplete ? 'completed' : ''}">
+                    <div class="${cardClass}">
                         <div class="challenge-header">
                             <span class="challenge-name">${challenge.name}</span>
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <span class="challenge-trophy">${isComplete ? '🏆' : '🎯'}</span>
+                                <span class="challenge-trophy">${trophy}</span>
                                 <button onclick="deleteChallenge(${challenge.id})" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="${t('delete')}">🗑️</button>
                             </div>
                         </div>
