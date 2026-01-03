@@ -3283,14 +3283,14 @@
 
         // ==================== PROFILE ====================
         function openProfileModal() {
-            document.getElementById('profile-modal').classList.add('active');
+            document.getElementById('profile-modal').classList.add('show');
             document.getElementById('profile-name').value = data.profile?.name || '';
             document.getElementById('profile-code-display').textContent = '';
             document.getElementById('restore-code-input').value = '';
         }
 
         function closeProfileModal() {
-            document.getElementById('profile-modal').classList.remove('active');
+            document.getElementById('profile-modal').classList.remove('show');
         }
 
         function saveProfile() {
@@ -3459,13 +3459,13 @@
 
         // ==================== CHALLENGES ====================
         function openChallengeModal() {
-            document.getElementById('challenge-modal').classList.add('active');
+            document.getElementById('challenge-modal').classList.add('show');
             document.getElementById('challenge-name').value = '';
             document.getElementById('challenge-days').value = '30';
         }
 
         function closeChallengeModal() {
-            document.getElementById('challenge-modal').classList.remove('active');
+            document.getElementById('challenge-modal').classList.remove('show');
         }
 
         function createChallenge() {
