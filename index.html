@@ -3306,6 +3306,16 @@
             data.profile.name = name;
             saveData();
             updateGreeting();
+
+            // Check if this is a known preset name
+            const presetKey = name.toLowerCase();
+            if (PRESET_PROFILES[presetKey] && data.tasks.length === 0) {
+                if (confirm(t('loadPresetConfirm'))) {
+                    loadPresetProfile(presetKey);
+                    return;
+                }
+            }
+
             closeProfileModal();
             showNotification('👤', t('profileSaved'), name || t('guest'));
         }
@@ -3434,6 +3444,8 @@
                 ]
             }
         };
+        // Aliases
+        PRESET_PROFILES.vadym = PRESET_PROFILES.baksik;
 
         function loadPresetByCode() {
             const code = document.getElementById('preset-code-input').value.trim().toLowerCase();
