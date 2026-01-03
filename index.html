@@ -119,30 +119,53 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .week-nav-group {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 4px;
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
         .week-display {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 500;
-            min-width: 200px;
+            padding: 0 12px;
             text-align: center;
+            white-space: nowrap;
         }
 
         .nav-btn {
             background: var(--accent);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .nav-btn:hover {
             opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .nav-btn.today-btn {
+            background: var(--success);
+            font-size: 0.75rem;
+            width: auto;
+            padding: 0 12px;
+            border-radius: 18px;
+            margin-left: 4px;
         }
 
         /* Card */
@@ -1519,10 +1542,12 @@
                 </div>
             </div>
             <nav class="week-nav">
-                <button class="nav-btn" onclick="changeWeek(-1)">← <span data-i18n="prev">Пред.</span></button>
-                <div class="week-display" id="week-display"></div>
-                <button class="nav-btn" onclick="goToToday()" data-i18n="today">Сегодня</button>
-                <button class="nav-btn" onclick="changeWeek(1)"><span data-i18n="next">След.</span> →</button>
+                <div class="week-nav-group">
+                    <button class="nav-btn" onclick="changeWeek(-1)" title="Предыдущая неделя">◀</button>
+                    <div class="week-display" id="week-display"></div>
+                    <button class="nav-btn" onclick="changeWeek(1)" title="Следующая неделя">▶</button>
+                </div>
+                <button class="nav-btn today-btn" onclick="goToToday()" data-i18n="today">Сегодня</button>
             </nav>
         </header>
 
