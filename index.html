@@ -2837,6 +2837,9 @@
                     }
                 });
                 data.totalCompleted = Math.max(0, data.totalCompleted - removed);
+                // Recalculate streak
+                data.streak.current = calcStreak();
+                data.streak.best = Math.max(data.streak.best, data.streak.current);
                 saveData();
                 renderTasks();
                 renderTemplates();
@@ -3861,6 +3864,10 @@
                     }
                 });
             });
+
+            // Recalculate streak
+            data.streak.current = calcStreak();
+            data.streak.best = Math.max(data.streak.best, data.streak.current);
 
             // Remove challenge
             data.challenges = data.challenges.filter(c => c.id !== challengeId);

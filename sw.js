@@ -1,4 +1,4 @@
-const CACHE_NAME = 'goal-tracker-v5';
+const CACHE_NAME = 'goal-tracker-v6';
 const urlsToCache = [
   './',
   './index.html',
