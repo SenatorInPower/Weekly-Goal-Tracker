@@ -2528,12 +2528,8 @@
         }
 
         function deleteTask(taskId) {
-            alert('Deleting task ID: ' + taskId + ' (type: ' + typeof taskId + ')');
-            alert('Current task IDs: ' + data.tasks.map(t => t.id + '(' + typeof t.id + ')').join(', '));
             if (confirm(t('deleteConfirm'))) {
-                const before = data.tasks.length;
                 data.tasks = data.tasks.filter(t => String(t.id) !== String(taskId));
-                alert('Tasks before: ' + before + ', after: ' + data.tasks.length);
                 let removed = 0;
                 Object.keys(data.completions).forEach(date => {
                     if (data.completions[date]?.[taskId]) {
