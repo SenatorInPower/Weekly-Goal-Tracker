@@ -3641,6 +3641,13 @@
             updateNotifButton();
             setupReminders();
             applyRecurringTasks();
+
+            // Set language in URL if not present
+            const url = new URL(window.location);
+            if (!url.searchParams.has('lang')) {
+                url.searchParams.set('lang', data.lang);
+                window.history.replaceState({}, '', url);
+            }
         }
 
         // ==================== i18n ====================
@@ -3687,6 +3694,11 @@
                 renderChallenges();
                 renderStats();
                 renderWeekDisplay();
+
+                // Update URL with language parameter
+                const url = new URL(window.location);
+                url.searchParams.set('lang', lang);
+                window.history.replaceState({}, '', url);
             }
         }
 
