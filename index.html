@@ -1554,7 +1554,7 @@
                     <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
                 </div>
                 <div class="header-controls">
-                    <button class="profile-btn" onclick="openPresetModal()">📋 <span data-i18n="myPreset">Мой пресет</span></button>
+                    <button class="profile-btn" onclick="openPresetModal()">☁️ <span data-i18n="cloudSync">Синхронизация</span></button>
                     <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)" title="Select language">
                         <option value="en">🇬🇧 EN</option>
                         <option value="ru">🇷🇺 RU</option>
@@ -1803,14 +1803,51 @@
     <!-- Preset Modal -->
     <div class="modal-overlay" id="preset-modal">
         <div class="modal">
-            <h3 class="modal-title" data-i18n="myPreset">Мой пресет</h3>
+            <h3 class="modal-title" data-i18n="cloudSync">Облачная синхронизация</h3>
+
+            <!-- Cloud Sync Section -->
             <div class="profile-section">
-                <label data-i18n="enterPresetCode">Введите код</label>
-                <input type="text" id="preset-code-input" placeholder="Введите код...">
-                <div class="profile-actions" style="margin-top: 15px;">
-                    <button class="btn-primary" onclick="loadPresetByCode()" data-i18n="load">Загрузить</button>
+                <label data-i18n="saveYourData">Сохранить ваши данные</label>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 5px 0 10px;">
+                    <span data-i18n="cloudSyncHint">Сохраните данные и получите код для доступа с другого устройства</span>
+                </p>
+                <div class="profile-actions">
+                    <button class="btn-primary" onclick="saveToCloud()" id="save-cloud-btn" data-i18n="saveToCloud">Сохранить в облако</button>
+                </div>
+                <div id="cloud-code-result" style="display: none; margin-top: 15px;">
+                    <label data-i18n="yourCode">Ваш код</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="cloud-code-display" readonly style="font-family: monospace; font-size: 0.9rem;">
+                        <button class="btn-secondary" onclick="copyCloudCode()" style="white-space: nowrap;">📋</button>
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px;">
+                        <span data-i18n="saveCodeHint">Сохраните этот код для восстановления данных</span>
+                    </p>
                 </div>
             </div>
+
+            <div style="text-align: center; color: var(--text-secondary); margin: 15px 0; font-size: 0.9rem;">— <span data-i18n="or">или</span> —</div>
+
+            <!-- Load from Cloud Section -->
+            <div class="profile-section">
+                <label data-i18n="loadByCode">Загрузить по коду</label>
+                <input type="text" id="cloud-code-input" data-i18n-placeholder="enterCloudCode" placeholder="Введите код синхронизации...">
+                <div class="profile-actions" style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="loadFromCloud()" id="load-cloud-btn" data-i18n="loadFromCloud">Загрузить из облака</button>
+                </div>
+            </div>
+
+            <div style="text-align: center; color: var(--text-secondary); margin: 15px 0; font-size: 0.9rem;">— <span data-i18n="or">или</span> —</div>
+
+            <!-- Preset Templates Section -->
+            <div class="profile-section">
+                <label data-i18n="loadPreset">Загрузить готовый пресет</label>
+                <input type="text" id="preset-code-input" data-i18n-placeholder="enterPresetCode" placeholder="Введите код пресета...">
+                <div class="profile-actions" style="margin-top: 15px;">
+                    <button class="btn-secondary" onclick="loadPresetByCode()" data-i18n="load">Загрузить</button>
+                </div>
+            </div>
+
             <div class="modal-buttons" style="margin-top: 20px;">
                 <button type="button" class="modal-btn cancel" onclick="closePresetModal()" data-i18n="close">Закрыть</button>
             </div>
@@ -1965,6 +2002,21 @@
                 loadPreset: 'Загрузить пресет',
                 loadPresetConfirm: 'Загрузить профиль? Текущие задачи будут заменены.',
                 presetLoaded: 'Профиль загружен',
+                cloudSync: 'Облачная синхронизация',
+                saveYourData: 'Сохранить ваши данные',
+                cloudSyncHint: 'Сохраните данные и получите код для доступа с другого устройства',
+                saveToCloud: 'Сохранить в облако',
+                yourCode: 'Ваш код',
+                saveCodeHint: 'Сохраните этот код для восстановления данных',
+                or: 'или',
+                loadByCode: 'Загрузить по коду',
+                enterCloudCode: 'Введите код синхронизации',
+                loadFromCloud: 'Загрузить из облака',
+                cloudSaved: 'Данные сохранены в облаке',
+                cloudLoaded: 'Данные загружены из облака',
+                cloudError: 'Ошибка синхронизации',
+                saving: 'Сохранение...',
+                loading: 'Загрузка...',
                 orChooseTemplate: 'Или выберите готовую:',
                 readyChallenges: 'Готовые челленджи',
                 addTask: 'Добавить задачу',
@@ -2081,6 +2133,21 @@
                 loadPreset: 'Load preset',
                 loadPresetConfirm: 'Load profile? Current tasks will be replaced.',
                 presetLoaded: 'Profile loaded',
+                cloudSync: 'Cloud Sync',
+                saveYourData: 'Save your data',
+                cloudSyncHint: 'Save data and get a code to access from another device',
+                saveToCloud: 'Save to Cloud',
+                yourCode: 'Your code',
+                saveCodeHint: 'Save this code to restore your data',
+                or: 'or',
+                loadByCode: 'Load by code',
+                enterCloudCode: 'Enter sync code',
+                loadFromCloud: 'Load from Cloud',
+                cloudSaved: 'Data saved to cloud',
+                cloudLoaded: 'Data loaded from cloud',
+                cloudError: 'Sync error',
+                saving: 'Saving...',
+                loading: 'Loading...',
                 orChooseTemplate: 'Or choose a template:',
                 readyChallenges: 'Ready challenges',
                 addTask: 'Add Task',
@@ -2194,6 +2261,21 @@
                 loadPreset: 'โหลดพรีเซ็ต',
                 loadPresetConfirm: 'โหลดโปรไฟล์? งานปัจจุบันจะถูกแทนที่',
                 presetLoaded: 'โหลดโปรไฟล์แล้ว',
+                cloudSync: 'ซิงค์คลาวด์',
+                saveYourData: 'บันทึกข้อมูลของคุณ',
+                cloudSyncHint: 'บันทึกข้อมูลและรับรหัสเพื่อเข้าถึงจากอุปกรณ์อื่น',
+                saveToCloud: 'บันทึกไปยังคลาวด์',
+                yourCode: 'รหัสของคุณ',
+                saveCodeHint: 'บันทึกรหัสนี้เพื่อกู้คืนข้อมูล',
+                or: 'หรือ',
+                loadByCode: 'โหลดด้วยรหัส',
+                enterCloudCode: 'ใส่รหัสซิงค์',
+                loadFromCloud: 'โหลดจากคลาวด์',
+                cloudSaved: 'บันทึกข้อมูลไปยังคลาวด์แล้ว',
+                cloudLoaded: 'โหลดข้อมูลจากคลาวด์แล้ว',
+                cloudError: 'ข้อผิดพลาดในการซิงค์',
+                saving: 'กำลังบันทึก...',
+                loading: 'กำลังโหลด...',
                 orChooseTemplate: 'หรือเลือกเทมเพลต:',
                 readyChallenges: 'ความท้าทายพร้อม',
                 addTask: 'เพิ่มงาน',
@@ -2307,6 +2389,21 @@
                 loadPreset: 'Cargar preset',
                 loadPresetConfirm: '¿Cargar perfil? Las tareas actuales serán reemplazadas.',
                 presetLoaded: 'Perfil cargado',
+                cloudSync: 'Sincronización en la nube',
+                saveYourData: 'Guardar tus datos',
+                cloudSyncHint: 'Guarda los datos y obtén un código para acceder desde otro dispositivo',
+                saveToCloud: 'Guardar en la nube',
+                yourCode: 'Tu código',
+                saveCodeHint: 'Guarda este código para restaurar tus datos',
+                or: 'o',
+                loadByCode: 'Cargar por código',
+                enterCloudCode: 'Ingresa código de sincronización',
+                loadFromCloud: 'Cargar desde la nube',
+                cloudSaved: 'Datos guardados en la nube',
+                cloudLoaded: 'Datos cargados desde la nube',
+                cloudError: 'Error de sincronización',
+                saving: 'Guardando...',
+                loading: 'Cargando...',
                 orChooseTemplate: 'O elige una plantilla:',
                 readyChallenges: 'Desafíos listos',
                 addTask: 'Agregar tarea',
@@ -2420,6 +2517,21 @@
                 loadPreset: 'Preset laden',
                 loadPresetConfirm: 'Profil laden? Aktuelle Aufgaben werden ersetzt.',
                 presetLoaded: 'Profil geladen',
+                cloudSync: 'Cloud-Synchronisierung',
+                saveYourData: 'Deine Daten speichern',
+                cloudSyncHint: 'Speichere Daten und erhalte einen Code für den Zugriff von einem anderen Gerät',
+                saveToCloud: 'In Cloud speichern',
+                yourCode: 'Dein Code',
+                saveCodeHint: 'Speichere diesen Code, um deine Daten wiederherzustellen',
+                or: 'oder',
+                loadByCode: 'Mit Code laden',
+                enterCloudCode: 'Sync-Code eingeben',
+                loadFromCloud: 'Aus Cloud laden',
+                cloudSaved: 'Daten in Cloud gespeichert',
+                cloudLoaded: 'Daten aus Cloud geladen',
+                cloudError: 'Sync-Fehler',
+                saving: 'Speichern...',
+                loading: 'Laden...',
                 orChooseTemplate: 'Oder wähle eine Vorlage:',
                 readyChallenges: 'Fertige Herausforderungen',
                 addTask: 'Aufgabe hinzufügen',
@@ -2533,6 +2645,21 @@
                 loadPreset: 'Charger le preset',
                 loadPresetConfirm: 'Charger le profil? Les tâches actuelles seront remplacées.',
                 presetLoaded: 'Profil chargé',
+                cloudSync: 'Synchronisation cloud',
+                saveYourData: 'Sauvegarder vos données',
+                cloudSyncHint: 'Sauvegardez les données et obtenez un code pour y accéder depuis un autre appareil',
+                saveToCloud: 'Sauvegarder dans le cloud',
+                yourCode: 'Votre code',
+                saveCodeHint: 'Gardez ce code pour restaurer vos données',
+                or: 'ou',
+                loadByCode: 'Charger par code',
+                enterCloudCode: 'Entrez le code de synchronisation',
+                loadFromCloud: 'Charger depuis le cloud',
+                cloudSaved: 'Données sauvegardées dans le cloud',
+                cloudLoaded: 'Données chargées depuis le cloud',
+                cloudError: 'Erreur de synchronisation',
+                saving: 'Sauvegarde...',
+                loading: 'Chargement...',
                 orChooseTemplate: 'Ou choisissez un modèle:',
                 readyChallenges: 'Défis prêts',
                 addTask: 'Ajouter une tâche',
@@ -2646,6 +2773,21 @@
                 loadPreset: '加载预设',
                 loadPresetConfirm: '加载配置？当前任务将被替换。',
                 presetLoaded: '配置已加载',
+                cloudSync: '云同步',
+                saveYourData: '保存你的数据',
+                cloudSyncHint: '保存数据并获取代码以从其他设备访问',
+                saveToCloud: '保存到云端',
+                yourCode: '你的代码',
+                saveCodeHint: '保存此代码以恢复你的数据',
+                or: '或',
+                loadByCode: '通过代码加载',
+                enterCloudCode: '输入同步代码',
+                loadFromCloud: '从云端加载',
+                cloudSaved: '数据已保存到云端',
+                cloudLoaded: '数据已从云端加载',
+                cloudError: '同步错误',
+                saving: '保存中...',
+                loading: '加载中...',
                 orChooseTemplate: '或选择模板：',
                 readyChallenges: '现成挑战',
                 addTask: '添加任务',
@@ -2759,6 +2901,21 @@
                 loadPreset: 'プリセットを読み込む',
                 loadPresetConfirm: 'プロフィールを読み込む？現在のタスクは置き換えられます。',
                 presetLoaded: 'プロフィール読み込み済み',
+                cloudSync: 'クラウド同期',
+                saveYourData: 'データを保存',
+                cloudSyncHint: 'データを保存して別のデバイスからアクセスするためのコードを取得',
+                saveToCloud: 'クラウドに保存',
+                yourCode: 'あなたのコード',
+                saveCodeHint: 'データを復元するためにこのコードを保存してください',
+                or: 'または',
+                loadByCode: 'コードで読み込む',
+                enterCloudCode: '同期コードを入力',
+                loadFromCloud: 'クラウドから読み込む',
+                cloudSaved: 'データがクラウドに保存されました',
+                cloudLoaded: 'データがクラウドから読み込まれました',
+                cloudError: '同期エラー',
+                saving: '保存中...',
+                loading: '読み込み中...',
                 orChooseTemplate: 'またはテンプレートを選択：',
                 readyChallenges: '用意されたチャレンジ',
                 addTask: 'タスクを追加',
@@ -2872,6 +3029,21 @@
                 loadPreset: 'Завантажити пресет',
                 loadPresetConfirm: 'Завантажити профіль? Поточні завдання будуть замінені.',
                 presetLoaded: 'Профіль завантажено',
+                cloudSync: 'Хмарна синхронізація',
+                saveYourData: 'Зберегти ваші дані',
+                cloudSyncHint: 'Збережіть дані та отримайте код для доступу з іншого пристрою',
+                saveToCloud: 'Зберегти в хмару',
+                yourCode: 'Ваш код',
+                saveCodeHint: 'Збережіть цей код для відновлення даних',
+                or: 'або',
+                loadByCode: 'Завантажити за кодом',
+                enterCloudCode: 'Введіть код синхронізації',
+                loadFromCloud: 'Завантажити з хмари',
+                cloudSaved: 'Дані збережено в хмарі',
+                cloudLoaded: 'Дані завантажено з хмари',
+                cloudError: 'Помилка синхронізації',
+                saving: 'Збереження...',
+                loading: 'Завантаження...',
                 orChooseTemplate: 'Або оберіть шаблон:',
                 readyChallenges: 'Готові челенджі',
                 addTask: 'Додати завдання',
@@ -2985,6 +3157,21 @@
                 loadPreset: 'Carregar preset',
                 loadPresetConfirm: 'Carregar perfil? As tarefas atuais serão substituídas.',
                 presetLoaded: 'Perfil carregado',
+                cloudSync: 'Sincronização na nuvem',
+                saveYourData: 'Salvar seus dados',
+                cloudSyncHint: 'Salve os dados e obtenha um código para acessar de outro dispositivo',
+                saveToCloud: 'Salvar na nuvem',
+                yourCode: 'Seu código',
+                saveCodeHint: 'Guarde este código para restaurar seus dados',
+                or: 'ou',
+                loadByCode: 'Carregar por código',
+                enterCloudCode: 'Digite o código de sincronização',
+                loadFromCloud: 'Carregar da nuvem',
+                cloudSaved: 'Dados salvos na nuvem',
+                cloudLoaded: 'Dados carregados da nuvem',
+                cloudError: 'Erro de sincronização',
+                saving: 'Salvando...',
+                loading: 'Carregando...',
                 orChooseTemplate: 'Ou escolha um modelo:',
                 readyChallenges: 'Desafios prontos',
                 addTask: 'Adicionar tarefa',
@@ -3098,6 +3285,21 @@
                 loadPreset: '프리셋 불러오기',
                 loadPresetConfirm: '프로필을 불러오시겠습니까? 현재 작업이 대체됩니다.',
                 presetLoaded: '프로필 불러옴',
+                cloudSync: '클라우드 동기화',
+                saveYourData: '데이터 저장',
+                cloudSyncHint: '데이터를 저장하고 다른 기기에서 접근할 수 있는 코드를 받으세요',
+                saveToCloud: '클라우드에 저장',
+                yourCode: '당신의 코드',
+                saveCodeHint: '데이터를 복원하려면 이 코드를 저장하세요',
+                or: '또는',
+                loadByCode: '코드로 불러오기',
+                enterCloudCode: '동기화 코드 입력',
+                loadFromCloud: '클라우드에서 불러오기',
+                cloudSaved: '데이터가 클라우드에 저장됨',
+                cloudLoaded: '데이터가 클라우드에서 불러와짐',
+                cloudError: '동기화 오류',
+                saving: '저장 중...',
+                loading: '불러오는 중...',
                 orChooseTemplate: '또는 템플릿 선택:',
                 readyChallenges: '준비된 챌린지',
                 addTask: '작업 추가',
@@ -4629,10 +4831,160 @@
         function openPresetModal() {
             document.getElementById('preset-modal').classList.add('show');
             document.getElementById('preset-code-input').value = '';
+            document.getElementById('cloud-code-input').value = '';
+
+            // Show saved cloud code if exists
+            const savedCloudId = localStorage.getItem('cloudSyncId');
+            if (savedCloudId) {
+                document.getElementById('cloud-code-display').value = savedCloudId;
+                document.getElementById('cloud-code-result').style.display = 'block';
+            } else {
+                document.getElementById('cloud-code-result').style.display = 'none';
+            }
         }
 
         function closePresetModal() {
             document.getElementById('preset-modal').classList.remove('show');
+        }
+
+        // ==================== CLOUD SYNC ====================
+        const CLOUD_API_URL = 'https://jsonblob.com/api/jsonBlob';
+
+        async function saveToCloud() {
+            const btn = document.getElementById('save-cloud-btn');
+            const originalText = btn.textContent;
+            btn.textContent = t('saving') || 'Saving...';
+            btn.disabled = true;
+
+            try {
+                const savedCloudId = localStorage.getItem('cloudSyncId');
+                let response;
+
+                // Prepare data for sync (exclude some local-only settings)
+                const syncData = {
+                    tasks: data.tasks,
+                    completions: data.completions,
+                    achievements: data.achievements,
+                    streak: data.streak,
+                    perfectWeeksInRow: data.perfectWeeksInRow,
+                    totalCompleted: data.totalCompleted,
+                    monthlyStats: data.monthlyStats,
+                    challenges: data.challenges,
+                    profile: data.profile,
+                    earlyBirdUnlocked: data.earlyBirdUnlocked,
+                    syncedAt: new Date().toISOString()
+                };
+
+                if (savedCloudId) {
+                    // Update existing blob
+                    response = await fetch(`${CLOUD_API_URL}/${savedCloudId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(syncData)
+                    });
+                } else {
+                    // Create new blob
+                    response = await fetch(CLOUD_API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(syncData)
+                    });
+                }
+
+                if (!response.ok) throw new Error('Cloud save failed');
+
+                // Get blob ID from Location header for new blobs
+                let cloudId = savedCloudId;
+                if (!savedCloudId) {
+                    const location = response.headers.get('Location');
+                    cloudId = location ? location.split('/').pop() : null;
+                    if (cloudId) {
+                        localStorage.setItem('cloudSyncId', cloudId);
+                    }
+                }
+
+                // Show the code
+                document.getElementById('cloud-code-display').value = cloudId;
+                document.getElementById('cloud-code-result').style.display = 'block';
+
+                showNotification('☁️', t('cloudSaved') || 'Data saved to cloud', '');
+            } catch (err) {
+                console.error('Cloud save error:', err);
+                showNotification('❌', t('cloudError') || 'Sync error', err.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function loadFromCloud() {
+            const codeInput = document.getElementById('cloud-code-input');
+            const code = codeInput.value.trim();
+
+            if (!code) {
+                showNotification('⚠️', t('enterCloudCode') || 'Enter sync code', '');
+                return;
+            }
+
+            const btn = document.getElementById('load-cloud-btn');
+            const originalText = btn.textContent;
+            btn.textContent = t('loading') || 'Loading...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${CLOUD_API_URL}/${code}`);
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error(t('invalidCode') || 'Invalid code');
+                    }
+                    throw new Error('Cloud load failed');
+                }
+
+                const cloudData = await response.json();
+
+                // Merge cloud data with current data (keep local theme/lang/sound preferences)
+                data.tasks = cloudData.tasks || [];
+                data.completions = cloudData.completions || {};
+                data.achievements = cloudData.achievements || {};
+                data.streak = cloudData.streak || { current: 0, best: 0, lastDate: null };
+                data.perfectWeeksInRow = cloudData.perfectWeeksInRow || 0;
+                data.totalCompleted = cloudData.totalCompleted || 0;
+                data.monthlyStats = cloudData.monthlyStats || {};
+                data.challenges = cloudData.challenges || [];
+                data.profile = cloudData.profile || { name: '' };
+                data.earlyBirdUnlocked = cloudData.earlyBirdUnlocked || false;
+
+                // Save cloud ID for future updates
+                localStorage.setItem('cloudSyncId', code);
+
+                saveData();
+                init();
+                closePresetModal();
+                showNotification('☁️', t('cloudLoaded') || 'Data loaded from cloud', '');
+            } catch (err) {
+                console.error('Cloud load error:', err);
+                showNotification('❌', t('cloudError') || 'Sync error', err.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function copyCloudCode() {
+            const codeDisplay = document.getElementById('cloud-code-display');
+            const code = codeDisplay.value;
+
+            if (!code) return;
+
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('📋', t('codeCopied') || 'Code copied', '');
+            }).catch(() => {
+                // Fallback for older browsers
+                codeDisplay.select();
+                document.execCommand('copy');
+                showNotification('📋', t('codeCopied') || 'Code copied', '');
+            });
         }
 
         // ==================== PRESET PROFILES ====================
