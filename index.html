@@ -212,7 +212,7 @@
         /* Add Task Form */
         .add-task-form {
             display: grid;
-            grid-template-columns: 2fr 1fr 80px 1fr auto;
+            grid-template-columns: 1.7fr 1fr 72px 1fr 1.1fr auto;
             gap: 10px;
             align-items: end;
         }
@@ -1542,6 +1542,84 @@
             min-width: 40px;
             text-align: right;
         }
+
+        /* Deadline badge */
+        .deadline-badge {
+            display: inline-block;
+            font-size: 0.62rem;
+            padding: 2px 7px;
+            border-radius: 8px;
+            margin-top: 4px;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .dl-ok { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+        .dl-soon { background: rgba(243, 156, 18, 0.20); color: var(--warning); }
+        .dl-over { background: rgba(231, 76, 60, 0.20); color: var(--danger); }
+
+        /* Cadence badge */
+        .cadence-badge {
+            display: inline-block;
+            font-size: 0.62rem;
+            padding: 2px 7px;
+            border-radius: 8px;
+            margin-top: 4px;
+            margin-left: 4px;
+            white-space: nowrap;
+            font-weight: 600;
+            background: rgba(74, 144, 217, 0.15);
+            color: var(--accent);
+        }
+
+        /* Skipped day cell */
+        .day-cell.skipped { opacity: 0.6; }
+        .skip-dash {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+        .skip-dash:hover { background: var(--border); color: var(--accent); }
+        .mobile-day.skipped { opacity: 0.6; }
+        .mobile-day .skip-dash { width: 32px; height: 32px; line-height: 32px; }
+
+        /* Weekday (cadence) selector in edit modal */
+        .weekday-selector {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .weekday-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .weekday-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .weekday-hint {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -1613,6 +1691,10 @@
                         <option value="weekdays" data-i18n="repeatWeekdays">Будни</option>
                         <option value="weekends" data-i18n="repeatWeekends">Выходные</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="deadline">Дедлайн</label>
+                    <input type="date" id="task-deadline">
                 </div>
                 <button type="submit" class="add-btn" data-i18n="add">Добавить</button>
             </form>
@@ -1781,6 +1863,15 @@
                         <option value="weekdays" data-i18n="repeatWeekdays">Будни</option>
                         <option value="weekends" data-i18n="repeatWeekends">Выходные</option>
                     </select>
+                </div>
+                <div>
+                    <label data-i18n="deadline">Дедлайн</label>
+                    <input type="date" id="edit-task-deadline">
+                </div>
+                <div>
+                    <label data-i18n="activeDays">Активные дни (каденция)</label>
+                    <div class="weekday-selector" id="edit-weekday-selector"></div>
+                    <div class="weekday-hint" data-i18n="activeDaysHint">Пусто = каждый день. Выбери дни — задача активна только в них, остальные дни не учитываются.</div>
                 </div>
                 <div>
                     <label data-i18n="tags">Теги</label>
@@ -2002,6 +2093,10 @@
                 loadPreset: 'Загрузить пресет',
                 loadPresetConfirm: 'Загрузить профиль? Текущие задачи будут заменены.',
                 presetLoaded: 'Профиль загружен',
+                deadline: 'Дедлайн',
+                activeDays: 'Активные дни (каденция)',
+                activeDaysHint: 'Пусто = каждый день. Выбери дни — задача активна только в них, остальные не учитываются.',
+                skipHint: 'Long-press по дню — пропустить (не учитывается). Нажми «—» чтобы вернуть.',
                 cloudSync: 'Облачная синхронизация',
                 saveYourData: 'Сохранить ваши данные',
                 cloudSyncHint: 'Сохраните данные и получите код для доступа с другого устройства',
@@ -2133,6 +2228,10 @@
                 loadPreset: 'Load preset',
                 loadPresetConfirm: 'Load profile? Current tasks will be replaced.',
                 presetLoaded: 'Profile loaded',
+                deadline: 'Deadline',
+                activeDays: 'Active days (cadence)',
+                activeDaysHint: 'Empty = every day. Pick days — the task is active only on them, others are not counted.',
+                skipHint: 'Long-press a day to skip it (not counted). Tap «—» to restore.',
                 cloudSync: 'Cloud Sync',
                 saveYourData: 'Save your data',
                 cloudSyncHint: 'Save data and get a code to access from another device',
@@ -3029,6 +3128,10 @@
                 loadPreset: 'Завантажити пресет',
                 loadPresetConfirm: 'Завантажити профіль? Поточні завдання будуть замінені.',
                 presetLoaded: 'Профіль завантажено',
+                deadline: 'Дедлайн',
+                activeDays: 'Активні дні (каденція)',
+                activeDaysHint: 'Порожньо = щодня. Обери дні — завдання активне лише в них, інші не враховуються.',
+                skipHint: 'Long-press по дню — пропустити (не враховується). Натисни «—» щоб повернути.',
                 cloudSync: 'Хмарна синхронізація',
                 saveYourData: 'Зберегти ваші дані',
                 cloudSyncHint: 'Збережіть дані та отримайте код для доступу з іншого пристрою',
@@ -3610,6 +3713,7 @@
         let currentWeekStart = getWeekStart(new Date());
         let data = loadData();
         let editingTags = [];
+        let editingWeekdays = [];
         let draggedRow = null;
 
         // Check URL for language parameter
@@ -3714,6 +3818,7 @@
             const defaults = {
                 tasks: [],
                 completions: {},
+                skips: {},
                 achievements: {},
                 streak: { current: 0, best: 0, lastDate: null },
                 perfectWeeksInRow: 0,
@@ -3947,6 +4052,8 @@
                 category: document.getElementById('task-category').value,
                 time: document.getElementById('task-time').value ? parseInt(document.getElementById('task-time').value) : null,
                 repeat: document.getElementById('task-repeat').value,
+                deadline: document.getElementById('task-deadline').value || null,
+                activeWeekdays: [],
                 tags: [],
                 comment: '',
                 reminder: null,
@@ -3956,6 +4063,7 @@
             saveData();
             document.getElementById('task-name').value = '';
             document.getElementById('task-time').value = '';
+            document.getElementById('task-deadline').value = '';
             renderTasks();
             renderStats();
             renderTemplates();
@@ -4083,8 +4191,11 @@
             document.getElementById('edit-task-repeat').value = task.repeat || 'none';
             document.getElementById('edit-task-comment').value = task.comment || '';
             document.getElementById('edit-task-reminder').value = task.reminder || '';
+            document.getElementById('edit-task-deadline').value = task.deadline || '';
             editingTags = [...(task.tags || [])];
+            editingWeekdays = [...(task.activeWeekdays || [])];
             renderTagsInput();
+            renderWeekdaySelector();
             document.getElementById('edit-modal').classList.add('show');
         }
 
@@ -4103,11 +4214,34 @@
             task.repeat = document.getElementById('edit-task-repeat').value;
             task.comment = document.getElementById('edit-task-comment').value.trim();
             task.reminder = document.getElementById('edit-task-reminder').value || null;
+            task.deadline = document.getElementById('edit-task-deadline').value || null;
+            task.activeWeekdays = [...editingWeekdays];
             task.tags = [...editingTags];
             saveData();
             closeEditModal();
             renderTasks();
+            renderProgressStats();
+            renderStats();
             SOUNDS.check();
+        }
+
+        // Weekday (cadence) selector in edit modal — buttons ordered Mon..Sun, value = JS getDay() (0=Sun..6=Sat)
+        function renderWeekdaySelector() {
+            const container = document.getElementById('edit-weekday-selector');
+            if (!container) return;
+            const sh = t('days'); // short names, index 0=Mon..6=Sun
+            const order = [1, 2, 3, 4, 5, 6, 0]; // Mon..Sun as getDay() values
+            container.innerHTML = order.map((dow, i) => {
+                const active = editingWeekdays.includes(dow);
+                return `<button type="button" class="weekday-btn ${active ? 'active' : ''}" onclick="toggleWeekday(${dow})">${sh[i]}</button>`;
+            }).join('');
+        }
+
+        function toggleWeekday(dow) {
+            const idx = editingWeekdays.indexOf(dow);
+            if (idx === -1) editingWeekdays.push(dow);
+            else editingWeekdays.splice(idx, 1);
+            renderWeekdaySelector();
         }
 
         // Tags
@@ -4142,6 +4276,7 @@
         }
 
         function toggleCompletion(taskId, date) {
+            if (skipJustToggled) { skipJustToggled = false; renderTasks(); return; }
             if (!data.completions[date]) data.completions[date] = {};
             const wasCompleted = data.completions[date][taskId];
             data.completions[date][taskId] = !wasCompleted;
@@ -4219,6 +4354,93 @@
             return data.completions[date]?.[taskId] || false;
         }
 
+        // ==================== SKIP DATES / ACTIVE WEEKDAYS ====================
+        function getTask(taskId) { return data.tasks.find(t => String(t.id) === String(taskId)); }
+        // weekday of 'YYYY-MM-DD' as JS getDay() (0=Sun..6=Sat), local-safe
+        function dowOf(dateStr) {
+            const p = String(dateStr).split('-');
+            return new Date(+p[0], +p[1] - 1, +p[2]).getDay();
+        }
+        // a (task,date) cell is skipped if manually skipped OR weekday not in task.activeWeekdays
+        function isSkipped(task, dateStr) {
+            if (data.skips && data.skips[dateStr] && data.skips[dateStr][task.id]) return true;
+            if (Array.isArray(task.activeWeekdays) && task.activeWeekdays.length && !task.activeWeekdays.includes(dowOf(dateStr))) return true;
+            return false;
+        }
+        // satisfied = completed or skipped (skipped days don't break streaks/progress)
+        function isSatisfied(task, dateStr) {
+            return isCompleted(task.id, dateStr) || isSkipped(task, dateStr);
+        }
+        // count of active (non-skipped) days for a task across given dates
+        function activeDays(task, dates) {
+            return dates.filter(d => !isSkipped(task, d)).length;
+        }
+        let skipJustToggled = false;
+        let cellPressTimer = null;
+        function toggleSkip(taskId, dateStr) {
+            const task = getTask(taskId);
+            if (!task) return;
+            if (!data.skips) data.skips = {};
+            if (!data.skips[dateStr]) data.skips[dateStr] = {};
+            if (data.skips[dateStr][taskId]) {
+                delete data.skips[dateStr][taskId];
+            } else {
+                data.skips[dateStr][taskId] = true;
+                // clear any completion on a newly-skipped day
+                if (data.completions[dateStr] && data.completions[dateStr][taskId]) {
+                    delete data.completions[dateStr][taskId];
+                    data.totalCompleted = Math.max(0, data.totalCompleted - 1);
+                    const m = dateStr.substring(0, 7);
+                    data.monthlyStats[m] = Math.max(0, (data.monthlyStats[m] || 0) - 1);
+                }
+            }
+            if (SOUNDS && SOUNDS.uncheck) SOUNDS.uncheck();
+            saveData();
+            renderTasks();
+            renderProgressStats();
+            renderStats();
+        }
+        function startCellPress(taskId, dateStr) {
+            clearTimeout(cellPressTimer);
+            cellPressTimer = setTimeout(() => {
+                skipJustToggled = true;
+                toggleSkip(taskId, dateStr);
+                setTimeout(() => { skipJustToggled = false; }, 500);
+            }, 480);
+        }
+        function endCellPress() { clearTimeout(cellPressTimer); }
+        // format minutes -> compact h/m
+        function fmtTime(min) {
+            if (!min) return '';
+            if (min < 60) return min + 'm';
+            const h = Math.floor(min / 60), m = min % 60;
+            return m ? h + 'h' + m : h + 'h';
+        }
+        // deadline badge (countdown + color)
+        function deadlineBadge(task) {
+            if (!task.deadline) return '';
+            const p = String(task.deadline).split('-');
+            const dl = new Date(+p[0], +p[1] - 1, +p[2]); dl.setHours(0, 0, 0, 0);
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const days = Math.round((dl - today) / 86400000);
+            const dd = String(dl.getDate()).padStart(2, '0') + '.' + String(dl.getMonth() + 1).padStart(2, '0');
+            const ru = (data.lang === 'ru' || data.lang === 'uk');
+            let label, cls;
+            if (days < 0) { label = '⚠ ' + dd + (ru ? ' просроч.' : ' overdue'); cls = 'dl-over'; }
+            else if (days === 0) { label = '📅 ' + dd + (ru ? ' · сегодня' : ' · today'); cls = 'dl-soon'; }
+            else if (days === 1) { label = '📅 ' + dd + (ru ? ' · завтра' : ' · 1d'); cls = 'dl-soon'; }
+            else { label = '📅 ' + dd + ' · ' + days + (ru ? 'д' : 'd'); cls = days <= 3 ? 'dl-soon' : 'dl-ok'; }
+            return `<span class="deadline-badge ${cls}">${label}</span>`;
+        }
+        // cadence badge — shows the weekdays a task is active on (e.g. LinkedIn Mon·Wed·Fri)
+        function cadenceBadge(task) {
+            if (!Array.isArray(task.activeWeekdays) || !task.activeWeekdays.length) return '';
+            const sh = t('days'); // index 0=Mon..6=Sun
+            const order = [1, 2, 3, 4, 5, 6, 0].filter(d => task.activeWeekdays.includes(d));
+            const names = order.map(d => sh[(d + 6) % 7]); // getDay() -> Mon-based index
+            return `<span class="cadence-badge">📆 ${names.join('·')}</span>`;
+        }
+
         // Drag and Drop
         function handleDragStart(e, taskId) {
             draggedRow = taskId;
@@ -4263,13 +4485,15 @@
             tbody.innerHTML = data.tasks.map(task => {
                 const cat = CATEGORIES[task.category];
                 const catName = cats[task.category];
-                const completed = weekDates.filter(d => isCompleted(task.id, d)).length;
-                const progress = Math.round((completed / 7) * 100);
+                const activeDates = weekDates.filter(d => !isSkipped(task, d));
+                const denom = activeDates.length || 1;
+                const completed = activeDates.filter(d => isCompleted(task.id, d)).length;
+                const progress = Math.round((completed / denom) * 100);
                 const color = progress >= 70 ? '#27ae60' : progress >= 40 ? '#f39c12' : '#e74c3c';
                 const isChallenge = !!task.challengeId;
 
                 const meta = [];
-                if (task.time) meta.push(`⏱${task.time}m`);
+                if (task.time) meta.push(`⏱${fmtTime(task.time)}`);
                 if (task.repeat && task.repeat !== 'none') meta.push(`🔄`);
                 if (task.reminder) meta.push(`⏰${task.reminder}`);
 
@@ -4285,15 +4509,23 @@
                             <span class="drag-handle">⋮⋮</span>
                             ${isChallenge ? '<span title="Задача челленджа">🔗</span> ' : ''}<span class="task-name" onclick="openEditModal('${task.id}')">${escapeHtml(task.name)}</span>
                             ${meta.length ? `<div class="task-meta">${meta.join(' ')}</div>` : ''}
+                            <div>${deadlineBadge(task)}${cadenceBadge(task)}</div>
                             ${tagsHtml ? `<div class="task-tags">${tagsHtml}</div>` : ''}
                         </td>
                         <td><span class="category-badge" style="border-left:3px solid ${cat.color}">${catName}</span></td>
-                        ${weekDates.map(date => `
-                            <td class="day-cell" data-date="${date}">
-                                <input type="checkbox" class="day-checkbox" ${isCompleted(task.id, date) ? 'checked' : ''}
-                                    onchange="toggleCompletion('${task.id}', '${date}')">
-                            </td>
-                        `).join('')}
+                        ${weekDates.map(date => {
+                            if (isSkipped(task, date)) {
+                                return `<td class="day-cell skipped" data-date="${date}">
+                                    <span class="skip-dash" onclick="toggleSkip('${task.id}', '${date}')" title="${t('skipHint')}">—</span>
+                                </td>`;
+                            }
+                            return `<td class="day-cell" data-date="${date}"
+                                    onmousedown="startCellPress('${task.id}', '${date}')" onmouseup="endCellPress()" onmouseleave="endCellPress()"
+                                    ontouchstart="startCellPress('${task.id}', '${date}')" ontouchend="endCellPress()" ontouchmove="endCellPress()">
+                                    <input type="checkbox" class="day-checkbox" ${isCompleted(task.id, date) ? 'checked' : ''}
+                                        onchange="toggleCompletion('${task.id}', '${date}')">
+                                </td>`;
+                        }).join('')}
                         <td>
                             <div class="progress-container">
                                 <div class="progress-bar"><div class="progress-fill" style="width:${progress}%;background:${color}"></div></div>
@@ -4323,8 +4555,10 @@
             container.innerHTML = data.tasks.map(task => {
                 const cat = CATEGORIES[task.category];
                 const catName = cats[task.category];
-                const completed = weekDates.filter(d => isCompleted(task.id, d)).length;
-                const progress = Math.round((completed / 7) * 100);
+                const activeDates = weekDates.filter(d => !isSkipped(task, d));
+                const denom = activeDates.length || 1;
+                const completed = activeDates.filter(d => isCompleted(task.id, d)).length;
+                const progress = Math.round((completed / denom) * 100);
                 const isChallenge = !!task.challengeId;
 
                 return `
@@ -4334,9 +4568,10 @@
                                 <div class="mobile-task-name" onclick="openEditModal('${task.id}')">${isChallenge ? '🔗 ' : ''}${escapeHtml(task.name)}</div>
                                 <div class="mobile-task-meta">
                                     <span style="border-left:3px solid ${cat.color};padding-left:6px">${catName}</span>
-                                    ${task.time ? ` · ⏱${task.time}м` : ''}
+                                    ${task.time ? ` · ⏱${fmtTime(task.time)}` : ''}
                                     ${task.reminder ? ` · ⏰${task.reminder}` : ''}
                                 </div>
+                                <div>${deadlineBadge(task)}${cadenceBadge(task)}</div>
                             </div>
                             <div class="mobile-task-actions">
                                 <button onclick="openEditModal('${task.id}')">✏️</button>
@@ -4344,19 +4579,27 @@
                             </div>
                         </div>
                         <div class="mobile-days-grid">
-                            ${weekDates.map((date, i) => `
-                                <div class="mobile-day ${date === today ? 'today' : ''}">
-                                    <span class="mobile-day-label">${days[i]}</span>
-                                    <input type="checkbox" class="day-checkbox" ${isCompleted(task.id, date) ? 'checked' : ''}
-                                        onchange="toggleCompletion('${task.id}', '${date}')">
-                                </div>
-                            `).join('')}
+                            ${weekDates.map((date, i) => {
+                                if (isSkipped(task, date)) {
+                                    return `<div class="mobile-day skipped ${date === today ? 'today' : ''}">
+                                        <span class="mobile-day-label">${days[i]}</span>
+                                        <span class="skip-dash" onclick="toggleSkip('${task.id}', '${date}')" title="${t('skipHint')}">—</span>
+                                    </div>`;
+                                }
+                                return `<div class="mobile-day ${date === today ? 'today' : ''}"
+                                        onmousedown="startCellPress('${task.id}', '${date}')" onmouseup="endCellPress()" onmouseleave="endCellPress()"
+                                        ontouchstart="startCellPress('${task.id}', '${date}')" ontouchend="endCellPress()" ontouchmove="endCellPress()">
+                                        <span class="mobile-day-label">${days[i]}</span>
+                                        <input type="checkbox" class="day-checkbox" ${isCompleted(task.id, date) ? 'checked' : ''}
+                                            onchange="toggleCompletion('${task.id}', '${date}')">
+                                    </div>`;
+                            }).join('')}
                         </div>
                         <div class="mobile-task-progress">
                             <div class="mobile-progress-bar">
                                 <div class="mobile-progress-fill" style="width:${progress}%"></div>
                             </div>
-                            <span class="mobile-progress-text">${completed}/7</span>
+                            <span class="mobile-progress-text">${completed}/${denom}</span>
                         </div>
                     </div>
                 `;
@@ -4372,9 +4615,12 @@
 
         function renderTotalProgress() {
             const weekDates = getWeekDates();
-            const total = data.tasks.length * 7;
-            let completed = 0;
-            data.tasks.forEach(task => weekDates.forEach(d => { if (isCompleted(task.id, d)) completed++; }));
+            let total = 0, completed = 0;
+            data.tasks.forEach(task => weekDates.forEach(d => {
+                if (isSkipped(task, d)) return; // skipped days don't count
+                total++;
+                if (isCompleted(task.id, d)) completed++;
+            }));
 
             const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
             const circ = 2 * Math.PI * 54;
@@ -4395,8 +4641,12 @@
 
             Object.keys(CATEGORIES).forEach(k => stats[k] = { total: 0, done: 0 });
             data.tasks.forEach(task => {
-                stats[task.category].total += 7;
-                weekDates.forEach(d => { if (isCompleted(task.id, d)) stats[task.category].done++; });
+                if (!stats[task.category]) stats[task.category] = { total: 0, done: 0 };
+                weekDates.forEach(d => {
+                    if (isSkipped(task, d)) return; // skipped days don't count
+                    stats[task.category].total++;
+                    if (isCompleted(task.id, d)) stats[task.category].done++;
+                });
             });
 
             const hasData = Object.values(stats).some(s => s.total > 0);
@@ -4431,7 +4681,7 @@
         function updateStreak() {
             const today = formatDate(new Date());
             const yesterday = formatDate(new Date(Date.now() - 86400000));
-            const allToday = data.tasks.length > 0 && data.tasks.every(t => isCompleted(t.id, today));
+            const allToday = data.tasks.length > 0 && data.tasks.every(t => isSatisfied(t, today));
 
             if (allToday) {
                 if (data.streak.lastDate === yesterday) data.streak.current++;
@@ -4450,7 +4700,7 @@
             d.setDate(d.getDate() - 1);
             while (streak < 365) {
                 const ds = formatDate(d);
-                if (!data.tasks.every(t => isCompleted(t.id, ds))) break;
+                if (!data.tasks.every(t => isSatisfied(t, ds))) break;
                 streak++;
                 d.setDate(d.getDate() - 1);
             }
@@ -5173,6 +5423,7 @@
                 const syncData = {
                     tasks: data.tasks,
                     completions: data.completions,
+                    skips: data.skips,
                     achievements: data.achievements,
                     streak: data.streak,
                     perfectWeeksInRow: data.perfectWeeksInRow,
@@ -5231,6 +5482,7 @@
                 // Merge cloud data with current data (keep local theme/lang/sound preferences)
                 data.tasks = cloudData.tasks || [];
                 data.completions = cloudData.completions || {};
+                data.skips = cloudData.skips || {};
                 data.achievements = cloudData.achievements || {};
                 data.streak = cloudData.streak || { current: 0, best: 0, lastDate: null };
                 data.perfectWeeksInRow = cloudData.perfectWeeksInRow || 0;
@@ -5267,34 +5519,35 @@
         }
 
         // ==================== PRESET PROFILES ====================
+        // Personal preset for Vadim. Tasks may carry:
+        //   deadlineOffset:N  -> deadline = today + N days (resolved at load time)
+        //   deadline:'YYYY-MM-DD' -> absolute deadline
+        //   activeWeekdays:[..] -> JS getDay() values (0=Sun..6=Sat); empty/absent = every day
         const PRESET_PROFILES = {
-            baksik: {
-                name: 'Baksik',
+            vadym: {
+                name: 'Vadim',
                 tasks: [
-                    { id: 1, name: 'Бег вечером', category: 'health', time: 30, reminder: '20:00', repeat: 'daily' },
-                    { id: 2, name: 'Английский утро', category: 'study', time: 30, reminder: '08:00', repeat: 'daily' },
-                    { id: 3, name: 'Английский вечер', category: 'study', time: 30, reminder: '19:00', repeat: 'daily' },
-                    { id: 4, name: 'Гидропоника', category: 'study', time: 15, reminder: '', repeat: 'daily' },
-                    { id: 5, name: 'Подземные сооружения', category: 'study', time: 15, reminder: '', repeat: 'daily' },
-                    { id: 6, name: 'Hardware Hacking', category: 'study', time: 15, reminder: '', repeat: 'daily' },
-                    { id: 7, name: 'LeetCode', category: 'work', time: 30, reminder: '', repeat: 'daily' },
-                    { id: 8, name: 'Книга: Феноменология духа', category: 'study', time: 20, reminder: '', repeat: 'daily' },
-                    { id: 9, name: 'Rust изучение', category: 'study', time: 20, reminder: '', repeat: 'daily' },
-                    { id: 10, name: 'Медитация', category: 'health', time: 10, reminder: '07:00', repeat: 'daily' },
-                    { id: 11, name: 'Вода 2 литра', category: 'health', time: 0, reminder: '', repeat: 'daily' },
-                    { id: 12, name: 'Сон до 23:00', category: 'health', time: 0, reminder: '22:30', repeat: 'daily' },
-                    { id: 13, name: 'Дневник/Рефлексия', category: 'personal', time: 10, reminder: '22:00', repeat: 'daily' },
-                    { id: 14, name: 'Anki карточки', category: 'study', time: 15, reminder: '', repeat: 'daily' },
-                    { id: 15, name: 'CTF задачи', category: 'work', time: 30, reminder: '', repeat: 'daily' }
+                    { name: 'TimeLock2 — разработка', category: 'work', time: 300, repeat: 'daily', deadlineOffset: 2 },
+                    { name: 'TimeLock VR1', category: 'work', time: 120, repeat: 'daily', deadlineOffset: 10 },
+                    { name: 'Dwarves (We Are The Dwarves)', category: 'work', time: 60, repeat: 'daily', deadlineOffset: 7 },
+                    { name: 'Deployment / Node Capture', category: 'work', time: 60, repeat: 'daily', deadlineOffset: 7 },
+                    { name: 'Site Agent', category: 'work', time: 30, repeat: 'daily' },
+                    { name: 'LinkedIn пост', category: 'work', time: 30, repeat: 'none', activeWeekdays: [1, 3, 5], deadline: '2026-06-30' },
+                    { name: 'PartySound', category: 'work', time: 30, repeat: 'none', activeWeekdays: [2, 4, 6], deadline: '2026-06-30' },
+                    { name: 'InNews', category: 'work', time: 15, repeat: 'daily' },
+                    { name: 'Английский', category: 'study', time: 120, repeat: 'daily' },
+                    { name: 'Чтение 200 страниц', category: 'study', time: 0, repeat: 'daily' },
+                    { name: 'Тренировка (2×/нед)', category: 'health', time: 0, repeat: 'none', activeWeekdays: [2, 5] },
+                    { name: 'Без сигарет', category: 'health', time: 0, repeat: 'daily' },
+                    { name: 'Без мастурбации', category: 'personal', time: 0, repeat: 'daily' },
+                    { name: 'Отложить 10.000₫', category: 'personal', time: 0, repeat: 'daily' }
                 ],
-                challenges: [
-                    { id: 1, name: '30 дней бега', totalDays: 30, completedDays: [] },
-                    { id: 2, name: '21 день медитации', totalDays: 21, completedDays: [] }
-                ]
+                challenges: []
             }
         };
         // Aliases
-        PRESET_PROFILES.vadym = PRESET_PROFILES.baksik;
+        PRESET_PROFILES.baksik = PRESET_PROFILES.vadym;
+        PRESET_PROFILES.baksikpro = PRESET_PROFILES.vadym;
 
         function loadPresetByCode() {
             const code = document.getElementById('preset-code-input').value.trim().toLowerCase();
@@ -5317,13 +5570,26 @@
 
             // Generate unique IDs for tasks (as strings like regular tasks)
             const now = Date.now();
-            data.tasks = preset.tasks.map((task, i) => ({
-                ...task,
-                id: String(now + i)
-            }));
+            // local-safe "today" for resolving relative deadlines (avoids UTC off-by-one)
+            const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+            const toYmd = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+            data.tasks = preset.tasks.map((task, i) => {
+                const ntask = {
+                    tags: [], comment: '', reminder: null, activeWeekdays: [],
+                    createdAt: formatDate(new Date()),
+                    ...task,
+                    id: String(now + i)
+                };
+                if (ntask.deadlineOffset != null) {
+                    const dl = new Date(today0); dl.setDate(dl.getDate() + ntask.deadlineOffset);
+                    ntask.deadline = toYmd(dl);
+                    delete ntask.deadlineOffset;
+                }
+                return ntask;
+            });
 
             // Generate unique IDs for challenges
-            data.challenges = preset.challenges.map((ch, i) => ({
+            data.challenges = (preset.challenges || []).map((ch, i) => ({
                 ...ch,
                 id: now + 1000 + i,
                 startDate: formatDate(new Date())
@@ -5331,6 +5597,7 @@
 
             data.profile = { name: preset.name };
             data.completions = {};
+            data.skips = {};
 
             saveData();
             init();
