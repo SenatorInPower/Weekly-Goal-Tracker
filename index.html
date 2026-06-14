@@ -3970,6 +3970,7 @@
                 dailyLog: {},           // { 'YYYY-MM-DD': { tasks:[{id,text,done}], mtime:Number } }
                 dailyCursor: null,      // viewed date (string); null = today
                 dailySeeded: null,      // date for which today's tasks were auto-seeded
+                dailySeededVer: 0,      // seed version applied (top-up gate)
                 gsync: { idToken: null, email: null, sub: null, name: null, lastSync: 0 }
             };
             try {
@@ -6056,14 +6057,19 @@
         // ==================== PERSONAL DAILY MODE (logic) ====================
         // Each day = its own unique checklist. Day% = done/total that day.
         // Month% = average of daily % over days that had tasks (6/6 and 12/12 both = 100%).
+        const SEED_VERSION = 2;   // bump to top-up today's seed (appends missing tasks once, keeps checks)
         const TODAY_SEED = {
-            // tasks Vadim wrote on 2026-06-14 (seeded once for the returning user)
+            // tasks Vadim wrote on 2026-06-14 (seeded/topped-up once for the returning user)
             '2026-06-14': [
                 'Меха — тестируем игру',
                 'ТЛ1 — работа над проектом, проверить изменения',
                 'Гонка — проверить дорогу',
                 'Сайт Агент — как клиент проходит воронку: покупка/демо, как вижу его в админке и где',
-                'Английский — 30 мин: плейлисты, Дуолинго, Гарри Поттер'
+                'Английский — 30 мин: плейлисты, Дуолинго, Гарри Поттер',
+                'PartySound',
+                'Тренировка №1',
+                'Тренировка №2',
+                'Книга — «Размышления» Марка Аврелия'
             ]
         };
         let GOOGLE_CLIENT_ID = '';   // fetched at runtime from the backend /health (single source of truth = VPS .env)
@@ -6102,12 +6108,16 @@
             const root=document.getElementById('daily-root');
             const cont=document.querySelector('.container');
             if(data.mode==='daily'){
-                // one-time seed of today's tasks for the returning user
+                // seed / top-up today's tasks for the returning user (runs once per SEED_VERSION;
+                // appends only tasks not already present by text → keeps existing checks, no dupes)
                 const td=dlToday();
-                if(HAD_SAVED && TODAY_SEED[td] && data.dailySeeded!==td && !(data.dailyLog[td]&&data.dailyLog[td].tasks.length)){
+                if(HAD_SAVED && TODAY_SEED[td] && data.dailySeededVer!==SEED_VERSION){
                     const e=dlEnsure(td);
-                    e.tasks=TODAY_SEED[td].map((txt,i)=>({id:String(Date.now()+i),text:txt,done:false}));
-                    dlTouch(td); data.dailySeeded=td; saveData();
+                    const have=new Set(e.tasks.map(t=>t.text));
+                    let added=false;
+                    TODAY_SEED[td].forEach((txt,i)=>{ if(!have.has(txt)){ e.tasks.push({id:String(Date.now()+i),text:txt,done:false}); added=true; } });
+                    if(added) dlTouch(td);
+                    data.dailySeeded=td; data.dailySeededVer=SEED_VERSION; saveData();
                 }
                 root.classList.add('active'); if(cont) cont.style.display='none';
                 document.getElementById('dl-theme-btn').textContent = (data.theme==='dark')?'☀️':'🌙';
