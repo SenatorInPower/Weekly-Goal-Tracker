@@ -1638,6 +1638,7 @@
                     <div class="logo" data-i18n="appName">Weekly Goal Tracker</div>
                 </div>
                 <div class="header-controls">
+                    <button class="profile-btn" onclick="setMode('daily')" title="Личный режим: задачи на каждый день">🎯 Daily</button>
                     <button class="profile-btn" onclick="openPresetModal()">☁️ <span data-i18n="cloudSync">Синхронизация</span></button>
                     <select class="lang-select" id="lang-select" onchange="setLanguage(this.value)" title="Select language">
                         <option value="en">🇬🇧 EN</option>
@@ -1834,6 +1835,114 @@
                 <button class="data-btn danger" onclick="resetData()">🗑️ <span data-i18n="reset">Сброс</span></button>
             </div>
         </section>
+    </div>
+
+    <!-- ==================== PERSONAL DAILY MODE ==================== -->
+    <style>
+      #daily-root{position:fixed;inset:0;z-index:60;background:var(--bg);color:var(--text);
+        overflow-y:auto;display:none;padding:0 0 60px;font-family:inherit;}
+      #daily-root.active{display:block;}
+      .dl-wrap{max-width:680px;margin:0 auto;padding:16px;}
+      .dl-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+      .dl-title{font-size:1.25rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+      .dl-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+      .dl-btn{background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:10px;
+        padding:7px 11px;cursor:pointer;font-size:0.85rem;transition:.15s;}
+      .dl-btn:hover{border-color:var(--accent);}
+      .dl-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+      .dl-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+        padding:16px;margin-bottom:14px;box-shadow:0 2px 10px var(--shadow);}
+      .dl-datenav{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+      .dl-nav{background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text);
+        width:40px;height:40px;font-size:1.1rem;cursor:pointer;flex:0 0 auto;}
+      .dl-nav:hover{border-color:var(--accent);}
+      .dl-date{flex:1;text-align:center;}
+      .dl-date-main{font-size:1.05rem;font-weight:700;}
+      .dl-date-sub{font-size:0.78rem;color:var(--text-secondary);}
+      .dl-date-input{margin-top:6px;background:transparent;border:1px solid var(--border);border-radius:8px;
+        color:var(--text);padding:4px 8px;font-family:inherit;}
+      .dl-score{display:flex;align-items:center;gap:18px;}
+      .dl-ring{width:96px;height:96px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+        background:conic-gradient(var(--ring-color) calc(var(--pct)*1%), var(--border) 0);transition:.4s;}
+      .dl-ring-inner{width:74px;height:74px;border-radius:50%;background:var(--card-bg);display:grid;place-items:center;
+        font-size:1.35rem;font-weight:800;}
+      .dl-score-meta{flex:1;}
+      .dl-score-meta b{font-size:1.4rem;}
+      .dl-score-hint{font-size:0.8rem;color:var(--text-secondary);margin-top:4px;}
+      .dl-list{list-style:none;padding:0;margin:8px 0 0;}
+      .dl-item{display:flex;align-items:center;gap:10px;padding:11px 8px;border-bottom:1px solid var(--border);}
+      .dl-item:last-child{border-bottom:none;}
+      .dl-check{width:24px;height:24px;flex:0 0 auto;cursor:pointer;accent-color:var(--accent);}
+      .dl-text{flex:1;font-size:0.96rem;line-height:1.35;outline:none;word-break:break-word;}
+      .dl-item.done .dl-text{text-decoration:line-through;color:var(--text-secondary);}
+      .dl-del{background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:1rem;
+        padding:4px 6px;border-radius:6px;flex:0 0 auto;}
+      .dl-del:hover{color:var(--danger);background:var(--border);}
+      .dl-add{display:flex;gap:8px;margin-top:12px;}
+      .dl-add textarea{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);
+        padding:10px;font-family:inherit;font-size:0.92rem;resize:vertical;min-height:42px;}
+      .dl-empty{text-align:center;color:var(--text-secondary);padding:18px;font-size:0.9rem;}
+      .dl-month-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+      .dl-day{width:38px;border-radius:8px;padding:5px 0;text-align:center;font-size:0.7rem;cursor:pointer;
+        border:1px solid var(--border);background:var(--bg);}
+      .dl-day b{display:block;font-size:0.82rem;}
+      .dl-day.cur{outline:2px solid var(--accent);}
+      .dl-acct{font-size:0.8rem;color:var(--text-secondary);display:flex;align-items:center;gap:6px;}
+      .dl-acct .dot{width:8px;height:8px;border-radius:50%;background:var(--success);}
+      .dl-bigpct{font-size:2.1rem;font-weight:800;}
+    </style>
+    <div id="daily-root">
+      <div class="dl-wrap">
+        <div class="dl-top">
+          <div class="dl-title">🎯 <span id="dl-i18n-title">Мои задачи дня</span></div>
+          <div class="dl-tools">
+            <span class="dl-acct" id="dl-account" style="display:none;"><span class="dot"></span><span id="dl-account-email"></span></span>
+            <span id="dl-gbtn-slot"></span>
+            <button class="dl-btn" id="dl-sync-btn" onclick="gsyncManual()" title="Синхронизировать" style="display:none;">🔄</button>
+            <button class="dl-btn" onclick="dailyOpenSyncInfo()" id="dl-login-btn">🔑 Вход</button>
+            <button class="dl-btn" onclick="setMode('weekly')" title="Классический недельный вид">🗓</button>
+            <button class="dl-btn" onclick="dlToggleTheme()" id="dl-theme-btn">🌙</button>
+          </div>
+        </div>
+
+        <div class="dl-card">
+          <div class="dl-datenav">
+            <button class="dl-nav" onclick="dailyShift(-1)">◀</button>
+            <div class="dl-date">
+              <div class="dl-date-main" id="dl-date-main">—</div>
+              <div class="dl-date-sub" id="dl-date-sub"></div>
+              <input type="date" class="dl-date-input" id="dl-date-input" onchange="dailyPick(this.value)">
+            </div>
+            <button class="dl-nav" onclick="dailyShift(1)">▶</button>
+          </div>
+        </div>
+
+        <div class="dl-card">
+          <div class="dl-score">
+            <div class="dl-ring" id="dl-ring" style="--pct:0;--ring-color:var(--accent);">
+              <div class="dl-ring-inner" id="dl-ring-pct">0%</div>
+            </div>
+            <div class="dl-score-meta">
+              <div><b id="dl-done-count">0</b> <span style="color:var(--text-secondary)">/ <span id="dl-total-count">0</span> задач</span></div>
+              <div class="dl-score-hint" id="dl-score-hint">Отметь выполненное — день засчитается в средний % месяца.</div>
+            </div>
+          </div>
+          <ul class="dl-list" id="dl-list"></ul>
+          <div class="dl-add">
+            <textarea id="dl-add-input" placeholder="Новая задача (можно вставить сразу несколько строк)" onkeydown="dlAddKey(event)"></textarea>
+            <button class="dl-btn primary" onclick="dailyAddFromInput()" style="align-self:stretch;">＋</button>
+          </div>
+        </div>
+
+        <div class="dl-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-weight:700;" id="dl-month-title">Средний % за месяц</div>
+            <div class="dl-bigpct" id="dl-month-pct">0%</div>
+          </div>
+          <div class="dl-score-hint" id="dl-month-sub">Среднее по дням, где были задачи (6/6 и 12/12 = 100%).</div>
+          <div class="dl-month-grid" id="dl-month-grid"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Edit Modal -->
@@ -3725,6 +3834,7 @@
         }
 
         // ==================== STATE ====================
+        let HAD_SAVED = false;   // true if returning user (had localStorage) — gates daily seed; declared before loadData() to avoid TDZ
         let data = loadData();
         let currentWeekStart = getWeekStart(new Date());
         let editingTags = [];
@@ -3836,6 +3946,7 @@
         }
 
         // ==================== DATA ====================
+        // HAD_SAVED is declared earlier (before loadData() call) to avoid TDZ.
         function loadData() {
             const defaults = {
                 tasks: [],
@@ -3853,11 +3964,17 @@
                 earlyBirdUnlocked: false,
                 monthlyStats: {},
                 challenges: [],
-                profile: { name: '' }
+                profile: { name: '' },
+                // ---- personal DAILY mode (per-day unique checklists) ----
+                mode: 'daily',          // 'daily' | 'weekly'
+                dailyLog: {},           // { 'YYYY-MM-DD': { tasks:[{id,text,done}], mtime:Number } }
+                dailyCursor: null,      // viewed date (string); null = today
+                dailySeeded: null,      // date for which today's tasks were auto-seeded
+                gsync: { idToken: null, email: null, sub: null, name: null, lastSync: 0 }
             };
             try {
                 const saved = localStorage.getItem('weeklyGoalTracker');
-                if (saved) return { ...defaults, ...JSON.parse(saved) };
+                if (saved) { HAD_SAVED = true; return { ...defaults, ...JSON.parse(saved) }; }
             } catch (e) {}
             return defaults;
         }
@@ -5935,6 +6052,218 @@
 
         initWheelPicker();
         init();
+
+        // ==================== PERSONAL DAILY MODE (logic) ====================
+        // Each day = its own unique checklist. Day% = done/total that day.
+        // Month% = average of daily % over days that had tasks (6/6 and 12/12 both = 100%).
+        const TODAY_SEED = {
+            // tasks Vadim wrote on 2026-06-14 (seeded once for the returning user)
+            '2026-06-14': [
+                'Меха — тестируем игру',
+                'ТЛ1 — работа над проектом, проверить изменения',
+                'Гонка — проверить дорогу',
+                'Сайт Агент — как клиент проходит воронку: покупка/демо, как вижу его в админке и где',
+                'Английский — 30 мин: плейлисты, Дуолинго, Гарри Поттер'
+            ]
+        };
+        const GOOGLE_CLIENT_ID = '';   // <-- сюда Web OAuth Client ID из Google Cloud (для входа через Google)
+        const SYNC_API = 'https://lnpower.org/tracker-api';   // VPS sync backend
+
+        function dlYmd(d){ return formatDate(d); }                 // local-safe (reuses app helper)
+        function dlToday(){ return formatDate(new Date()); }
+        function dlParse(s){ const [y,m,dd]=s.split('-').map(Number); return new Date(y,m-1,dd); }
+        function dlCursor(){ return data.dailyCursor || dlToday(); }
+        function dlEnsure(date){
+            if(!data.dailyLog[date]) data.dailyLog[date]={tasks:[],mtime:0};
+            if(!Array.isArray(data.dailyLog[date].tasks)) data.dailyLog[date].tasks=[];
+            return data.dailyLog[date];
+        }
+        function dlTouch(date){ data.dailyLog[date].mtime = Date.now(); }
+        function dayPct(date){
+            const e=data.dailyLog[date]; if(!e||!e.tasks.length) return null;
+            const done=e.tasks.filter(t=>t.done).length;
+            return Math.round(done/e.tasks.length*100);
+        }
+        function monthDays(y,m){ // list of 'YYYY-MM-DD' that have tasks, in given year/month
+            const pre=`${y}-${String(m+1).padStart(2,'0')}-`;
+            return Object.keys(data.dailyLog).filter(k=>k.startsWith(pre)&&data.dailyLog[k].tasks.length).sort();
+        }
+        function monthAvg(y,m){
+            const days=monthDays(y,m).map(dayPct).filter(p=>p!==null);
+            if(!days.length) return null;
+            return Math.round(days.reduce((a,b)=>a+b,0)/days.length);
+        }
+
+        function setMode(m){
+            data.mode = m; saveData(); applyMode();
+        }
+        function applyMode(){
+            const root=document.getElementById('daily-root');
+            const cont=document.querySelector('.container');
+            if(data.mode==='daily'){
+                // one-time seed of today's tasks for the returning user
+                const td=dlToday();
+                if(HAD_SAVED && TODAY_SEED[td] && data.dailySeeded!==td && !(data.dailyLog[td]&&data.dailyLog[td].tasks.length)){
+                    const e=dlEnsure(td);
+                    e.tasks=TODAY_SEED[td].map((txt,i)=>({id:String(Date.now()+i),text:txt,done:false}));
+                    dlTouch(td); data.dailySeeded=td; saveData();
+                }
+                root.classList.add('active'); if(cont) cont.style.display='none';
+                document.getElementById('dl-theme-btn').textContent = (data.theme==='dark')?'☀️':'🌙';
+                dailyRender(); gsyncReflect();
+            } else {
+                root.classList.remove('active'); if(cont) cont.style.display='';
+            }
+        }
+        function dlToggleTheme(){ toggleTheme(); document.getElementById('dl-theme-btn').textContent=(data.theme==='dark')?'☀️':'🌙'; }
+
+        function dailyShift(n){
+            const d=dlParse(dlCursor()); d.setDate(d.getDate()+n);
+            data.dailyCursor=dlYmd(d); saveData(); dailyRender();
+        }
+        function dailyPick(v){ if(v){ data.dailyCursor=v; saveData(); dailyRender(); } }
+        function goDailyToday(){ data.dailyCursor=dlToday(); saveData(); dailyRender(); }
+
+        function dailyAddFromInput(){
+            const ta=document.getElementById('dl-add-input');
+            const lines=ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+            if(!lines.length) return;
+            const date=dlCursor(); const e=dlEnsure(date);
+            lines.forEach((txt,i)=> e.tasks.push({id:String(Date.now()+i),text:txt,done:false}));
+            dlTouch(date); ta.value=''; saveData(); dailyRender(); gsyncAuto();
+        }
+        function dlAddKey(ev){ if(ev.key==='Enter'&&!ev.shiftKey){ ev.preventDefault(); dailyAddFromInput(); } }
+        function dailyToggle(date,id){
+            const e=data.dailyLog[date]; if(!e) return;
+            const tk=e.tasks.find(x=>x.id===id); if(!tk) return;
+            tk.done=!tk.done; dlTouch(date); saveData(); dailyRender(); gsyncAuto();
+        }
+        function dailyDelete(date,id){
+            const e=data.dailyLog[date]; if(!e) return;
+            e.tasks=e.tasks.filter(x=>x.id!==id); dlTouch(date); saveData(); dailyRender(); gsyncAuto();
+        }
+        function dailyEditText(date,id,el){
+            const e=data.dailyLog[date]; if(!e) return;
+            const tk=e.tasks.find(x=>x.id===id); if(!tk) return;
+            const v=el.textContent.trim(); if(v&&v!==tk.text){ tk.text=v; dlTouch(date); saveData(); gsyncAuto(); }
+        }
+
+        function dailyRender(){
+            const date=dlCursor(), d=dlParse(date), e=data.dailyLog[date];
+            const days=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+            const mon=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+            const isToday=(date===dlToday());
+            document.getElementById('dl-date-main').textContent=`${d.getDate()} ${mon[d.getMonth()]}${isToday?' · сегодня':''}`;
+            document.getElementById('dl-date-sub').textContent=days[d.getDay()];
+            document.getElementById('dl-date-input').value=date;
+
+            const tasks=(e&&e.tasks)||[];
+            const done=tasks.filter(t=>t.done).length, total=tasks.length;
+            const pct= total? Math.round(done/total*100):0;
+            const color= pct>=70?'var(--success)':pct>=40?'var(--warning)':'var(--danger)';
+            const ring=document.getElementById('dl-ring');
+            ring.style.setProperty('--pct',pct); ring.style.setProperty('--ring-color', total?color:'var(--border)');
+            document.getElementById('dl-ring-pct').textContent=`${pct}%`;
+            document.getElementById('dl-done-count').textContent=done;
+            document.getElementById('dl-total-count').textContent=total;
+
+            const list=document.getElementById('dl-list');
+            if(!total){
+                list.innerHTML=`<li class="dl-empty">Нет задач на этот день. Напиши задачи на сегодня ниже ⤵</li>`;
+            } else {
+                list.innerHTML=tasks.map(t=>`
+                  <li class="dl-item ${t.done?'done':''}">
+                    <input type="checkbox" class="dl-check" ${t.done?'checked':''} onchange="dailyToggle('${date}','${t.id}')">
+                    <div class="dl-text" contenteditable="true" spellcheck="false"
+                         onblur="dailyEditText('${date}','${t.id}',this)">${escHtml(t.text)}</div>
+                    <button class="dl-del" onclick="dailyDelete('${date}','${t.id}')" title="Удалить">🗑</button>
+                  </li>`).join('');
+            }
+
+            // month summary
+            const mAvg=monthAvg(d.getFullYear(),d.getMonth());
+            document.getElementById('dl-month-pct').textContent= mAvg===null?'—':`${mAvg}%`;
+            document.getElementById('dl-month-title').textContent=`Средний % за ${mon[d.getMonth()]}`;
+            const grid=document.getElementById('dl-month-grid');
+            const mdays=monthDays(d.getFullYear(),d.getMonth());
+            grid.innerHTML= mdays.length? mdays.map(k=>{
+                const p=dayPct(k), dd=dlParse(k);
+                const c= p>=70?'var(--success)':p>=40?'var(--warning)':'var(--danger)';
+                return `<div class="dl-day ${k===date?'cur':''}" onclick="dailyPick('${k}')" title="${k}">
+                          <b style="color:${c}">${p}%</b>${dd.getDate()}</div>`;
+            }).join('') : `<div class="dl-score-hint">Пока нет дней с задачами в этом месяце.</div>`;
+        }
+        function escHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+        // ---------- Google sign-in + VPS sync ----------
+        function gsyncReflect(){
+            const signed=!!(data.gsync&&data.gsync.idToken);
+            document.getElementById('dl-account').style.display=signed?'flex':'none';
+            document.getElementById('dl-login-btn').style.display=signed?'none':'';
+            document.getElementById('dl-sync-btn').style.display=signed?'':'none';
+            if(signed) document.getElementById('dl-account-email').textContent=data.gsync.email||'аккаунт';
+            renderGoogleButton();
+        }
+        function renderGoogleButton(){
+            const slot=document.getElementById('dl-gbtn-slot'); if(!slot) return;
+            if(!GOOGLE_CLIENT_ID || (data.gsync&&data.gsync.idToken)){ slot.innerHTML=''; return; }
+            if(!window.google||!google.accounts||!google.accounts.id){ return; }
+            try{
+                google.accounts.id.initialize({ client_id:GOOGLE_CLIENT_ID, callback:onGoogleCredential });
+                slot.innerHTML=''; google.accounts.id.renderButton(slot,{theme:'filled_blue',size:'medium',type:'standard',text:'signin'});
+            }catch(e){}
+        }
+        function onGoogleCredential(resp){
+            try{
+                const p=JSON.parse(atob(resp.credential.split('.')[1]));
+                data.gsync={ idToken:resp.credential, email:p.email, sub:p.sub, name:p.name, lastSync:0 };
+                saveData(); gsyncReflect();
+                gsyncPull(true);
+                showNotification && showNotification('✅','Вход выполнен', p.email||'');
+            }catch(e){}
+        }
+        function gsignOut(){ data.gsync={idToken:null,email:null,sub:null,name:null,lastSync:0}; saveData(); gsyncReflect(); }
+        let _gsyncTimer=null;
+        function gsyncAuto(){ if(!(data.gsync&&data.gsync.idToken)) return; clearTimeout(_gsyncTimer); _gsyncTimer=setTimeout(gsyncPush,1500); }
+        function gsyncManual(){ gsyncPull(false).then(()=>gsyncPush()); }
+        async function gsyncPush(){
+            if(!(data.gsync&&data.gsync.idToken)) return;
+            try{
+                const r=await fetch(SYNC_API+'/sync',{method:'POST',headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({idToken:data.gsync.idToken, dailyLog:data.dailyLog})});
+                if(r.ok){ const j=await r.json(); if(j.dailyLog){ data.dailyLog=mergeDaily(data.dailyLog,j.dailyLog); data.gsync.lastSync=Date.now(); saveData(); dailyRender(); } }
+            }catch(e){}
+        }
+        async function gsyncPull(showMsg){
+            if(!(data.gsync&&data.gsync.idToken)) return;
+            try{
+                const r=await fetch(SYNC_API+'/load',{method:'POST',headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({idToken:data.gsync.idToken})});
+                if(r.ok){ const j=await r.json(); if(j.dailyLog){ data.dailyLog=mergeDaily(data.dailyLog,j.dailyLog); data.gsync.lastSync=Date.now(); saveData(); dailyRender(); if(showMsg) showNotification&&showNotification('🔄','Синхронизировано',''); } }
+            }catch(e){}
+        }
+        function mergeDaily(a,b){ // per-date newest-by-mtime wins
+            const out={...a};
+            for(const k in b){ if(!out[k] || (b[k].mtime||0) > (out[k].mtime||0)) out[k]=b[k]; }
+            return out;
+        }
+        function dailyOpenSyncInfo(){
+            if(!GOOGLE_CLIENT_ID){
+                alert('Вход через Google ещё не подключён.\n\nНужен Web OAuth Client ID из Google Cloud Console (1 раз, ~2 мин) — вставить в GOOGLE_CLIENT_ID. Пока пользуйся локально, данные хранятся на устройстве.');
+                return;
+            }
+            renderGoogleButton();
+        }
+        // load Google Identity script lazily if configured
+        (function(){
+            if(GOOGLE_CLIENT_ID){
+                const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.async=true; s.defer=true;
+                s.onload=()=>{ renderGoogleButton(); if(data.gsync&&data.gsync.idToken) gsyncPull(false); };
+                document.head.appendChild(s);
+            }
+        })();
+
+        applyMode();   // activate personal DAILY mode overlay (after all daily consts/functions defined)
     </script>
 </body>
 </html>
