@@ -6058,20 +6058,9 @@
         // Each day = its own unique checklist. Day% = done/total that day.
         // Month% = average of daily % over days that had tasks (6/6 and 12/12 both = 100%).
         const SEED_VERSION = 2;   // bump to top-up today's seed (appends missing tasks once, keeps checks)
-        const TODAY_SEED = {
-            // tasks Vadim wrote on 2026-06-14 (seeded/topped-up once for the returning user)
-            '2026-06-14': [
-                'Меха — тестируем игру',
-                'ТЛ1 — работа над проектом, проверить изменения',
-                'Гонка — проверить дорогу',
-                'Сайт Агент — как клиент проходит воронку: покупка/демо, как вижу его в админке и где',
-                'Английский — 30 мин: плейлисты, Дуолинго, Гарри Поттер',
-                'PartySound',
-                'Тренировка №1',
-                'Тренировка №2',
-                'Книга — «Размышления» Марка Аврелия'
-            ]
-        };
+        // NOTE: public (GitHub Pages) build ships with NO personal seed — privacy.
+        // Vadim's personal pre-seeded build lives privately on the VPS at https://lnpower.org/tracker/ (htpasswd).
+        const TODAY_SEED = {};
         let GOOGLE_CLIENT_ID = '';   // fetched at runtime from the backend /health (single source of truth = VPS .env)
         const SYNC_API = 'https://lnpower.org/tracker-api';   // VPS sync backend
         let _gcfgLoaded = false;
