@@ -6066,8 +6066,9 @@
                 'Английский — 30 мин: плейлисты, Дуолинго, Гарри Поттер'
             ]
         };
-        const GOOGLE_CLIENT_ID = '';   // <-- сюда Web OAuth Client ID из Google Cloud (для входа через Google)
+        let GOOGLE_CLIENT_ID = '';   // fetched at runtime from the backend /health (single source of truth = VPS .env)
         const SYNC_API = 'https://lnpower.org/tracker-api';   // VPS sync backend
+        let _gcfgLoaded = false;
 
         function dlYmd(d){ return formatDate(d); }                 // local-safe (reuses app helper)
         function dlToday(){ return formatDate(new Date()); }
@@ -6110,7 +6111,7 @@
                 }
                 root.classList.add('active'); if(cont) cont.style.display='none';
                 document.getElementById('dl-theme-btn').textContent = (data.theme==='dark')?'☀️':'🌙';
-                dailyRender(); gsyncReflect();
+                dailyRender(); gsyncReflect(); loadGoogleConfig();
             } else {
                 root.classList.remove('active'); if(cont) cont.style.display='';
             }
@@ -6247,21 +6248,27 @@
             for(const k in b){ if(!out[k] || (b[k].mtime||0) > (out[k].mtime||0)) out[k]=b[k]; }
             return out;
         }
-        function dailyOpenSyncInfo(){
+        async function dailyOpenSyncInfo(){
+            await loadGoogleConfig();
             if(!GOOGLE_CLIENT_ID){
-                alert('Вход через Google ещё не подключён.\n\nНужен Web OAuth Client ID из Google Cloud Console (1 раз, ~2 мин) — вставить в GOOGLE_CLIENT_ID. Пока пользуйся локально, данные хранятся на устройстве.');
+                alert('Вход через Google ещё не подключён.\n\nНужен Web OAuth Client ID (Google Cloud, ~2 мин) — после этого синхрон телефон↔комп заработает сам. Пока данные хранятся локально на устройстве.');
                 return;
             }
             renderGoogleButton();
         }
-        // load Google Identity script lazily if configured
-        (function(){
+        // Pull Google client_id from the backend, then lazy-load the Google Identity script.
+        async function loadGoogleConfig(){
+            if(_gcfgLoaded) return; _gcfgLoaded=true;
+            try{
+                const r=await fetch(SYNC_API+'/health',{cache:'no-store'});
+                if(r.ok){ const j=await r.json(); if(j.client_id) GOOGLE_CLIENT_ID=j.client_id; }
+            }catch(e){}
             if(GOOGLE_CLIENT_ID){
                 const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.async=true; s.defer=true;
                 s.onload=()=>{ renderGoogleButton(); if(data.gsync&&data.gsync.idToken) gsyncPull(false); };
                 document.head.appendChild(s);
             }
-        })();
+        }
 
         applyMode();   // activate personal DAILY mode overlay (after all daily consts/functions defined)
     </script>
