@@ -6097,10 +6097,11 @@
             const root=document.getElementById('daily-root');
             const cont=document.querySelector('.container');
             if(data.mode==='daily'){
-                // seed / top-up today's tasks for the returning user (runs once per SEED_VERSION;
-                // appends only tasks not already present by text → keeps existing checks, no dupes)
+                // seed / top-up today's tasks (runs once per SEED_VERSION; appends only tasks not
+                // already present by text → keeps existing checks, no dupes). Public build has an
+                // empty TODAY_SEED (nothing seeded); the private VPS build carries Vadim's tasks.
                 const td=dlToday();
-                if(HAD_SAVED && TODAY_SEED[td] && data.dailySeededVer!==SEED_VERSION){
+                if(TODAY_SEED[td] && data.dailySeededVer!==SEED_VERSION){
                     const e=dlEnsure(td);
                     const have=new Set(e.tasks.map(t=>t.text));
                     let added=false;
